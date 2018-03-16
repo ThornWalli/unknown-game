@@ -1,0 +1,5 @@
+{
+  "matrix": {
+    "x": 48,
+    "y": 48
+  },"units":[{"type":"figure","position":{"x":0,"y":4}},{"type":"wall","position":{"x":3,"y":0}},{"type":"wall","position":{"x":3,"y":1}},{"type":"wall","position":{"x":3,"y":3}},{"type":"wall","position":{"x":3,"y":4}},{"type":"wall","position":{"x":3,"y":5}},{"type":"wall","position":{"x":3,"y":6}},{"type":"wall","position":{"x":4,"y":4}},{"type":"wall","position":{"x":5,"y":4}}]}

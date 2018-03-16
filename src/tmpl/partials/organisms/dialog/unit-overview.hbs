@@ -1,0 +1,13 @@
+---
+unit-type-select:
+  options:
+    - 'unit-1'
+    - 'unit-2'
+    - 'unit-3'
+units: []
+---
+{{#mixin "organisms/dialog" this partial-name="organisms/dialog/unit-overview" controller-name="./partials/organisms/dialog/UnitOverview" title="Unit Overview"}}
+  {{#content "content"}}
+    {{{mixin "atoms/select-list" class="select-list--dialog select-list--scroll" target="[data-partial='organisms/dialog/unit-overview']"}}}
+  {{/content}}
+{{/mixin}}

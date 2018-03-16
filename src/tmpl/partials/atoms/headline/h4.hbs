@@ -1,0 +1,14 @@
+---
+docs:
+  refs:
+    class:
+      type: 'string'
+      required: false
+    text:
+      type: 'string'
+      required: true
+data:
+  class: #
+  text: 'Headline H4'
+---
+<h4 class="partial{{#if class}} {{{class}}}{{/if}}" data-partial="atoms/headline/h4">{{{text}}}</h4>

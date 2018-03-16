@@ -1,0 +1,20 @@
+{{#mixin "organisms/dialog" this partial-name="organisms/dialog/map-builder/map-settings" controller-name="./partials/organisms/dialog/mapBuilder/MapSettings" }}
+  {{#content "content"}}
+
+    {{#mixin "atoms/form" this}}
+      {{#content "content"}}
+        <form>
+
+          <div>
+            <label>Map Size:</label> {{{mixin "atoms/input/textfield" name="sizeX" type="number" step="1" min="0" max="256" size="3" placeholder="16…"}}}
+            <span> x </span>{{{mixin "atoms/input/textfield" name="sizeY" type="number" step="1" min="0" max="256" size="3" placeholder="16…"}}}
+          </div>
+          <div>
+            {{{mixin "atoms/button" type="submit" title="Save" hook="mapSettingsSaveButton"}}} {{{mixin "atoms/button/upload" title="Import" hook="mapSettingsImportButton"}}} {{{mixin "atoms/button" title="Export" hook="mapSettingsExportButton"}}}
+          </div>
+        </form>
+      {{/content}}
+    {{/mixin}}
+
+  {{/content}}
+{{/mixin}}

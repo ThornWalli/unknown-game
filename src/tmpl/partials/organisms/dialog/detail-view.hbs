@@ -1,0 +1,23 @@
+{{#mixin "organisms/dialog" this partial-name="organisms/dialog/detail-view" controller-name="./partials/organisms/dialog/DetailView" }}
+  {{#content "content"}}
+
+    {{#mixin "molecules/tab-container" class="tab-container--dialog" }}
+
+      {{#content "content"}}
+
+        <div data-title="Allgemein">
+          Allgemein
+        </div>
+        <div data-title="Fahrzeuge">
+          Fahrzeuge
+        </div>
+        <div data-title="Lager">
+          Lager
+        </div>
+
+      {{/content}}
+
+    {{/mixin}}
+
+  {{/content}}
+{{/mixin}}

@@ -1,0 +1,22 @@
+---
+select:
+  options:
+    - 'Filter 1.'
+    - 'Filter 2.'
+    - 'Filter 3.'
+---
+
+<div class="partial {{{class}}}" data-partial="atoms/select-list">
+  <div class="select-list__navigation">
+    <select class="select-list__dropdown" data-hook="selectListDropDown">
+      {{#each select.options}}
+        <option>
+          {{{this}}}
+        </option>
+      {{/each}}
+    </select>
+  </div>
+  {{#block "content"}}
+    {{{mixin "atoms/list" list class="list--text-border list--text-border-select select-list__list" hook="selectListItems"}}}
+  {{/block}}
+</div>

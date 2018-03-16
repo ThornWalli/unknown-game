@@ -1,0 +1,14 @@
+{
+  "name": "zip",
+  "task": "gp-boilerplate-environment/lib/tasks/zip-compress",
+  "config": {
+    "subtasks": [{
+      "name": "default",
+      "excludes": [],
+      "files": {
+        "src": ["<%= destination %>"],
+        "dest": "<%= destination %>"
+      }
+    }]
+  }
+}

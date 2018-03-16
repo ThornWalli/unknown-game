@@ -1,0 +1,183 @@
+.partial[data-partial="molecules/tab-container"] {
+  background: $dialog_borderColor;
+
+  .tab-container {
+    &__navigation {
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        opacity: 0;
+        transition: opacity 200ms linear;
+      }
+
+      li {
+        display: inline-block;
+      }
+    }
+
+    &__tabs {
+      > div {
+        display: none;
+
+        &.js--active {
+          display: block;
+        }
+      }
+    }
+  }
+
+  &.tab-container--dialog {
+    color: $color_green;
+    display: flex;
+    flex-direction: column;
+
+    select {
+      appearance: none;
+      display: block;
+      width: 100%;
+      padding: 2px 5px;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      text-transform: uppercase;
+    }
+
+    &,
+    &.tab-container--type-tabs {
+      .tab-container {
+        &__dropdown {
+          display: none;
+        }
+
+        &__navigation {
+          display: block;
+        }
+      }
+    }
+
+    &.tab_ontainer--type-dropdown {
+      .tab-container {
+        &__dropdown {
+          display: block;
+        }
+
+        &__navigation {
+          display: none;
+        }
+      }
+    }
+
+    &.tab-container--scroll {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .tab-container {
+      &__navigation {
+        text-transform: uppercase;
+        font-size: 10px;
+        font-weight: 500;
+        flex: 0;
+        padding-bottom: 4px;
+
+        li {
+          display: inline-block;
+          padding: 2px 5px;
+          cursor: pointer;
+          opacity: 0.4;
+          transition: opacity 200ms linear;
+          line-height: 1;
+
+          &:hover {
+            opacity: 0.75;
+          }
+
+          &.js--active {
+            opacity: 1;
+          }
+        }
+      }
+
+      &__tabs {
+        @extend .scrollbar-style;
+
+        flex-grow: 1;
+        overflow-y: auto;
+          background: $color_black;
+
+        > div {
+          padding: 2px 5px;
+          font-size: 11px;
+        }
+      }
+    }
+  }
+
+  &.tab-container--default {
+    padding: 5px;
+    background: #ccc;
+
+    .tab-container {
+      &__navigation {
+        ul {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          margin-bottom: 5px;
+        }
+
+        li {
+          display: inline-block;
+          padding: 5px 10px;
+          cursor: pointer;
+          border: solid #ccc 1px;
+
+          &.js--active {
+            background-color: #fff;
+            color: #333;
+          }
+        }
+      }
+
+      &__tabs {
+        > div {
+          background: #fff;
+          display: none;
+          padding: 5px;
+
+          &.js--active {
+            display: block;
+          }
+        }
+      }
+    }
+  }
+
+  &.tab-container--hide-tabs {
+    .tab-container {
+      &__navigation {
+        display: none;
+      }
+
+      &__tabs {
+        > div {
+          border-top-width: 0;
+        }
+      }
+    }
+  }
+
+  &.js--ready {
+    .tab-container {
+      &__navigation {
+        ul {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}

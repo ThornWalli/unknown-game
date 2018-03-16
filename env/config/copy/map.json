@@ -1,0 +1,32 @@
+{
+  "name": "copy",
+  "task": "gp-boilerplate-environment/lib/tasks/copy",
+  "config": {
+    "subtasks": [{
+      "name": "default",
+      "files": {
+        "src": ["src/assets/**/*.{ttf,woff,eot,svg,ico,png,jpg,gif}", "!src/assets/svg-symbols/**/*.svg"],
+        "dest": "<%= destination %>/assets"
+      }
+    }, {
+      "name": "external",
+      "files": {
+        "src": ["src/external/**/*"],
+        "dest": "<%= destination %>/external"
+      }
+    }, {
+      "name": "svg-symbols",
+      "files": {
+        "src": ["generated/svg-symbols/**/*.svg"],
+        "dest": "<%= destination %>/assets/svg-symbols"
+      }
+    }],
+    "watch": [{
+      "src": ["src/assets/**/*.{ttf,woff,eot,svg,ico,png,jpg,gif}", "src/assets/svg/**/*.svg", "!src/assets/svg-symbols/**/*.svg"],
+      "tasks": ["default"]
+    }, {
+      "src": ["src/external/**/*"],
+      "tasks": ["external"]
+    }]
+  }
+}

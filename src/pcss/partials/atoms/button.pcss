@@ -1,0 +1,21 @@
+.partial[data-partial="atoms/button"],
+.partial[data-partial^="atoms/button/"] {
+  > * {
+    margin: 3px auto;
+    display: block;
+    width: 100%;
+    background: #111;
+    line-height: 1;
+    padding: 5px 30px;
+    box-sizing: border-box;
+    border: solid $color_green 1px;
+    transition: background-color 150ms linear, color 150ms linear;
+  }
+
+  &:hover {
+    > * {
+      color: $color_black;
+      background: $color_green;
+    }
+  }
+}

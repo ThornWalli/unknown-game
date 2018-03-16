@@ -1,0 +1,39 @@
+---
+tabs:
+  - name: 'Tab 1.'
+  - name: 'Tab 2.'
+  - name: 'Tab 3.'
+---
+
+<div class="partial controller{{#if hide-tabs}} tab-container--hide-tabs{{/if}} {{{class}}}" data-partial="molecules/tab-container" data-controller="./partials/molecules/TabContainer"{{#if target}} data-target="{{{target}}}"{{/if}}>
+  <div class="tab-container__navigation">
+    <select class="tab-container__dropdown" data-hook="tabContainerNavigationDropDown">
+      {{#each tabs}}
+        <option value="{{{@index}}}">
+          {{{name}}}
+        </option>
+      {{/each}}
+    </select>
+    <ul data-hook="tabContainerNavigation">
+      {{#each tabs}}
+        <li>
+          {{{name}}}
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+  <div class="tab-container__tabs" data-hook="tabContainerTabs">
+    {{#block "content"}}
+
+      <div data-title="Container 1.">
+        Container Content 1.
+      </div>
+      <div data-title="Container 2.">
+        Container Content 2.
+      </div>
+      <div data-title="Container 3.">
+        Container Content 3.
+      </div>
+    {{/block}}
+  </div>
+</div>

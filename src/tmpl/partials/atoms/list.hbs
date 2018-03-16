@@ -1,0 +1,13 @@
+---
+items:
+  - 'Item 1.'
+  - 'Item 2.'
+  - 'Item 3.'
+---
+<div class="partial {{{class}}}" data-partial="atoms/list">
+  <ul{{#if hook}} data-hook="{{{hook}}}"{{/if}}>
+    {{#block "content"}}
+    {{#each items}}<li><span>{{{this}}}</span></li>{{/each}}
+    {{/block}}
+  </ul>
+</div>

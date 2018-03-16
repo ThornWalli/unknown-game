@@ -1,0 +1,38 @@
+{{#mixin "organisms/dialog" this partial-name="organisms/dialog/action-view" controller-name="./partials/organisms/dialog/ActionView" title="Action Info" }}
+  {{#content "content"}}
+
+    {{#mixin "molecules/tab-container" class="tab-container--dialog" target="[data-controller='./partials/organisms/dialog/ActionView']" }}
+
+      {{#content "content"}}
+
+        <div data-name="transfer" data-title="Transfer">
+          <div class="action-view__transfer">
+            <div class="action-view__transfer__from" data-hook="actionViewTransferFrom">
+              <span>From</span>
+            </div>
+            <div class="action-view__transfer__info" data-hook="actionViewTransferInfo">
+              <span data-value="0"></span>
+            </div>
+            <div class="action-view__transfer__to" data-hook="actionViewTransferTo">
+              <span>To</span>
+            </div>
+          </div>
+        </div>
+
+        <div data-name="move" data-title="Move">
+
+          <div>
+            <span data-hook="actionViewMoveProgress"></span><br />
+          </div>
+          <div>
+            <span>From:</span><span data-hook="actionViewMoveFrom"></span><br />
+            <span>To:</span><span data-hook="actionViewMoveTo"></span><br />
+          </div>
+        </div>
+
+      {{/content}}
+
+    {{/mixin}}
+
+  {{/content}}
+{{/mixin}}

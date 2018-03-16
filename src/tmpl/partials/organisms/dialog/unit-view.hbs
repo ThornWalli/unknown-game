@@ -1,0 +1,37 @@
+---
+depot:
+  items:
+    - title: 'Vehicle 1.'
+    - title: 'Vehicle 2.'
+    - title: 'Vehicle 3.'
+---
+
+{{#mixin "organisms/dialog" this partial-name="organisms/dialog/unit-view" controller-name="./partials/organisms/dialog/UnitView" title="Action Info" }}
+  {{#content "content"}}
+
+    {{#mixin "molecules/tab-container" this class="tab-container--dialog tab-container--scroll" target="[data-controller='./partials/organisms/dialog/UnitView']" }}
+      {{#content "content"}}
+
+        <div data-name="info" data-title="Info">
+          <div class="unit-view__info" data-hook="unitViewInfo">
+
+          </div>
+        </div>
+
+        <div data-name="storage" data-title="Storage">
+          <div class="unit-view__storage__items" data-hook="unitViewStorageItems">
+
+          </div>
+        </div>
+
+        <div data-name="depot" data-title="Depot">
+          <div class="unit-view__depot" data-hook="unitViewDepot">
+            {{#mixin "atoms/list" depot class="list--text-border" hook="unitViewDepotUnits"}}{{#content "content"}}{{#each items}}{{{mixin "organisms/dialog/unit-view/depot-item" this}}}{{/each}}{{/content}}{{/mixin}}
+          </div>
+        </div>
+
+      {{/content}}
+    {{/mixin}}
+
+  {{/content}}
+{{/mixin}}

@@ -1,0 +1,28 @@
+{
+  "name": "svg-symbols",
+  "task": "gp-boilerplate-environment/lib/tasks/svg-symbols",
+  "config": {
+    "subtasks": [{
+      "name": "default",
+      "config": "<%= root %>/env/config/svg-symbols/config.default.js",
+      "files": {
+        "src": ["<%= root %>/src/assets/svg-symbols/default/*.svg"],
+        "dest": "<%= destination_root %>/generated/svg-symbols"
+      }
+    },{
+      "name": "icon",
+      "config": "<%= root %>/env/config/svg-symbols/config.icon.js",
+      "files": {
+        "src": ["<%= root %>/src/assets/svg-symbols/icon/*.svg"],
+        "dest": "<%= destination_root %>/generated/svg-symbols"
+      }
+    }],
+    "watch": [{
+      "src": ["<%= root %>/src/assets/svg-symbols/default/*.svg"],
+      "tasks": ["default"]
+    },{
+      "src": ["<%= root %>/src/assets/svg-symbols/icon/*.svg"],
+      "tasks": ["icon"]
+    }]
+  }
+}

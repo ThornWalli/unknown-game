@@ -1,0 +1,13 @@
+{
+  "name": "validate",
+  "task": "gp-boilerplate-environment/lib/tasks/validate",
+  "config": {
+    "subtasks": [{
+      "name": "default",
+      "files": {
+        "src": ["<%= destination %>/**/*.html"],
+        "dest": "<%= destination %>/w3c"
+      }
+    }]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "grid",
+  "task": "gp-boilerplate-environment/lib/tasks/grid",
+  "config": {
+    "subtasks": [{
+      "name": "default",
+      "config": "<%= root %>/env/config/grid/config.default",
+      "dest": "<%= destination_root %>/generated/pcss/grid"
+    }]
+  }
+}

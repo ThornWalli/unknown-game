@@ -1,0 +1,9 @@
+<svg class="partial<% if(svgClassname) { %><%= svgClassname %><% } %>" data-partial="svgs/symbols/<%= svgClassname %>" xmlns="http://www.w3.org/2000/svg" width="0" height="0"><% if(defs) {%>
+  <defs>
+      <%= defs %>
+  </defs><% } %><% _.forEach( icons, function( icon ){ %>
+    <symbol id="<%= icon.id %>" viewBox="<%= icon.svg.viewBox %>"<% if (icon.svg.originalAttributes.preserveAspectRatio) {%> preserveAspectRatio="<%= icon.svg.originalAttributes.preserveAspectRatio %>" <% }%>><% if (icon.title) {%>
+      <title><%= icon.title %></title><% }%>
+      <%= icon.svg.content %>
+    </symbol><%
+}); %></svg>

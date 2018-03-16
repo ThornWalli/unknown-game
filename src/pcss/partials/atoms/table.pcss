@@ -1,0 +1,43 @@
+.partial[data-partial="atoms/table"],
+.partial[data-partial^="atoms/table/"] {
+  color: $color_green;
+  display: table;
+  width: 100%;
+  font-size: 11px;
+
+  .table {
+    &__row {
+      display: table-row;
+    }
+
+    &__cell,
+    &__head {
+      display: table-cell;
+      padding: 4px;
+      line-height: 1;
+    }
+
+    &__head {
+      text-align: center;
+      font-weight: 700;
+    }
+  }
+
+  border: solid $color_green;
+  border-width: 0 1px 1px 0;
+  .table {
+    &__cell,
+    &__head {
+      border: solid $color_green;
+      border-width: 1px 0 0 1px;
+    }
+  }
+
+  &.table__cell--center {
+    text-align: center;
+  }
+
+  &.table__cell--right {
+    text-align: right;
+  }
+}

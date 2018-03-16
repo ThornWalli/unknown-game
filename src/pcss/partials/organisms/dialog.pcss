@@ -1,0 +1,61 @@
+.partial[data-partial="organisms/dialog"],
+.partial[data-partial^="organisms/dialog/"] {
+  position: absolute;
+  border: solid $dialog_borderColor;
+  background: $dialog_backgroundColor;
+  border-width: 4px;
+  box-sizing: content-box;
+  box-shadow: -5px -5px 10px $dialog_boxShadowColor;
+  display: flex;
+  flex-direction: column;
+
+  .dialog__title {
+    font-size: 11px;
+    color: $color_green;
+    flex: 0 0;
+    padding: 2px 5px;
+    padding-bottom: 6px;
+    text-align: center;
+    font-weight: 500;
+    background: $dialog_borderColor;
+    line-height: 1;
+  }
+
+  .dialog__content {
+    position: relative;
+    flex-grow: 1;
+  }
+
+  [data-module="gp-boilerplate-documentation/modules/detail/preview"] & {
+    position: relative;
+    width: 80%;
+    margin: 0 auto;
+    /* height: 400px; */
+  }
+
+  &.dialog-position--left {
+    left: 0;
+  }
+
+  &.dialog-position--horizontal-center {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &.dialog-position--vertical-center {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  &.dialog-position--top {
+    top: 0;
+  }
+
+  &.dialog-position--right {
+    right: 0;
+  }
+
+  &.dialog-position--bottom {
+    bottom: 0;
+  }
+}

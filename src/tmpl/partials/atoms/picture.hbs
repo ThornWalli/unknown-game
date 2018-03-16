@@ -1,0 +1,59 @@
+---
+docs:
+  refs:
+    title:
+      type: "string"
+      required: true
+    class:
+      type: "string"
+      required: false
+      values: ["align-left-[default,xs,sm,md,lg]", "align-right-[default,xs,sm,md,lg]"]
+    sources:
+      type: "array"
+      required: true
+      item:
+        type: {type: "string", required: true, values: ["lg", "md", "sm", "xs", "default"]}
+        absolute: {type: "boolean", required: false, values: [true, false]}
+        srcset: {type: "string", required: true}
+    sizes:
+      type: "map"
+      required: false
+    fallback:
+      type: "string"
+      required: false
+data:
+  title: "sample image"
+  class: #css-class
+  sources:
+      - {type: 'lg', absolute: true, srcset: '//dummyimage.com/1920x1080/ff0000/fff'}
+      - {type: 'md', absolute: true, srcset: '//dummyimage.com/1199x674/00ff00/fff'}
+      - {type: 'sm', absolute: true, srcset: '//dummyimage.com/991x557/0000ff/fff'}
+      - {type: 'xs', absolute: true, srcset: '//dummyimage.com/767x431/ffff00/fff'}
+      - {type: 'default', absolute: true, srcset: '//dummyimage.com/479x269/00ffff/fff'}
+  sizes:
+      lg: '(min-width: 1200px)'
+      md: '(min-width: 992px)'
+      sm: '(min-width: 768px)'
+      xs: '(min-width: 480px)'
+  fallback:
+      img: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+---
+<picture class="partial{{#if class}} {{class}}{{/if}}" data-partial="atoms/picture">
+  <!--[if IE 9]><video><![endif]-->
+  {{#each sources}}
+    <source class="{{type}}"{{#if (lookup ../sizes type)}} media="{{lookup ../sizes type}}"{{/if}}{{#if src}} src="{{#unless absolute}}{{{../relativeToRoot}}}{{/unless}}{{src}}"{{/if}}{{#if srcset}} srcset="{{#unless absolute}}{{{../relativeToRoot}}}{{/unless}}{{srcset}}"{{/if}}/>
+  {{/each}}
+  <!--[if IE 9]></video><![endif]-->
+  <img src="{{#unless absolute}}{{{../relativeToRoot}}}{{/unless}}{{sources.0.srcset}}" alt="{{title}}"/>
+  {{#with svg}}
+    <template>
+      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewbox="0 0 752 470" preserveAspectRatio="xMinYMin" width="752" height="470">
+        <image xlink:href="{{fallback.img}}" x="0" y="0" width="752" height="470"{{#if clipPath}} clip-path="url({{clipPath}})"{{/if}}{{#if mask}} mask="url({{mask}})"{{/if}}></image>
+      </svg>
+    </template>
+  {{/with}}
+</picture>
+<script type="text/javascript">
+  var pictures = document.getElementsByTagName('picture');
+  window.picture.parse(pictures[pictures.length - 1]);
+</script>

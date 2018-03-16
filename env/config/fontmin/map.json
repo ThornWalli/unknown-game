@@ -1,0 +1,5 @@
+{
+  "name": "fontmin",
+  "task": "gp-boilerplate-environment/lib/tasks/fontmin",
+  "config": null
+}

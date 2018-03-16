@@ -1,0 +1,31 @@
+---
+options:
+  - title: 'option with value'
+    value: 'option_value'
+  - title: 'option only title'
+  - 'options only type string'
+  - title: 'option group'
+    options:
+      - title: grouped option
+---
+<span class="partial {{{class}}}" data-partial="atoms/input/dropdown">
+  <select{{#if size}} size="{{{size}}}"{{/if}}{{#if multiple}} multiple{{/if}}{{#if hook}} data-hook="{{{hook}}}"{{/if}}>
+    {{#each options}}
+
+      {{#if options}}
+
+      <optgroup label="{{{fallback title value}}}">
+        {{#each options}}
+        <option {{#if value}} value="{{{value}}}"{{/if}}>{{{fallback (fallback title value) this}}}</option>
+        {{/each}}
+      </optgroup>
+
+      {{else}}
+
+      <option {{#if value}} value="{{{value}}}"{{/if}}>{{{fallback (fallback title value) this}}}</option>
+
+      {{/if}}
+
+    {{/each}}
+  </select>
+</span>

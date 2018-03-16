@@ -1,0 +1,32 @@
+/* Colors */
+
+$color_black: #000;
+$color_white: #fff;
+
+$color_red: #fea3aa;
+$color_orange: #f8b88b;
+$color_yellow: #faf884;
+$color_green: #baed91;
+$color_blue: #b2cefe;
+$color_magenta: #f2a2e8;
+
+$dialog_borderColor: #333;
+$dialog_backgroundColor: rgba(0, 0, 0, 0.4);
+$dialog_boxShadowColor: rgba(0, 0, 0, 0.3333);
+
+.scrollbar-style {
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-corner {
+    background: $color_black;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $color_green;
+    outline: none;
+  }
+}

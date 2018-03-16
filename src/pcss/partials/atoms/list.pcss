@@ -1,0 +1,160 @@
+.partial[data-partial="atoms/list"] {
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &.list--text-border {
+    ul {
+      border: solid $color_green;
+      border-width: 1px 0 0 1px;
+    }
+
+    li {
+      border: solid $color_green;
+      border-width: 0 1px 1px 0;
+      padding: 4px 4px;
+      box-sizing: border-box;
+      line-height: 13px;
+      display: flex;
+      flex-direction: row;
+
+      span {
+        flex: 0;
+        white-space: nowrap;
+
+        &:first-child {
+          flex: 1;
+        }
+      }
+
+      > span {
+        display: inline-block;
+
+        &.secondary {
+          opacity: 0.6;
+        }
+      }
+    }
+  }
+
+  &.list--text-border-select {
+    li {
+      cursor: pointer;
+      background: $color_black;
+      color: $color_green;
+      transition: background 200ms linear, color 200ms linear;
+
+      &:hover {
+        background: $color_green;
+        color: $color_black;
+      }
+    }
+  }
+
+  &.list--small-text,
+  &.list--log {
+    li {
+      display: flex;
+      flex-direction: row;
+      font-size: 10px;
+      color: $color_green;
+
+      span {
+        /* white-space: nowrap; */
+        display: block;
+        flex: 0;
+      }
+    }
+  }
+
+  &.list--log {
+    li {
+      margin: 5px 0;
+
+      span {
+        padding-left: 5px;
+
+        &.time {
+          opacity: 0.5;
+        }
+
+        &.module {
+          opacity: 0.8;
+          flex: 1;
+        }
+
+        &.text {
+          flex: 50%;
+        }
+      }
+    }
+  }
+
+  &.list--small-list {
+    li {
+      font-size: 10px;
+      color: $color_white;
+    }
+  }
+
+  &.list--buttons {
+    li {
+      margin: 5px;
+      background: $color_green;
+      font-size: 12px;
+      padding: 5px;
+      position: relative;
+      cursor: pointer;
+
+      > span {
+        display: block;
+        position: relative;
+        text-align: center;
+        z-index: 2;
+        transition: color 150ms linear;
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: $color_black;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 150ms linear;
+      }
+
+      &.js--selected,
+      &:hover {
+        > span {
+          color: $color_white;
+        }
+
+        &::after {
+          opacity: 0.4;
+        }
+      }
+    }
+  }
+
+  &.list--scroll {
+    @extend .scrollbar-style;
+
+    height: 100%;
+    overflow-y: auto;
+
+    li {
+      padding-right: 8px;
+    }
+  }
+
+  .tab-container__tabs & {
+    margin: -2px -5px;
+  }
+}

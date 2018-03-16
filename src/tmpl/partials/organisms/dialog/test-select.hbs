@@ -1,0 +1,32 @@
+---
+test-select:
+  options:
+    - 'PathFinding'
+    - 'MapNavigation'
+    - 'MapBuilder'
+map-select:
+  options:
+    - title: 'Map 1.'
+      value: 'external/maps/map-1.json'
+    - title: 'Map 2.'
+      value: 'external/maps/map-2.json'
+    - title: 'Map 3.'
+      value: 'external/maps/map-3.json'
+    - title: 'Map 4.'
+      value: 'external/maps/map-4.json'
+---
+{{#mixin "organisms/dialog" this partial-name="organisms/dialog/test-select" controller-name="./partials/organisms/dialog/TestSelect" }}
+  {{#content "content"}}
+
+    {{#mixin "atoms/form" this}}
+      {{#content "content"}}
+        <div>
+          <label>Test:</label>{{{mixin "atoms/input/dropdown" test-select hook="testSelect" }}}
+        </div>
+        <div>
+          <label>Map:</label>{{{mixin "atoms/input/dropdown" map-select hook="mapSelect" }}}
+        </div>
+      {{/content}}
+    {{/mixin}}
+  {{/content}}
+{{/mixin}}

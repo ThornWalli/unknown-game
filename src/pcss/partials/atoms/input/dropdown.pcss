@@ -1,0 +1,41 @@
+.partial[data-partial="atoms/input/dropdown"] {
+  position: relative;
+  background: #444;
+  color: $color_white;
+  border: solid $color_green 1px;
+  display: inline-block;
+  padding: 4px;
+
+  select {
+    display: block;
+    appearance: none;
+    line-height: 1;
+    font-size: 11px;
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    padding: 0;
+    padding-right: 26px;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid $color_green;
+    pointer-events: none;
+    opacity: 0.6;
+    transition: opacity 200ms linear;
+  }
+
+  &:hover {
+    &::after {
+      opacity: 1;
+    }
+  }
+}

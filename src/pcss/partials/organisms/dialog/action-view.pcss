@@ -1,0 +1,43 @@
+.partial[data-partial="organisms/dialog/action-view"] {
+  color: $color_green;
+  font-size: 11px;
+  width: 240px;
+  height: 200px;
+
+  .action-view {
+    &__transfer {
+      display: flex;
+      flex-direction: row;
+
+      > div {
+        flex: 1;
+        border: solid blue 1px;
+        text-align: center;
+
+        &.action-view__transfer__info {
+          flex: 0;
+        }
+      }
+
+      &__from {
+        /* empty */
+      }
+
+      &__info {
+        span {
+          display: block;
+
+          &::before {
+            display: block;
+            content: attr(data-value) "%";
+            text-align: center;
+          }
+        }
+      }
+
+      &__to {
+        /* empty */
+      }
+    }
+  }
+}

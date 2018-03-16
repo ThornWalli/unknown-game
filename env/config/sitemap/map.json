@@ -1,0 +1,14 @@
+{
+  "name": "sitemap",
+  "task": "gp-boilerplate-environment/lib/tasks/sitemap",
+  "config": {
+    "subtasks": [{
+      "name": "default",
+      "domain": "http://www.example.com",
+      "files": {
+        "src": ["<%= destination %>/**/*.html", "!<%= destination %>/partials/**/*.html"],
+        "dest": "<%= destination %>"
+      }
+    }]
+  }
+}

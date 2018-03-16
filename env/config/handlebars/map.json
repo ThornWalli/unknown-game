@@ -1,0 +1,100 @@
+{
+  "name": "handlebars",
+  "task": "gp-boilerplate-environment/lib/tasks/handlebars",
+  "config": {
+    "options": {
+      "registerController": {
+        "src": ["<%= destination %>/**/*.html"]
+      },
+      "assets": "<%= destination %>/assets/",
+      "layouts": {
+        "files": {
+          "src": ["./src/tmpl/partials/layouts/**/*.hbs", "./node_modules/gp-module-*/layouts/**/*.hbs", "./node_modules/gp-boilerplate-*/modules/layouts/**/*.hbs"]
+        },
+        "options": {
+          "base": "./src/tmpl/partials"
+        }
+      },
+      "partials": {
+        "files": {
+          "src": ["./src/tmpl/partials/**/*.hbs", "./src/tmpl/docs/**/*.hbs", "./node_modules/gp-module-*/**/*.hbs", "./node_modules/gp-boilerplate-*/**/*.hbs"]
+        },
+        "options": {
+          "base": "./src/tmpl/partials"
+        }
+      },
+      "globals": {
+        "files": {
+          "cwd": "./src/data/",
+          "src": ["./globals/**/*.{json,yaml}"]
+        }
+      }
+    },
+    "resources": {
+      "js": {
+        "main": "js/app.js",
+        "embed": "<%= destination %>/js/embed.js"
+      },
+      "css": {
+        "main": "css/style.css",
+        "critical": "<%= destination %>/css/critical.css",
+        "doc": "css/doc.style.css",
+        "docCritical": "<%= destination %>/css/doc.critical.css"
+      }
+    },
+    "subtasks": [{
+      "name": "pages",
+      "layout": "layouts/default",
+      "config": "<%= root %>/env/config/handlebars/config",
+      "files": {
+        "src": ["./src/tmpl/**/*.hbs", "!./src/tmpl/partials/**/*.hbs"],
+        "dest": "<%= destination %>",
+        "base": "./src/tmpl/"
+      },
+      "data": {
+        "cwd": "./src/data/",
+        "src": ["./**/*.{json,yaml}", "!./globals/**/*.{json,yaml}"]
+      },
+      "partialRendering": {
+        "options": {
+          "cwd": "<%= root %>/src/tmpl/"
+        }
+      }
+    }, {
+      "name": "docs",
+      "layout": "gp-boilerplate-documentation/modules/layouts/detail",
+      "config": "<%= root %>/env/config/handlebars/config",
+      "files": {
+        "src": ["./src/tmpl/partials/**/*.hbs", "!./src/tmpl/partials/commons/**/*.hbs", "!./src/tmpl/partials/layouts/**/*.hbs"],
+        "dest": "<%= destination %>/docs",
+        "base": "./src/tmpl/"
+      },
+      "partialRendering": {
+        "options": {
+          "base": "./src/tmpl/",
+          "cwd": "<%= root %>/src/tmpl/partials/"
+        }
+      }
+    }, {
+      "name": "modules-docs",
+      "once": true,
+      "layout": "gp-boilerplate-documentation/modules/layouts/detail",
+      "config": "<%= root %>/env/config/handlebars/config",
+      "files": {
+        "src": ["./node_modules/gp-module-ui-*/**/*.hbs", "!./node_modules/gp-boilerplate-*/**/*.hbs"],
+        "dest": "<%= destination %>/docs/",
+        "base": "./"
+      }
+    }],
+    "watch": [{
+      "src": ["src/tmpl/**/*.hbs", "!src/tmpl/docs/index.hbs"],
+      "partialRendering": true,
+      "options": {
+        "ignoreInitial": false,
+        "base": "./src/tmpl/"
+      }
+    }, {
+      "src": ["src/data/**/*.json"]
+    }]
+  }
+}

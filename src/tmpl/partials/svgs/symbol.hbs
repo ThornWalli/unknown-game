@@ -1,0 +1,13 @@
+---
+absolute: true
+view-box: #
+url: #
+id: #
+width: '100%'
+height: '100%'
+---
+<span class="partial {{{id}}}{{#if class}} {{{class}}}{{/if}}" {{#block "attributes"}}data-partial="svgs/symbol{{#if symbol-name}}/{{symbol-name}}{{else}}{{symbol-name}}{{/if}}"{{/block}}{{#if hook}} data-hook="{{{hook}}}"{{/if}}>
+  <svg{{#if viewbox}} viewBox="{{{viewbox}}}"{{/if}} width="{{{width}}}" height="{{{height}}}">
+    {{#block "svg"}}<use xlink:href="{{#unless absolute}}{{{relativeToRoot}}}{{/unless}}{{{url}}}#{{{id}}}" />{{/block}}
+  </svg>
+</span>

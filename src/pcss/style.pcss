@@ -1,0 +1,38 @@
+/* Variables */
+
+@import "../../generated/pcss/grid/default.variables.pcss";
+@import "./base/colors.pcss";
+@import "./base/mixins.pcss";
+
+/* Externals */
+
+@import "./externals.pcss";
+
+/* Services */
+
+@import "./services.pcss";
+
+/* Partials */
+
+@import "./partials.pcss";
+
+/* Modules */
+
+@import "gp-module-ui-link";
+@import "gp-module-ui-modal";
+
+/* Defaults */
+
+* {
+  outline: none;
+}
+
+.disable-hover,
+.disable-hover * {
+  pointer-events: none !important;
+}
+
+body {
+  overflow: hidden;
+  font-family: "OpenSans", sans-serif;
+}
