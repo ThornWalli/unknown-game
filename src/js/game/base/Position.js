@@ -213,7 +213,7 @@ export default class Position {
     }
 
     toString(){
-        return `Position: ${this.x} / ${this.y}`
+        return `Position: ${this.x} / ${this.y}`;
     }
 
     /**
@@ -245,7 +245,6 @@ function diff(num1, num2) {
         return (num2 - num1);
     }
 }
-
 
 
 // function RadToPosition(rad) {

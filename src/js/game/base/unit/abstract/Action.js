@@ -1,9 +1,9 @@
 'use strict';
 
 import {
-    TYPES,
-    CLASSES
-} from '../../../utils/unit';
+    UNIT_CLASSES,
+    UNITS as UNIT_TYPES
+} from '../../../types';
 
 /**
  * Abstract Class Action
@@ -11,7 +11,7 @@ import {
 const Action = Abstract => class extends Abstract {
     constructor() {
         super();
-        this.setType(TYPES.ACTION);
+        this.setType(UNIT_TYPES.ACTION);
         this._activeAction = null;
     }
 
@@ -20,7 +20,9 @@ const Action = Abstract => class extends Abstract {
      */
 
     setAction(action) {
-        if (!this._activeAction) {
+        if (!action) {
+            this._activeAction = null;
+        } else if (!this._activeAction) {
             this._activeAction = action;
             this._activeAction.on('stop', () => {
                 this._activeAction = null;
@@ -41,6 +43,6 @@ const Action = Abstract => class extends Abstract {
         return this._activeAction;
     }
 };
-TYPES.ACTION = 'action';
-CLASSES[TYPES.ACTION] = Action;
+UNIT_TYPES.ACTION = 'action';
+UNIT_CLASSES[UNIT_TYPES.ACTION] = Action;
 export default Action;

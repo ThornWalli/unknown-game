@@ -1,24 +1,37 @@
  'use strict';
 
+ import {
+     ACTIONS as ACTION_TYPES
+ } from '../../types';
+
  import Action from '../Action';
 
  import {
      ticker
  } from '../Ticker';
 
+ ACTION_TYPES.MOVE = 'move';
+
  export default class Move extends Action {
      constructor(unit, callback) {
-         super('move', unit, callback);
+         super(ACTION_TYPES.MOVE, unit, callback);
          this._moveData = null;
          this._timerListener = null;
+         this._timerFirstTick = false;
      }
 
      onComplete() {
          removeListener(this);
          Action.prototype.onComplete.apply(this, arguments);
      }
+     onStop() {
+         removeListener(this);
+         Action.prototype.onStop.apply(this, arguments);
+     }
 
-     // Functions
+     /*
+      * Functions
+      */
 
      start(moveData) {
          this._moveData = moveData;
@@ -26,20 +39,17 @@
          Action.prototype.start.apply(this, arguments);
      }
 
-     stop() {
-         removeListener(this);
-         Action.prototype.stop.apply(this, arguments);
-     }
-
      destroy() {
          removeListener(this);
          Action.prototype.destroy.apply(this, arguments);
      }
 
-     // Properties
+     /*
+      * Properties
+      */
 
      get duration() {
-         return 250; //750; //250; // ms
+         return 200; //750; //250; // ms
      }
 
      get startTime() {
@@ -54,7 +64,9 @@
      }
  }
 
- // Functions
+ /*
+  * Functions
+  */
 
  function addListener(action, path) {
      action._timerFirstTick = false;
@@ -83,10 +95,14 @@
 
  function onComplete(path) {
      return () => {
-         if (path.length < 1) {
+         if (this.stopped) {
              this.unit.positionOffset.setValuesLocal(0, 0);
              this._timerFirstTick = false;
-             this.unit.nextPosition = null;
+             this.onStop();
+             return false;
+         } else if (path.length < 1) {
+             this.unit.positionOffset.setValuesLocal(0, 0);
+             this._timerFirstTick = false;
              this.onComplete();
              return false;
          } else {

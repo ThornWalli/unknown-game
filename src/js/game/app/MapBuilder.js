@@ -3,8 +3,8 @@
 import App from '../App';
 
 import {
-    CLASSES as UNIT_CLASSES
-} from '../utils/unit';
+    UNIT_CLASSES
+} from '../types';
 
 export default class MapBuilder extends App {
 

@@ -14,7 +14,9 @@ export default class Action extends Events {
         this._completed = false;
     }
 
-    // Functions
+    /*
+     * Functions
+     */
 
     onComplete() {
         this._completed = true;
@@ -23,38 +25,39 @@ export default class Action extends Events {
         this.trigger('complete', this);
     }
 
+    onStop() {
+        this._completed = false;
+        this._stopped = true;
+        this._started = false;
+        this.trigger('stop', this);
+    }
+
     destroy() {
         this._unit = null;
         this.detacheEvents();
-    }
-
-    onStop() {
-        this._stopped = true;
-        this.trigger('stop', this);
     }
 
     /**
      * @override
      */
     start() {
-        if (!this._stopped) {
-            this.trigger('start', this);
-        }
         this._stopped = false;
         this._started = true;
+        this.trigger('start', this);
     }
+
     /**
      * @override
      */
     pause() {}
+
     /**
      * @override
      */
     stop() {
-        this._started = false;
         this._stopped = true;
-        this.trigger('stop', this);
     }
+
     /**
      * @override
      */
@@ -64,7 +67,9 @@ export default class Action extends Events {
         return `Action: ${this.type}`;
     }
 
-    // Properties
+    /*
+     * Properties
+     */
 
     /**
      * Duration (Milliseconds)

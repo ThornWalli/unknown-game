@@ -6,12 +6,14 @@ import Events from './base/Events';
 import Move from './base/action/Move';
 import Transfer from './base/action/Transfer';
 import Park from './base/action/Park';
+import Spawn from './base/action/Spawn';
+import Wait from './base/action/Wait';
 
-import SyncPromise from 'sync-p';
+import SyncPromise from 'sync-p/extra';
 
 import {
-    TYPES as UNIT_TYPES
-} from './utils/unit';
+    UNITS as UNIT_TYPES
+} from './types';
 
 /**
  * Verwaltet die Aktionen der einzelnen Units.
@@ -22,49 +24,91 @@ class UnitActions extends Events {
         this._app = app;
         this._actionsByUnits = new Map();
         this._activeActions = new Collection();
-        // this._activeActions.on('add', onAddAction, this);
-
-        // this._app.timer.on('tick', () => {
-        //     this._activeActions.forEach(action => {
-        //         action.tick();
-        //     });
-        // });
     }
 
-    add(unit, type) {
-        console.log('UnitActions Start', type, unit);
-        if (isActionUnit(unit)) {
-            let args = Array.from(arguments);
-            args = args.splice(2, args.length);
+    add(options) {
+        if (isActionUnit(options.unit)) {
+
+            options = Object.assign({
+                type: null,
+                unit: null,
+                /**
+                 * Legt eine Funktion fest, die vor dem Start aufgerufen wird.
+                 * Es können die Start-Argumente überarbeitet werden.
+                 * Wenn `false` zurückgegeben wird, beendet sich die Action vor dem Start.
+                 * @required
+                 * @type {Function}
+                 * @return {SyncPromise}
+                 */
+                beforeStart: null,
+                /**
+                 * Legt die start Argumente für den Start aufruf fest.
+                 * @required
+                 * @type {Array}
+                 */
+                startArgs: []
+
+            }, options);
+
             return new SyncPromise(resolve => {
+                const unit = options.unit;
                 let action;
-                if (typeof type === 'string') {
-                    action = new(getAction(type))(unit, resolve);
+                if (typeof options.type === 'string') {
+                    action = new(getAction(options.type))(unit, resolve);
                 } else {
-                    action = new type(unit, resolve);
+                    action = new options.type(unit, resolve);
                 }
-                action.unit.once('setAction', () => {
-                    action
-                        .on('stop', onActionStop, this)
-                        .on('start', onActionStart, this)
-                        .on('complete', onActionComplete, this);
-                }, this);
-                if (!action.unit.setAction(action)) {
+                const callback = () => {
+
+                    action.unit.setAction(action);
+
+                    let start;
+
+                    if (options.beforeStart) {
+                        start = options.beforeStart(options.startArgs);
+                    } else {
+                        start = SyncPromise.resolve(options.startArgs);
+                    }
+
+                    start.then(startArgs => {
+                        if (!startArgs) {
+                            // Action wird vor dem Start beendet.
+                            stopAction.bind(this)(action);
+                        } else {
+                            action
+                                .on('start', onActionStart, this)
+                                .on('stop', onActionStop, this)
+                                .on('complete', onActionComplete, this);
+                            action.unit.activeAction.start.apply(action.unit.activeAction, startArgs);
+                        }
+                    }).catch(err => {
+                        console.error(err);
+                        throw err;
+                    });
+                };
+                if (action.unit.activeAction) {
                     if (!this._actionsByUnits.has(unit.id)) {
                         this._actionsByUnits.set(unit.id, []);
                     }
-                    this._actionsByUnits.get(unit.id).push(action);
+                    this._actionsByUnits.get(unit.id).push(callback);
                 } else {
-                    action.unit.activeAction.start.apply(action.unit.activeAction, args);
+                    callback();
                 }
 
+            }).catch(err => {
+                console.error(err);
+                throw err;
             });
         }
     }
+
     log(text) {
         this._app.logger.log('action', 'Action:' + text);
     }
 
+    clearActionsByUnit(unit) {
+        this._actionsByUnits.set(unit.id, []);
+    }
     /*
      * Properties
      */
@@ -82,10 +126,22 @@ class UnitActions extends Events {
     }
 }
 
+function stopAction(action) {
+    console.log('stopAction', action);
+    action.callback(action);
+    this._activeActions.remove(action);
+    action.unit.setAction(null);
+}
 
 function onActionStart(action) {
     // console.log('UnitActions', 'Action Begin');
     this._activeActions.add(action);
+}
+
+function onActionStop(action) {
+    // console.log('UnitActions', 'Action Begin');
+    this._activeActions.remove(action);
+    getNextAction.bind(this)(action.unit);
 }
 
 function onActionComplete(action) {
@@ -95,17 +151,11 @@ function onActionComplete(action) {
     getNextAction.bind(this)(action.unit);
 }
 
-function onActionStop(action) {
-    // console.log('UnitActions', 'Action Stop');
-    this._activeActions.remove(action);
-    getNextAction.bind(this)(action.unit);
-}
-
 function getNextAction(unit) {
     const id = unit.id;
-    if (this._actionsByUnits.has(id)) {
-        const action = this._actionsByUnits.get(id).shift();
-        unit.setAction(action);
+    if (this._actionsByUnits.has(id) && this._actionsByUnits.get(id).length) {
+        const callback = this._actionsByUnits.get(id).shift();
+        callback();
     }
 }
 
@@ -117,7 +167,9 @@ function isActionUnit(unit) {
 const actions = {
     move: Move,
     transfer: Transfer,
-    park: Park
+    park: Park,
+    spawn: Spawn,
+    wait: Wait
 };
 
 function getAction(type) {

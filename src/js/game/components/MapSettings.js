@@ -2,8 +2,8 @@
 
 import Size from '../base/Size';
 import {
-    TYPE_CLASSES
-} from '../base/UnitTypes';
+    UNIT_CLASSES
+} from '../types';
 import {
     getDefaultMapData
 } from '../MapLoader';
@@ -27,7 +27,7 @@ export default class MapSettings {
         data = getDefaultMapData(data);
         this._app.map.reset(new Size(data.matrix));
         data.units.forEach(unitData => {
-            const unit = new TYPE_CLASSES[unitData.type]();
+            const unit = new UNIT_CLASSES[unitData.type]();
             unit.position.setLocal(unitData.position);
             this._app.map.units.add(unit);
         });

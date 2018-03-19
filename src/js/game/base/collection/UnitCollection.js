@@ -13,8 +13,8 @@ export default class UnitCollection extends Collection {
         unit
             .on('change.direction', onUnitChangeDirection, this)
             .on('change.position', onUnitChangePosition, this)
-            .on('render.sprite', onUnitRenderSprite, this)
-            .on('change.sprite.visible', onUnitChangeSpriteVisible, this);
+            .on('sprite.render', onUnitRenderSprite, this)
+            .on('sprite.visible.change', onUnitChangeSpriteVisible, this);
         Collection.prototype.add.apply(this, arguments);
     }
 

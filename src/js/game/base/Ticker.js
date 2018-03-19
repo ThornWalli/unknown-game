@@ -36,7 +36,9 @@ class Ticker extends Events {
         return ((this._now || Date.now()) - this._timestamp);
     }
 
-    // Functions
+    /*
+ * Functions
+ */
 
     start() {
         this._ticker.start();
@@ -78,7 +80,9 @@ class Ticker extends Events {
         this._listeners.remove(listener);
     }
 
-    // Properties
+    /*
+ * Properties
+ */
 
     get ticker() {
         return this._ticker;
@@ -117,13 +121,17 @@ class Listener {
         }
     }
 
-    // Functions
+    /*
+ * Functions
+ */
 
     remove() {
         this._ticker.unregister(this);
     }
 
-    // Properties
+    /*
+ * Properties
+ */
 
     get ticker() {
         return this._ticker;

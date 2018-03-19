@@ -1,24 +1,29 @@
 'use strict';
 
 import {
-    TYPES,
-    CLASSES
-} from '../../utils/unit';
+    UNIT_CLASSES,
+    UNITS as UNIT_TYPES
+} from '../../types';
 
-import Unit from '../Unit';
-import Sprite from './abstract/Sprite';
-import Module from './abstract/Module';
 import ResourceModule from '../../modules/unit/Resource';
 
-class Resource extends Sprite(Module(Unit)) {
+import Unit from '../Unit';
+import Abstract_Sprite from './abstract/Sprite';
+import Abstract_Module from './abstract/Module';
+
+class Resource extends Abstract_Sprite(Abstract_Module(Unit)) {
     constructor() {
         super();
-        this.setType(TYPES.RESOURCE);
-        this.selectable = true;
-        this.walkable = false;
+        this.setType(UNIT_TYPES.RESOURCE.DEFAULT );
         this.setModule(ResourceModule);
+        this.selectable = true;
+        this.walkable = true;
+    }
+    onModuleReady(module) {
+        module.maxItemStorageItemValue = 10;
     }
 }
-TYPES.RESOURCE = 'resource';
-CLASSES[TYPES.RESOURCE] = Resource;
+UNIT_TYPES.RESOURCE.DEFAULT = 'resource.default';
+UNIT_CLASSES[UNIT_TYPES.RESOURCE.DEFAULT] = Resource;
+
 export default Resource;

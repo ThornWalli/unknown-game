@@ -35,7 +35,6 @@ class Events {
                             return listener;
                         }
                     });
-                    // console.log('OFF', this[SymbolEvents], listeners);
                 } else {
                     this[SymbolEvents][name] = [];
                 }
@@ -89,6 +88,9 @@ class Events {
 }
 
 function removeListener(events, name, listener) {
+    if (events[name].indexOf(listener)< 0) {
+        console.error(name, listener, events);
+    }
     events[name].splice(events[name].indexOf(listener), 1);
 }
 

@@ -1,0 +1,17 @@
+---
+
+---
+
+{{#if options}}
+
+  <optgroup label="{{{fallback title value}}}">
+    {{#each options}}
+      <option {{#if value}} value="{{{value}}}" {{/if}}>{{{fallback (fallback title value) this}}}</option>
+    {{/each}}
+  </optgroup>
+
+{{else}}
+
+  <option {{#if value}} value="{{{value}}}" {{/if}}>{{{fallback (fallback title value) this}}}</option>
+
+{{/if}}

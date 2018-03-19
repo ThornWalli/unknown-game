@@ -3,7 +3,10 @@
 import Size from '../base/Size';
 import Test from '../Test';
 
-import {TYPES as UNIT_TYPES, CLASSES as UNIT_CLASSES} from '../utils/unit';
+import {
+    UNIT_CLASSES,
+    UNITS as UNIT_TYPES
+} from '../types';
 
 export default class MapBuilder extends Test {
     constructor(app) {

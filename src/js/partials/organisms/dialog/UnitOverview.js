@@ -28,7 +28,7 @@ export default Dialog.extend({
             unitType: {
                 type: 'string',
                 required: true,
-                default: 'unit'
+                default: 'default'
             }
         }
     }),

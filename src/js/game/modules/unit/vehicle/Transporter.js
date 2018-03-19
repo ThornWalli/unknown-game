@@ -7,7 +7,7 @@ export default class Transporter extends ItemStorage(Vehicle) {
 
     constructor(app, unit) {
         super(app, unit);
-        this._maxItemStorageValue = 50;
+        this.maxItemStorageItemValue = 50;
     }
 
 }

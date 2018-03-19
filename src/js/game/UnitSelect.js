@@ -1,7 +1,6 @@
 'use strict';
 
 import Events from './base/Events';
-import Position from './base/Position';
 
 /**
  * Verwaltet die Unit-Auswahl.
@@ -13,7 +12,9 @@ export default class UnitSelect extends Events {
         this._selectedUnits = [];
     }
 
-    // Functions
+    /*
+     * Functions
+     */
 
     selectUnit(unit) {
         unit.selected = true;
@@ -26,12 +27,15 @@ export default class UnitSelect extends Events {
             while (this._selectedUnits.length) {
                 const unit = this._selectedUnits.shift();
                 unit.selected = false;
+                this.trigger('select', null);
                 this.trigger('unselect', unit);
             }
         }
     }
 
-    // Properties
+    /*
+     * Properties
+     */
 
     get app() {
         return this._app;
@@ -46,11 +50,17 @@ export default class UnitSelect extends Events {
 
         const selectedUnits = this._selectedUnits,
             offset = this.app.display.getOffset();
-        const x = Math.floor((event.x + offset.x) / this.app.map.cellSize.width),
-            y = Math.floor((event.y + offset.y) / this.app.map.cellSize.height);
+
+        const position = offset.add(event).divideLocal(this.app.map.cellSize).floorLocal();
 
         if (selectedUnits.length && event.secondaryClick) {
+            this.trigger('selectSecondary', selectedUnits, position);
+            // console.log('click on unit');
 
+            // const unit = this.app.map.getUnitsByCell(x,y);
+            // if (true) {
+            //     selectedUnits[0]
+            // }
             // Move Unit
             // selectedUnits.forEach(unit => {
             //
@@ -69,16 +79,16 @@ export default class UnitSelect extends Events {
             //     });
             // });
 
-        } else if (this.selectedUnits.length && event.primaryClick) {
-
-            // Clear selected Units
-            this.clearSelectUnits();
-
         } else {
+
+            if (this.selectedUnits.length && event.primaryClick) {
+                // Clear selected Units
+                this.clearSelectUnits();
+            }
 
             // const x = Math.floor((event.x - offset.x) / this.app.map.cellSize.width) + this.visibleBounds.min.x,
             //     y = Math.floor((event.y - offset.y) / this.app.map.cellSize.height) + this.visibleBounds.min.y;
-            const units = this.app.map.getUnitsByCell(x, y);
+            const units = this.app.map.getUnitsByCell(position.x, position.y);
             if (units.length > 0) {
                 // select
                 for (var i = 0; i < units.length; i++) {

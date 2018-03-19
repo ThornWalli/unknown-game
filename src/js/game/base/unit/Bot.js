@@ -1,9 +1,9 @@
 'use strict';
 
 import {
-    TYPES,
-    CLASSES
-} from '../../utils/unit';
+    UNIT_CLASSES,
+    UNITS as UNIT_TYPES
+} from '../../types';
 
 import Figure from './Figure';
 import Module from './abstract/Module';
@@ -11,7 +11,7 @@ import Module from './abstract/Module';
 class Bot extends Module(Figure) {
     constructor() {
         super();
-        this.setType(TYPES.BOT);
+        this.setType(UNIT_TYPES.BOT);
         this.selectable = false;
 //
 //         setTimeout(() => {
@@ -22,6 +22,6 @@ class Bot extends Module(Figure) {
 //         }, 3000);
     }
 }
-TYPES.BOT = 'bot';
-CLASSES[TYPES.BOT] = Bot;
+UNIT_TYPES.BOT = 'bot';
+UNIT_CLASSES[UNIT_TYPES.BOT] = Bot;
 export default Bot;

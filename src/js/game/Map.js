@@ -5,7 +5,7 @@ import Position from './base/Position';
 import Size from './base/Size';
 
 import {
-    getPositionAroundPositionBasic
+    getPositionsAroundPositionCircle
 } from './utils/matrix';
 import UnitCollection from './base/collection/UnitCollection';
 import {
@@ -15,9 +15,9 @@ import {
 
 
 import {
-    TYPES as UNIT_TYPES,
-    CLASSES as UNIT_CLASSES
-} from './utils/unit';
+    UNIT_CLASSES,
+    UNITS as UNIT_TYPES
+} from './types';
 
 export default class Map extends Events {
     constructor(size, units = []) {
@@ -61,7 +61,7 @@ export default class Map extends Events {
         if (x > 0 && y > 0 && x < this._size.x && y < this._size.y) {
             const units = this.getUnitsByCell(x, y);
             for (var i = 0; i < units.length; i++) {
-                if (units[i].type === UNIT_TYPES.ROAD) {
+                if (units[i].type === UNIT_TYPES.ROAD.DEFAULT) {
                     return GRID_CELL_TYPES.ROAD;
                 } else if (walkable) {
                     walkable = units[i].walkable;
@@ -75,23 +75,31 @@ export default class Map extends Events {
 
     isCellRoad(x, y) {
         return this.getUnitsByCell(x, y).find(unit => {
-            if (unit.type === UNIT_TYPES.ROAD) {
+            if (unit.type === UNIT_TYPES.ROAD.DEFAULT) {
                 return true;
             }
         });
     }
 
-    getUnitByCell(x, y) {
+    getUnitById(id) {
+        return this.units.find(unit => {
+            if (unit.id === id) {
+                return true;
+            }
+        });
+    }
+
+    getUnitByCell(x, y, type) {
         return this._units.find(unit => {
-            if (unit.position.isValues(x, y)) {
+            if (unit.position.isValues(x, y) && (!type || unit.isType(type))) {
                 return unit;
             }
         });
     }
-    
-    getUnitsByCell(x, y) {
+
+    getUnitsByCell(x, y, type) {
         return this._units.reduce((result, unit) => {
-            if (unit.position.isValues(x, y)) {
+            if (unit.position.isValues(x, y) && (!type || unit.isType(type))) {
                 result.push(unit);
             }
             return result;
@@ -105,24 +113,6 @@ export default class Map extends Events {
             }
         });
     }
-
-    /*
-     * Properties
-     */
-
-    get size() {
-        return this._size;
-    }
-    get cellSize() {
-        return this._cellSize;
-    }
-    get units() {
-        return this._units;
-    }
-    get matrix() {
-        return this._matrix;
-    }
-
 
     getMoveData(unit, position, options = {}) {
         return findPath.bind(this)(unit, position, options).then(path => {
@@ -149,7 +139,9 @@ export default class Map extends Events {
 
     refreshNeighbor(x, y, type, deep = true) {
 
-        const key = getPositionAroundPositionBasic(x, y).reduce((result, position) => {
+        // getPositionAroundPositionBasic(x, y)
+
+        const key = getPositionsAroundPositionCircle(new Position(x, y), 1).reduce((result, position) => {
 
             if (position) {
                 if (this._neighborMatrix[position.x] && this._neighborMatrix[position.x][position.y] && this._neighborMatrix[position.x][position.y].find(unit => {
@@ -169,33 +161,23 @@ export default class Map extends Events {
         return key;
     }
 
-    //
-    //     hasNeighbor(x, y, type, cells = []) {
-    // // console.log('hasNeighbor',x,y,fromX,fromY);
-    //             // return [4,6]
-    //             const key = getPositionAroundPositionBasic(x, y).reduce((result, position) => {
-    //
-    //                 if (position) {
-    //                     if (this._neighborMatrix[position.x] && this._neighborMatrix[position.x][position.y] && this._neighborMatrix[position.x][position.y].find(unit => {
-    //                             if (unit && unit.isType(type)) {
-    //                                 return true;
-    //                             }
-    //                         })) {
-    //                 // console.log('hasNeighbor2',position.x, position.y, type, x, y);
-    //                 cells.push(this._neighborMatrix[position.x][position.y]);
-    //                     if (cells.indexOf(this._neighborMatrix[position.x][position.y]) !== 1) {
-    //                             this.hasNeighbor(position.x, position.y, type, cells);
-    //                         result.push([position.y - y, position.x - x]);
-    //                     }
-    //                 }
-    //
-    //                 }
-    //                 return result;
-    //             }, []);
-    //             return key;
-    //
-    //         }
-    //
+    /*
+     * Properties
+     */
+
+    get size() {
+        return this._size;
+    }
+    get cellSize() {
+        return this._cellSize;
+    }
+    get units() {
+        return this._units;
+    }
+    get matrix() {
+        return this._matrix;
+    }
+
 
 
 }
@@ -306,7 +288,6 @@ function setupUnits(map) {
 function onAddUnit(unit) {
     this.addNeighbor(unit.position.x, unit.position.y, unit);
     if (unit.isType(UNIT_TYPES.NEIGHBOR)) {
-        console.log('??????');
         unit.neighbors = this.refreshNeighbor(unit.position.x, unit.position.y, UNIT_TYPES.NEIGHBOR);
     }
 }
@@ -314,7 +295,6 @@ function onAddUnit(unit) {
 function onRemoveUnit(unit) {
     this.removeNeighbor(unit.position.x, unit.position.y, unit);
     if (unit.isType(UNIT_TYPES.NEIGHBOR)) {
-        console.log('??????');
         this.refreshNeighbor(unit.position.x, unit.position.y, UNIT_TYPES.NEIGHBOR);
     }
 }
@@ -324,7 +304,7 @@ function onAddRemoveUnit(unit) {
     const x = unit.position.x,
         y = unit.position.y;
 
-    if (unit.type === UNIT_TYPES.ROAD) {
+    if (unit.type === UNIT_TYPES.ROAD.DEFAULT) {
         this._matrix.updateCell(x, y, GRID_CELL_TYPES.ROAD);
     } else {
 

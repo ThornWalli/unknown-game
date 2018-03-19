@@ -5,8 +5,8 @@ import Size from './base/Size';
 import Position from './base/Position';
 import PositionBounds from './base/PositionBounds';
 
-import RenderWrapper_Grid from './display/renderWrapper/Grid';
-import RenderWrapper_Pixi from './display/renderWrapper/Pixi';
+import RenderWrapper_Grid from './renderWrapper/Grid';
+import RenderWrapper_Pixi from './renderWrapper/Pixi';
 
 export default class Display extends Events {
     constructor(app, containerEl, options) {

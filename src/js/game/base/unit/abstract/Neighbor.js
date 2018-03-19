@@ -1,9 +1,9 @@
 'use strict';
 
 import {
-    TYPES,
-    CLASSES
-} from '../../../utils/unit';
+    UNIT_CLASSES,
+    UNITS as UNIT_TYPES
+} from '../../../types';
 
 /**
  * Abstract Class Neighbor
@@ -11,7 +11,7 @@ import {
 const Neighbor = Abstract => class extends Abstract {
     constructor() {
         super();
-        this.setType(TYPES.NEIGHBOR);
+        this.setType(UNIT_TYPES.NEIGHBOR);
         this._neighbors = [];
     }
 
@@ -25,7 +25,7 @@ const Neighbor = Abstract => class extends Abstract {
     }
 };
 
-TYPES.NEIGHBOR = 'neighbor';
-CLASSES[TYPES.NEIGHBOR] = Neighbor;
+UNIT_TYPES.NEIGHBOR = 'neighbor';
+UNIT_CLASSES[UNIT_TYPES.NEIGHBOR] = Neighbor;
 
 export default Neighbor;

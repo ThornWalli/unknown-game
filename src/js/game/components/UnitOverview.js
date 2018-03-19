@@ -1,8 +1,8 @@
 'use strict';
 
 import {
-    TYPES as UNIT_TYPES
-} from '../utils/unit';
+    UNITS as UNIT_TYPES
+} from '../types';
 
 export default class UnitOverview {
     constructor(app) {

@@ -7,6 +7,9 @@ import Position from './base/Position';
 import InputKeyEvent from './base/InputKeyEvent';
 import InputPointerEvent from './base/InputPointerEvent';
 
+
+import './bootloader';
+
 import Map from './Map';
 
 import Logger from './Logger';
@@ -27,16 +30,18 @@ import history from 'gp-module-history';
 
 // Units
 
-import './base/UnitTypes';
 
 
-const DEFAULT_MAP_URI = 'external/maps/map-4.json';
+
+const DEFAULT_MAP_URI = 'external/maps/demo-1.json';
 
 class App extends Events {
     constructor(containerEl, options) {
         super();
 
-        // Properties
+        /*
+ * Properties
+ */
         this._map = null;
         this._display = null;
         this._inputControl = null;

@@ -1,7 +1,6 @@
 'use strict';
 
 import Collection from '../../../base/Collection';
-import Position from '../../../base/Position';
 
 /**
  * Abstract Class Module
@@ -16,26 +15,33 @@ export default Abstract => class extends Abstract {
     constructor(app, unit) {
         super(app, unit);
         /**
-         * @type {Object}
+         * @type {game.base.Collection}
          */
-        this._storageUnits = new Collection();
+        this._unitStorageUnits = new Collection();
         /**
-         * Maximal Anzahl der Units.
          * @type {Number}
          */
-        this._maxStorageUnits = 0;
-
-        this._storagePortPosition = new Position();
+        this._maxUnitStorageUnits = 0;
+        /**
+         * @type {Array<game.types.units>}
+         */
+        this._allowedUnitStorageUnits = [];
+        /**
+         * @type {game.base.unit.Storage}
+         */
+        this._unitStoragePreferredUnit = null;
     }
 
-    // Functions
+    /*
+     * Functions
+     */
 
     /**
      * Fügt eine Unit hinzu.
      * @param {game.base.Unit} unit
      */
-    add(unit) {
-        this._storageUnits.add(unit);
+    addUnitStorageUnit(unit) {
+        this._unitStorageUnits.add(unit);
         unit.spriteVisible = false;
         this.trigger('storage.units.add', this, unit);
     }
@@ -44,9 +50,11 @@ export default Abstract => class extends Abstract {
      * Entfernt eine Unit.
      * @param {game.base.Unit} unit
      */
-    remove(unit) {
-        this._storageUnits.remove(unit);
+    removeUnitStorageUnit(unit) {
+        this._unitStorageUnits.remove(unit);
         unit.spriteVisible = true;
+
+        unit.setPosition(this.unit.portPosition);
         this.trigger('storage.units.remove', this, unit);
     }
 
@@ -54,51 +62,76 @@ export default Abstract => class extends Abstract {
      * Trifft zu wenn keine Unit enthalten ist.
      * @return {Boolean}
      */
-    isStorageEmpty() {
-        return this._storageUnits.length === 0;
+    isUnitStorageEmpty() {
+        return this._unitStorageUnits.length === 0;
     }
 
     /**
      * Trifft zu wenn die maximale Anzahl an Units vorhanden ist.
      * @return {Boolean}
      */
-    isStorageFull() {
-        return this._maxStorageUnits === this._storageUnits.length;
+    isUnitStorageFull() {
+        return this._maxUnitStorageUnits === this._unitStorageUnits.length;
     }
 
     /**
      * Ruft das freie Volumen ab.
      * @return {Number}
      */
-    getFreeStorageValue() {
-        return this._maxStorageUnits - this._storageUnits.length;
+    getFreeUnitStorageUnits() {
+        return this._maxUnitStorageUnits - this._unitStorageUnits.length;
     }
 
-
-
-    // Properties
+    /*
+     * Properties
+     */
 
     /**
+     * Ruft die erlaubten Units ab.
      * @return {Array<game.base.Unit>}
      */
-    get storageUnits() {
-        return this._storageUnits;
+    get unitStorageUnits() {
+        return this._unitStorageUnits;
     }
 
     /**
-     * Ruft das maximale anzahl an Units ab.
-     * @return {Number}
+     * Ruft die maximale Anzahl an Units ab.
+     * @type {Number}
      */
-    get maxStorageUnits() {
-        return this._maxStorageUnits;
+    get maxUnitStorageUnits() {
+        return this._maxUnitStorageUnits;
     }
 
     /**
-     * Ruft die Position ab, in der eine Unit verladen werden kann.
-     * @return {game.base.Position}
+     * Legt die maximale Anzahl an Units fest.
+     * @param  {Number} value
      */
-    get storagePortPosition() {
-        return this._storagePortPosition;
+    set maxUnitStorageUnits(value) {
+        this._maxUnitStorageUnits = value;
+    }
+
+    /**
+     * Gibt an welche Units erlaubt sind.
+     * @type {Array<game.types.unit>}
+     */
+    get allowedUnitStorageUnits() {
+        return this._allowedUnitStorageUnits;
+    }
+
+    /**
+     * Ruft die bevorzugte Storage-Unit ab.
+     * @type {game.base.unit.Storage}
+     */
+    get unitStoragePreferredUnit() {
+        return this._unitStoragePreferredUnit;
+    }
+
+    /**
+     * Legt die bevorzugte Storage-Unit fest.
+     * @param  {game.base.Unit} value
+     */
+    set unitStoragePreferredUnit(value) {
+        this._unitStoragePreferredUnit = value;
     }
 
 };

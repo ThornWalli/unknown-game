@@ -25,10 +25,15 @@ export default Dialog.extend({
         }
     }),
 
+    bindings: {
+        'model.unit': {
+            type: 'booleanClass',
+            name: 'js--visible'
+        }
+    },
+
     initialize() {
         Dialog.prototype.initialize.apply(this, arguments);
-
-
 
         // Transfer
         this.elements.transferFrom = this.queryByHook('actionViewTransferFrom');
@@ -46,7 +51,9 @@ export default Dialog.extend({
                     if (this.model.unit) {
                         unregister.bind(this)(this.model.unit);
                     }
-                    register.bind(this)(unit);
+                    if (unit) {
+                        register.bind(this)(unit);
+                    }
                 });
                 if (app.unitSelect.selectedUnits.length > 0) {
                     register.bind(this)(app.unitSelect.selectedUnits[0]);
@@ -69,6 +76,8 @@ function register(unit) {
 
 function unregister(unit) {
     unit.off(null, null, this);
+    unit.module.off(null, null, this);
+    this.model.unit = null;
 }
 
 function onSetAction(action) {
@@ -83,13 +92,11 @@ function onSetAction(action) {
 
 }
 
-
-
 function setupAction(action) {
     if (action.type === 'transfer') {
         action.on('transferring', renderTransferTransferring, this);
         if (action.started) {
-            renderMoveStart.bind(this)(action);
+            renderTransferTransferring.bind(this)(action);
         }
     } else if (action.type === 'move') {
         action.on('start', () => renderMoveStart, this);
@@ -99,7 +106,6 @@ function setupAction(action) {
         action.on('moving', renderMoveMoving, this);
     }
 }
-
 
 function renderTransferTransferring(action, value) {
 
@@ -115,12 +121,13 @@ function renderTransferTransferring(action, value) {
     }
 
     if (action.transferDirection) {
-        this.elements.transferFrom.innerHTML = `${action.transferType}: ${Math.round((action.unit.module.storageItems[action.transferType] || 0) + action.transferValue * value)}<br />`;
-        this.elements.transferTo.innerHTML = `${action.transferType}: ${Math.round((action._targetUnit.module.storageItems[action.transferType] || 0) - action.transferValue * value)}<br />`;
+        this.elements.transferFrom.innerHTML = `${action.transferType}: ${Math.round((action.unit.module.itemStorageItems[action.transferType] || 0) + action.transferValue * value)}<br />`;
+        this.elements.transferTo.innerHTML = `${action.transferType}: ${Math.round((action._targetUnit.module.itemStorageItems[action.transferType] || 0) - action.transferValue * value)}<br />`;
     } else {
-        this.elements.transferFrom.innerHTML = `${action.transferType}: ${Math.round((action.unit.module.storageItems[action.transferType] || 0) - action.transferValue * value)}<br />`;
-        this.elements.transferTo.innerHTML = `${action.transferType}: ${Math.round((action._targetUnit.module.storageItems[action.transferType] || 0) + action.transferValue * value)}<br />`;
+        this.elements.transferFrom.innerHTML = `${action.transferType}: ${Math.round((action.unit.module.itemStorageItems[action.transferType] || 0) - action.transferValue * value)}<br />`;
+        this.elements.transferTo.innerHTML = `${action.transferType}: ${Math.round((action._targetUnit.module.itemStorageItems[action.transferType] || 0) + action.transferValue * value)}<br />`;
     }
+
 }
 
 function renderMoveStart(action) {

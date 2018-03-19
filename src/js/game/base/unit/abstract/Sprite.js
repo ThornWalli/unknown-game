@@ -1,13 +1,9 @@
 'use strict';
 
 import {
-    TYPES,
-    CLASSES
-} from '../../../utils/unit';
-
-import {
-    DIRECTIONS
-} from '../../../utils/unit';
+    UNIT_CLASSES,
+    UNITS as UNIT_TYPES
+} from '../../../types';
 
 /**
  * Abstract Class Sprite
@@ -15,12 +11,14 @@ import {
 const Sprite = Abstract => class extends Abstract {
     constructor() {
         super();
-        this.setType(TYPES.SPRITE);
+        this.setType(UNIT_TYPES.SPRITE);
         this._spriteVisible = true;
         this._sprite = null;
-        this._spriteType = TYPES.DEFAULT;
+        this._spriteType = UNIT_TYPES.DEFAULT;
     }
-    // Functions
+    /*
+     * Functions
+     */
     setSpriteType(type) {
         this._spriteType = type;
     }
@@ -29,17 +27,18 @@ const Sprite = Abstract => class extends Abstract {
     }
     renderSprite() {
         if (this._sprite) {
-            render.bind(this)();
-            this.trigger('render.sprite', this);
+            this.trigger('sprite.render', this);
         }
     }
-    // Properties
+    /*
+     * Properties
+     */
     get spriteVisible() {
         return this._spriteVisible;
     }
     set spriteVisible(spriteVisible) {
         this._spriteVisible = spriteVisible;
-        this.trigger('change.sprite.visible', this, spriteVisible);
+        this.trigger('sprite.visible.change', this, spriteVisible);
     }
     get sprite() {
         return this._sprite;
@@ -49,13 +48,8 @@ const Sprite = Abstract => class extends Abstract {
     }
 
 };
-TYPES.SPRITE = 'sprite';
-CLASSES[TYPES.SPRITE] = Sprite;
-
-
-function render() {
-    // sprite.rotation =getSpriteDirectionRotation(this._sprite, this.direction);
-}
+UNIT_TYPES.SPRITE = 'sprite';
+UNIT_CLASSES[UNIT_TYPES.SPRITE] = Sprite;
 
 export {
     Sprite as

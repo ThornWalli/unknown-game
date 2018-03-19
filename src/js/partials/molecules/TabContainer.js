@@ -96,7 +96,7 @@ export default Controller.extend({
             }
         },
         openByName(name) {
-            console.log(name, this.names.indexOf(name));
+            // console.log(name, this.names.indexOf(name));
             this.index = this.names.indexOf(name);
         },
         render() {

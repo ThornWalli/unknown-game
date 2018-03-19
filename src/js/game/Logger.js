@@ -17,13 +17,17 @@ export default class Logger {
         this._logs = new LogCollection();
     }
 
-    // Functions
+    /*
+ * Functions
+ */
 
     log(type, text) {
         this._logs.add(new Log(this._ticker.now(), type, text));
     }
 
-    // Properties
+    /*
+ * Properties
+ */
 
     get logs() {
         return this._logs;

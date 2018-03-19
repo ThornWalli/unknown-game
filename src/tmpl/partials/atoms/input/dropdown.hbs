@@ -1,4 +1,6 @@
 ---
+# default-title: 'Default Option'
+# default-value: 'default_option_value'
 options:
   - title: 'option with value'
     value: 'option_value'
@@ -9,23 +11,12 @@ options:
       - title: grouped option
 ---
 <span class="partial {{{class}}}" data-partial="atoms/input/dropdown">
-  <select{{#if size}} size="{{{size}}}"{{/if}}{{#if multiple}} multiple{{/if}}{{#if hook}} data-hook="{{{hook}}}"{{/if}}>
+  <select{{#if size}} size="{{{size}}}"{{/if}}{{#if multiple}} multiple{{/if}}{{#if hook}} data-hook="{{{hook}}}"{{/if}}{{#if default-title}} data-default-title="{{{default-title}}}"{{/if}}{{#if default-value}} data-default-value="{{{default-value}}}"{{/if}}>
+    {{#if default-option}}
+      {{> "atoms/input/dropdown/option" default-option}}
+    {{/if}}
     {{#each options}}
-
-      {{#if options}}
-
-      <optgroup label="{{{fallback title value}}}">
-        {{#each options}}
-        <option {{#if value}} value="{{{value}}}"{{/if}}>{{{fallback (fallback title value) this}}}</option>
-        {{/each}}
-      </optgroup>
-
-      {{else}}
-
-      <option {{#if value}} value="{{{value}}}"{{/if}}>{{{fallback (fallback title value) this}}}</option>
-
-      {{/if}}
-
+      {{> "atoms/input/dropdown/option" this}}
     {{/each}}
   </select>
 </span>

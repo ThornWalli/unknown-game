@@ -1,9 +1,9 @@
 'use strict';
 
 import {
-    TYPES,
-    CLASSES
-} from '../../../utils/unit';
+    UNIT_CLASSES,
+    UNITS as UNIT_TYPES
+} from '../../../types';
 
 /**
  * Abstract Class Moveable
@@ -11,7 +11,7 @@ import {
 const Moveable = Abstract => class extends Abstract {
     constructor() {
         super();
-        this.setType(TYPES.MOVEABLE);
+        this.setType(UNIT_TYPES.MOVEABLE);
         this._moveData = null;
     }
 
@@ -36,7 +36,7 @@ const Moveable = Abstract => class extends Abstract {
         this._moveData = moveData;
     }
 };
-TYPES.MOVEABLE = 'moveable';
-CLASSES[TYPES.MOVEABLE] = Moveable;
+UNIT_TYPES.MOVEABLE = 'moveable';
+UNIT_CLASSES[UNIT_TYPES.MOVEABLE] = Moveable;
 
 export default Moveable;

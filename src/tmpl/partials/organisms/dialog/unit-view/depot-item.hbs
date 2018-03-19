@@ -3,7 +3,7 @@ id: 'depot-item'
 title: 'Depot Item'
 ---
 
-<li data-id="{{{id}}}">
+<li>
   <span>{{{title}}}</span>
-  <a>Start</a>
+  <a data-id="{{{id}}}" data-hook="unitViewStorageItemsStart">Start</a>
 </li>

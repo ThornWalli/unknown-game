@@ -7,20 +7,18 @@ export default class Resource extends ItemStorage(Unit) {
 
     constructor(app, unit) {
         super(app, unit);
-
-        this._storageItems.iron = 10;
-        this._maxItemStorageValue = 10;
-
     }
 
-    // Functions
+    /*
+     * Functions
+     */
 
-    removeStorageItemValue() {
-        const removeStorageItemValue = ItemStorage(Unit).prototype.removeStorageItemValue.apply(this, arguments);
+    removeItemStorageItemValue() {
+        const removeItemStorageItemValue = ItemStorage(Unit).prototype.removeItemStorageItemValue.apply(this, arguments);
         if (this.isItemStorageEmpty()) {
             this.remove();
         }
-        return removeStorageItemValue;
+        return removeItemStorageItemValue;
     }
 
     /**

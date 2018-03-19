@@ -9,23 +9,23 @@ export default Abstract => class extends Abstract {
     constructor(app, unit) {
         super(app, unit);
         /**
-         * Aktuelles Volumen.
          * @type {Object}
          */
-        this._storageItems = {};
+        this._itemStorageItems = {};
         /**
-         * Maximal Volumen.
          * @type {Number}
          */
-        this._maxItemStorageValue = 0;
+        this._maxItemStorageItemValue = 0;
+
         /**
-         * Maximal Anzahl an Inhalten.
-         * @type {Number}
+         * @type {Array<game.types.items>}
          */
-        this._maxItemStorageItems = 0;
+        this._allowedItemStorageItems = [];
     }
 
-    // Functions
+    /*
+     * Functions
+     */
 
     /**
      * Überträgt Inhalt zum angegebenen Modul.
@@ -35,10 +35,8 @@ export default Abstract => class extends Abstract {
      * @param  {Number} value
      * @return {Number}
      */
-    storageTransfer(target, type, value, direction) {
-
+    itemStorageTransfer(target, type, value, direction) {
         value = Math.abs(value);
-
         let from, to;
         if (direction) {
             // from -> to
@@ -49,12 +47,12 @@ export default Abstract => class extends Abstract {
             from = this;
             to = target;
         }
-        value = Math.min(value, from.getStorageItemValue(type));
+        value = Math.min(value, from.getItemStorageItemValue(type));
 
         // Nur das was auch vorhanden ist.
-        const transferedValue = to.addStorageItemValue(type, value);
-        from.removeStorageItemValue(type, transferedValue);
-        console.log('TRANSFER', type, value, transferedValue);
+        const transferedValue = to.addItemStorageItemValue(type, value);
+        from.removeItemStorageItemValue(type, transferedValue);
+        // console.log('TRANSFER', type, value, transferedValue);
         this.trigger('storage.value.transfer', this, type, value);
         return transferedValue;
     }
@@ -65,18 +63,17 @@ export default Abstract => class extends Abstract {
      * @param {[type]} type  [description]
      * @param {[type]} value [description]
      */
-    addStorageItemValue(type, value) {
-        // console.log('addStorageItemValue pre', value, this.isItemStorageFull(), this.getFreeStorageValue());
+    addItemStorageItemValue(type, value) {
         if (!checkMaxTypes(this, type)) {
             return false;
         }
         value = Math.abs(value);
         if (!this.isItemStorageFull()) {
-            value = Math.min(value, this.getFreeStorageValue());
+            value = Math.min(value, this.getFreeItemStorageValue());
         } else {
             value = 0;
         }
-        this._storageItems[type] = (this._storageItems[type] || 0) + value;
+        this._itemStorageItems[type] = (this._itemStorageItems[type] || 0) + value;
         this.trigger('storage.value.add', this, type, value);
         return value;
     }
@@ -87,28 +84,42 @@ export default Abstract => class extends Abstract {
      * @param {[type]} type  [description]
      * @param {[type]} value [description]
      */
-    removeStorageItemValue(type, value) {
+    removeItemStorageItemValue(type, value) {
         value = Math.abs(value);
-        if (this._storageItems[type] <= value) {
-            delete this._storageItems[type];
+        if (this._itemStorageItems[type] <= value) {
+            delete this._itemStorageItems[type];
         } else {
-            this._storageItems[type] = (this._storageItems[type] || 0) - value;
+            this._itemStorageItems[type] = (this._itemStorageItems[type] || 0) - value;
         }
         this.trigger('storage.value.remove', this, type, value);
         return value;
     }
 
+    /**
+     * Ruft ab kein Volumen vorhanden ist.
+     * @param  {game.types.items} type (Optional)
+     * @return {Boolean}
+     */
     isItemStorageEmpty(type) {
-        return type && this.getStorageItemValue(type) === 0 || !type && this.totalStorageValue === 0;
+        return type && this.getItemStorageItemValue(type) === 0 || !type && this.totalItemStorageValue === 0;
     }
 
+    /**
+     * Ruft ab ob maximal Volumen erreicht wurde.
+     * @return {Boolean}
+     */
     isItemStorageFull() {
-        return this._maxItemStorageValue === this.totalStorageValue;
+        return this._maxItemStorageItemValue === this.totalItemStorageValue;
     }
 
-    getStorageItemValue(type) {
-        if (type in this._storageItems) {
-            return this._storageItems[type];
+    /**
+     * Ruft zum angegebenen Item das Volumen ab.
+     * @param  {game.types.items} type
+     * @return {Number}
+     */
+    getItemStorageItemValue(type) {
+        if (type in this._itemStorageItems) {
+            return this._itemStorageItems[type];
         } else {
             return 0;
         }
@@ -118,45 +129,64 @@ export default Abstract => class extends Abstract {
      * Ruft das freie Volumen ab.
      * @return {Number}
      */
-    getFreeStorageValue() {
-        return this._maxItemStorageValue - this.totalStorageValue;
+    getFreeItemStorageValue() {
+        return this._maxItemStorageItemValue - this.totalItemStorageValue;
     }
 
-
-
-    // Properties
-
-    get totalStorageValue() {
-        return Object.values(this._storageItems).reduce((result, value) => result + value, 0);
-    }
-
-    get storageItems() {
-        return this._storageItems;
-    }
     /**
-     * Ruft das maximale Volumen ab.
+     * Ruft das nächste Item aus dem Storage ab.
+     * @param {game.base.Unit} unit
+     * @return {game.types.item}
+     */
+    getItemStorageAvailableItems(allowedItems = []) {
+        return Object.keys(this.itemStorageItems).map(item => {
+            if (!allowedItems.length || allowedItems.indexOf(item) > -1) {
+                return item;
+            }
+        });
+    }
+
+
+    /*
+     * Properties
+     */
+
+    /**
+     * Ruft das maximal Volumen ab.
      * @return {Number}
      */
-    get maxStorageTotalValue() {
-        return this._maxItemStorageValue;
+    get maxItemStorageItemValue() {
+        return this._maxItemStorageItemValue;
     }
     /**
-     * Ruft die maximale Anzahl an Inhalten ab.
+     * Legt das maximal Volumen fest.
+     * @param {Number} value
+     */
+    set maxItemStorageItemValue(value) {
+        this._maxItemStorageItemValue = value;
+    }
+    /**
+     * Ruft das gesamt Volumen ab.
      * @return {Number}
      */
-    get maxItemStorageItems() {
-        return this._maxItemStorageItems;
+    get totalItemStorageValue() {
+        return Object.values(this._itemStorageItems).reduce((result, value) => result + value, 0);
     }
 
+    get itemStorageItems() {
+        return this._itemStorageItems;
+    }
+    /**
+     * Ruft die erlaubten Items ab.
+     * @type {Array<game.types.items>}
+     */
+    get allowedItemStorageItems() {
+        return this._allowedItemStorageItems;
+    }
 };
 
 function checkMaxTypes(storage, type) {
-    const types = Object.keys(storage._storageItems);
-    if (storage._maxItemStorageItems === 0) {
-        return true;
-    } else if (types.indexOf(type) > -1) {
-        return true;
-    } else if (storage._maxItemStorageItems > 0 && storage._maxItemStorageItems > types.length) {
+    if (storage.allowedItemStorageItems.length < 1 || storage.allowedItemStorageItems.indexOf(type) > -1) {
         return true;
     } else {
         return false;

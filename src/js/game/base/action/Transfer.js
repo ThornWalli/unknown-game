@@ -1,13 +1,20 @@
 'use strict';
 
+import {
+    ACTIONS as ACTION_TYPES
+} from '../../types';
+
 import Action from '../Action';
+
 import {
     ticker
 } from '../Ticker';
 
+ACTION_TYPES.TRANSFER = 'transfer';
+
 export default class Transfer extends Action {
     constructor(unit, callback) {
-        super('transfer', unit, callback);
+        super(ACTION_TYPES.TRANSFER, unit, callback);
         this._timerListener = null;
         this._lastTickValue = 0;
         this._transferedValue = 0;
@@ -21,10 +28,17 @@ export default class Transfer extends Action {
         Action.prototype.onComplete.apply(this, arguments);
     }
 
-    // Functions
+    onStop() {
+        reset(this);
+        Action.prototype.onStop.apply(this, arguments);
+    }
+
+    /*
+     * Functions
+     */
 
     start(targetUnit, type, value, direction) {
-        console.log('transfer start', type, value, direction);
+        // console.log('transfer start', type, value, direction);
 
         if (targetUnit.module.isItemStorageEmpty() && direction) {
             // target empty?
@@ -42,12 +56,14 @@ export default class Transfer extends Action {
         Action.prototype.start.apply(this, arguments);
     }
 
-    stop() {
-        reset(this);
-        Action.prototype.stop.apply(this, arguments);
+    destroy() {
+        removeListener(this);
+        Action.prototype.destroy.apply(this, arguments);
     }
 
-    // Properties
+    /*
+     * Properties
+     */
 
     get transferDirection() {
         return this._transferDirection;
@@ -82,7 +98,9 @@ export default class Transfer extends Action {
 
 }
 
-// Functions
+/*
+ * Functions
+ */
 
 function addListener(action) {
     action._timerListener = ticker.register(onTick.bind(action)(), onComplete.bind(action)(), action.duration);
@@ -96,8 +114,8 @@ function removeListener(action) {
 }
 
 function reset(action) {
-    action._transferedValue = null;
     removeListener(action);
+    action._transferedValue = null;
 }
 
 // Events
@@ -110,17 +128,12 @@ function onTick() {
 
 function onComplete() {
     return () => {
-        console.log(this._transferedValue, this._transferMaxValue);
-
-        const val = this.unit.module.storageTransfer(this._targetUnit.module, this._transferType, (this.transferValue * this.transferEfficiency), this._transferDirection);
-
-        console.log(this._transferedValue, val);
-
+        const val = this.unit.module.itemStorageTransfer(this._targetUnit.module, this._transferType, (this.transferValue * this.transferEfficiency), this._transferDirection);
         this._transferedValue += val;
-
-        console.log('COLLECT ENDE', this._targetUnit.module.storageItems, this.unit.module.storageItems, this._transferedValue);
-
-        if (!this._transferMaxValue || this._transferMaxValue && (this._transferedValue >= this._transferMaxValue || (this._transferDirection ? this._targetUnit.module : this.unit.module).isItemStorageEmpty() || (!this._transferDirection ? this._targetUnit.module : this.unit.module).isItemStorageFull())) {
+        if (this.stopped) {
+            this.onStop();
+            return false;
+        } else if ((!this._transferMaxValue || this._transferMaxValue && (this._transferedValue >= this._transferMaxValue || (this._transferDirection ? this._targetUnit.module : this.unit.module).isItemStorageEmpty() || (!this._transferDirection ? this._targetUnit.module : this.unit.module).isItemStorageFull()))) {
             this.onComplete();
             return false;
         } else {

@@ -1,9 +1,9 @@
 'use strict';
 
 import {
-    TYPES,
-    CLASSES
-} from '../../utils/unit';
+    UNIT_CLASSES,
+    UNITS as UNIT_TYPES
+} from '../../types';
 
 import Unit from '../Unit';
 import Action from './abstract/Action';
@@ -14,11 +14,11 @@ import Sprite from './abstract/Sprite';
 class Figure extends Moveable(Sprite(Action(Unit))) {
     constructor() {
         super();
-        this.setType(TYPES.FIGURE);
+        this.setType(UNIT_TYPES.FIGURE);
         this.selectable = true;
         this.walkable = false;
     }
 }
-TYPES.FIGURE = 'figure';
-CLASSES[TYPES.FIGURE] = Figure;
+UNIT_TYPES.FIGURE = 'figure';
+UNIT_CLASSES[UNIT_TYPES.FIGURE] = Figure;
 export default Figure;

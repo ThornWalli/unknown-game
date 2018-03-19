@@ -1,21 +1,19 @@
 'use strict';
 
 import {
-    TYPES as UNIT_TYPES
-} from './utils/unit';
+    UNITS as UNIT_TYPES
+} from './types';
 
 /**
- * Verwaltet die Bots.
+ * Verwaltet die Module.
  */
 export default class UnitModuleControl {
     constructor(app) {
         this._app = app;
 
-        this._units = this._app.map.units
-            .on('add', onAddUnit, this)
-            .on('remove', onRemoveUnit, this);
-        this._units = this._app.map.units.createFilteredCollection(collectionFilter.bind(this));
-
+        this._units = this._app.map.units.createFilteredCollection(collectionFilter);
+        this._units.on('add', onAddUnit, this);
+        [].concat(this._units.items).forEach(item => setupUnit(item, app));
     }
 
     /*
@@ -28,32 +26,17 @@ export default class UnitModuleControl {
 }
 
 function collectionFilter(unit) {
-    if (setupUnit(unit, this._app)) {
-        return unit;
+    if (isModuleUnit(unit)) {
+        return true;
     }
 }
 
-
-
 function setupUnit(unit, app) {
-    if (isModuleUnit(unit)) {
         unit.setupModule(app);
-        return true;
-    } else {
-        return false;
-    }
 }
 
 function onAddUnit(unit) {
     setupUnit(unit, this._app);
-}
-
-function onRemoveUnit(unit) {
-    if (isModuleUnit(unit)) {
-        this._units.remove(unit, {
-            passive: true
-        });
-    }
 }
 
 function isModuleUnit(unit) {

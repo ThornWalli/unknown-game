@@ -9,13 +9,17 @@ export default class Module extends Events {
         this._unit = unit;
     }
 
-    // Functions
+    /*
+ * Functions
+ */
 
     log(text) {
         this._app.logger.log('module', text);
     }
 
-    // Properties
+    /*
+ * Properties
+ */
 
     get app() {
         return this._app;

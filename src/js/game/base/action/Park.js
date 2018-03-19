@@ -1,14 +1,20 @@
  'use strict';
 
+ import {
+     ACTIONS as ACTION_TYPES
+ } from '../../types';
+
  import Action from '../Action';
 
  import {
      ticker
  } from '../Ticker';
 
+ ACTION_TYPES.PARK = 'park';
+
  export default class Park extends Action {
      constructor(unit, callback) {
-         super('park', unit, callback);
+         super(ACTION_TYPES.PARK, unit, callback);
          this._timerListener = null;
      }
 
@@ -17,7 +23,9 @@
          Action.prototype.onComplete.apply(this, arguments);
      }
 
-     // Functions
+     /*
+      * Functions
+      */
 
      start(targetUnit) {
          this._targetUnit = targetUnit;
@@ -35,14 +43,18 @@
          Action.prototype.destroy.apply(this, arguments);
      }
 
-     // Properties
+     /*
+      * Properties
+      */
 
      get duration() {
          return 250;
      }
  }
 
- // Functions
+ /*
+  * Functions
+  */
 
  function addListener(action) {
      action._timerListener = ticker.register(onTick.bind(action), onComplete.bind(action), action.duration);
@@ -60,6 +72,7 @@
  function onTick() {}
 
  function onComplete() {
-     this._targetUnit.module.add(this.unit);
+     this._targetUnit.module.addUnitStorageUnit(this.unit);
+     this.onComplete();
      return false;
  }

@@ -1,1 +1,199 @@
-{"matrix":{"x":32,"y":24},"units":[{"type":"road","position":{"x":21,"y":14}},{"type":"road","position":{"x":22,"y":14}},{"type":"road","position":{"x":15,"y":16}},{"type":"road","position":{"x":16,"y":14}},{"type":"road","position":{"x":15,"y":15}},{"type":"road","position":{"x":15,"y":12}},{"type":"road","position":{"x":15,"y":14}},{"type":"road","position":{"x":17,"y":14}},{"type":"road","position":{"x":18,"y":14}},{"type":"road","position":{"x":19,"y":14}},{"type":"road","position":{"x":9,"y":14}},{"type":"road","position":{"x":20,"y":14}},{"type":"road","position":{"x":14,"y":14}},{"type":"road","position":{"x":15,"y":17}},{"type":"road","position":{"x":13,"y":14}},{"type":"road","position":{"x":15,"y":11}},{"type":"road","position":{"x":12,"y":14}},{"type":"road","position":{"x":11,"y":14}},{"type":"road","position":{"x":10,"y":14}},{"type":"road","position":{"x":15,"y":13}},{"type":"resource","position":{"x":12,"y":13}},{"type":"home","position":{"x":15,"y":18}},{"type":"home","position":{"x":15,"y":10}},{"type":"resource","position":{"x":18,"y":15}},{"type":"resource","position":{"x":12,"y":12}},{"type":"resource","position":{"x":18,"y":16}},{"type":"vehicle_depot","position":{"x":14,"y":17}},{"type":"vehicle_depot","position":{"x":16,"y":11}}]}
+{
+  "matrix": {
+    "x": 32,
+    "y": 24
+  },
+  "units": [{
+    "type": "road.default",
+    "position": {
+      "x": 12,
+      "y": 14
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 13,
+      "y": 14
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 16
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 16,
+      "y": 14
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 15
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 12
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 14
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 17,
+      "y": 14
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 18,
+      "y": 14
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 19,
+      "y": 14
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 22,
+      "y": 14
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 9,
+      "y": 14
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 21,
+      "y": 14
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 20,
+      "y": 14
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 14,
+      "y": 14
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 17
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 11
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 11,
+      "y": 14
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 10,
+      "y": 14
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 13
+    }
+  }, {
+    "type": "building.depot.vehicle",
+    "position": {
+      "x": 14,
+      "y": 17
+    }
+  }, {
+    "type": "resource.iron",
+    "position": {
+      "x": 18,
+      "y": 16
+    }
+  }, {
+    "type": "building.storage.default",
+    "position": {
+      "x": 15,
+      "y": 10
+    }
+  }, {
+    "type": "resource.iron",
+    "position": {
+      "x": 18,
+      "y": 15
+    }
+  }, {
+    "type": "resource.iron",
+    "position": {
+      "x": 12,
+      "y": 12
+    }
+  }, {
+    "type": "building.storage.default",
+    "position": {
+      "x": 15,
+      "y": 18
+    }
+  }, {
+    "type": "resource.iron",
+    "position": {
+      "x": 12,
+      "y": 13
+    }
+  }, {
+    "type": "building.depot.vehicle",
+    "position": {
+      "x": 16,
+      "y": 11
+    }
+  }, {
+    "type": "resource.copper",
+    "position": {
+      "x": 12,
+      "y": 15
+    }
+  }, {
+    "type": "resource.copper",
+    "position": {
+      "x": 12,
+      "y": 16
+    }
+  }, {
+    "type": "resource.copper",
+    "position": {
+      "x": 18,
+      "y": 13
+    }
+  }, {
+    "type": "resource.copper",
+    "position": {
+      "x": 18,
+      "y": 12
+    }
+  }]
+}

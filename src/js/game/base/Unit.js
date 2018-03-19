@@ -2,9 +2,9 @@
 
 import {
     DIRECTIONS,
-    CLASSES,
-    TYPES
-} from '../utils/unit';
+    UNIT_CLASSES,
+    UNITS as UNIT_TYPES
+} from '../types';
 
 import uuid from 'uuid';
 import Events from './Events';
@@ -46,7 +46,7 @@ class Unit extends Events {
          * Wenn gesetzt ist Unit ausgewählt.
          * @type {Boolean}
          */
-        this.selected = false;
+        this._selected = false;
         /**
          * Wenn gesetzt, kann Unit ausgewählt werden.
          * @type {Boolean}
@@ -57,15 +57,21 @@ class Unit extends Events {
          * @type {Boolean}
          */
         this.walkable = true;
+        /**
+         * @type {game.base.Position}
+         */
+        this._portOffset = new Position();
 
 
         this._types = [];
 
-        this.setType(TYPES.UNIT);
+        this.setType(UNIT_TYPES.DEFAULT);
 
     }
 
-    // Functions
+    /*
+     * Functions
+     */
 
     setPosition(position) {
         this.setPositionValues(position.x, position.y);
@@ -97,8 +103,26 @@ class Unit extends Events {
         this._types.push(type);
     }
 
-    // Properties
-    //
+    /*
+     * Properties
+     */
+
+    /**
+     * Ruft die Port Position der Unit ab.
+     * @return {game.base.Position}
+     */
+    get portPosition() {
+        return this.position.add(this._portOffset);
+    }
+
+   /**
+    * Ruft die Port Offset der Unit ab.
+    * @return {game.base.Position}
+    */
+   get portOffset() {
+       return this._portOffset;
+   }
+
     /**
      * Relativer abstand von vorheriger, zu aktueller Position.
      * @return {Position}
@@ -116,6 +140,14 @@ class Unit extends Events {
 
     get type() {
         return this._types[this._types.length - 1];
+    }
+
+    get selected() {
+        return this._selected;
+    }
+    set selected(value) {
+        this._selected = value;
+        this.trigger('selected.change', this, value);
     }
 
     get direction() {
@@ -161,8 +193,8 @@ class Unit extends Events {
 
 }
 
-TYPES.UNIT = 'unit';
-CLASSES[TYPES.UNIT] = Unit;
+UNIT_TYPES.DEFAULT = 'default';
+UNIT_CLASSES[UNIT_TYPES.DEFAULT] = Unit;
 
 function setDirection(position, lastPosition) {
     if (position.y === lastPosition.y) {
