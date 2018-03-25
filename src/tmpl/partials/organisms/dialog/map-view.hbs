@@ -1,10 +1,5 @@
 {{#mixin "organisms/dialog" this partial-name="organisms/dialog/map-view" controller-name="./partials/organisms/dialog/MapView" }}
   {{#content "content"}}
-    <div class="map-view__time">
-      <span data-hook="mapViewTime">00:00</span>
-    </div>
-    <div class="map-view__canvas">
-      <canvas data-hook="mapViewCanvas"></canvas>
-    </div>
+    {{{mixin "molecules/interface/map-view" target=target}}}
   {{/content}}
 {{/mixin}}

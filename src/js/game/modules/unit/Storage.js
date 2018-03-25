@@ -31,7 +31,7 @@ export default class Storage extends ItemStorage(Unit) {
 
 function onHarvesterModuleReady(module) {
     this.log('Harvester created');
-    module.harvesterPreferredStorageUnit = this.unit;
+    module.transporterPreferredStorageUnit = this.unit;
     module.start();
 }
 

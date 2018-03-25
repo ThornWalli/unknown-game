@@ -21,7 +21,7 @@ export default class UnitSelect extends Events {
         this._selectedUnits.push(unit);
         this.trigger('select', unit);
     }
-
+    
     clearSelectUnits() {
         if (this._selectedUnits.length) {
             while (this._selectedUnits.length) {

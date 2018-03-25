@@ -1,8 +1,6 @@
 <div class="partial controller {{{class}}}" data-partial="{{#if partial-name}}{{{partial-name}}}{{else}}organisms/app{{/if}}" data-controller="{{#if controller-name}}{{{controller-name}}}{{else}}./partials/organisms/App{{/if}}" {{{block "attributes"}}}>
 
-  {{!-- <canvas data-hook="appCanvas"></canvas> --}}
-  <div data-hook="appContainer">
-
-  </div>
-
+  {{#block "content-before"}}{{/block}}
+  <div class="app__container" data-hook="appContainer"></div>
+  {{#block "content-after"}}{{/block}}
 </div>

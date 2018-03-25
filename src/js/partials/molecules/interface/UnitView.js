@@ -4,20 +4,21 @@ import {
     UNITS as UNIT_TYPES
 } from '../../../game/types';
 
-import Dialog from '../Dialog';
+import Interface from '../Interface';
 
 import Template from '../../../base/Template';
 import itemTmpl from './tmpl/depotItem.hbs';
 import dropdownOptionTmpl from '../../../tmpl/dropdownOption.hbs';
 
-export default Dialog.extend({
+
+export default Interface.extend({
 
     itemTmpl: new Template(itemTmpl),
     dropdownOptionTmpl: new Template(dropdownOptionTmpl),
 
     pathLength: 0,
 
-    modelConstructor: Dialog.prototype.modelConstructor.extend({
+    modelConstructor: Interface.prototype.modelConstructor.extend({
         session: {
             unit: {
                 type: 'object',
@@ -31,22 +32,25 @@ export default Dialog.extend({
     }),
 
     bindings: {
-        'model.unit' : {
+        'model.unit': {
             type: 'booleanClass',
             name: 'js--visible'
         }
     },
 
-    events: Object.assign(Dialog.prototype.events, {
+    events: Object.assign(Interface.prototype.events, {
 
         'click [data-hook="unitViewDepotUnits"] a': onClickDepotUnitsStart,
 
-        'click [data-hook="unitViewVehicleMoveToDepotButton"]': onClickVehicleMoveToDepot,
-        'click [data-hook="unitViewVehicleMoveToStorageButton"]': onClickVehicleMoveToStorage,
-
         'change [data-hook="unitViewVehicleDepotDropdown"]': onChangeVehicleDepot,
-        'change [data-hook="unitViewVehicleStorageDropdown"]': onChangeVehicleStorage,
-        'change [data-hook="unitViewHarvesterPreferredResourceDropdown"]': onChangeVehicleResource
+        'click [data-hook="unitViewVehicleMoveToDepotButton"]': onClickVehicleMoveToDepot,
+
+        'change [data-hook="unitViewVTransporterStorageDropdown"]': onChangeTransporterStorage,
+        'click [data-hook="unitViewTransporterMoveToStorageButton"]': onClickTransporterMoveToStorage,
+
+        'change [data-hook="unitViewHarvesterPreferredResourceDropdown"]': onChangeVehicleResource,
+        'click [data-hook="unitViewHarvesterMoveToResourceButton"]': onClickHarvesterMoveToResource
+
 
 
 
@@ -54,7 +58,7 @@ export default Dialog.extend({
 
 
     initialize() {
-        Dialog.prototype.initialize.apply(this, arguments);
+        Interface.prototype.initialize.apply(this, arguments);
 
         this.model.once('change:tabContainer', (model, tabContainer) => {
             tabContainer.openByName('storage');
@@ -65,7 +69,7 @@ export default Dialog.extend({
 
         // Vehicle
         this.elements.vehicleDepot = this.queryByHook('unitViewVehicleDepotDropdown');
-        this.elements.vehicleStorage = this.queryByHook('unitViewVehicleStorageDropdown');
+        this.elements.transporterStorage = this.queryByHook('unitViewTransporterStorageDropdown');
 
         // Harvester
         //
@@ -98,6 +102,7 @@ export default Dialog.extend({
 function register(unit) {
     this.model.unit = unit;
     setupUnit.bind(this)(unit);
+    this.model.tabContainer.openByName('info');
 }
 
 function unregister(unit) {
@@ -159,13 +164,15 @@ function renderInfo(unit) {
 
 function setupHarvester(module, active) {
     elementVisibility(this.elements.harvesterPreferredResourceWrapper, active);
-
-    renderItems.bind(this)(Object.values(UNIT_TYPES.RESOURCE).map(resource => {
-        return {
-            id: resource,
-            title: resource
-        };
-    }), this.elements.harvesterPreferredResource, module.harvesterPreferredResource);
+    if (active) {
+        module.on('harvesterPreferredResourceType.change', (unit, value) => this.elements.harvesterPreferredResource.value = value, this);
+        renderItems.bind(this)(Object.values(UNIT_TYPES.RESOURCE).map(resource => {
+            return {
+                id: resource,
+                title: resource
+            };
+        }), this.elements.harvesterPreferredResource, module.harvesterPreferredResourceType);
+    }
 }
 
 // Vehicle
@@ -178,6 +185,7 @@ function setupVehicle(module, active) {
         this.model.tabContainer.hideTab('vehicle');
     }
 }
+
 
 function renderVehicle(module) {
 
@@ -199,24 +207,25 @@ function renderVehicle(module) {
     }, this).on('remove', () => {
         renderItems.bind(this)(prepareStorage(this.vehicleUnitStorages), this.elements.vehicleDepot);
     }, this);
-    renderItems.bind(this)(prepareStorage(this.vehicleUnitStorages), this.elements.vehicleDepot);
+    renderItems.bind(this)(prepareStorage(this.vehicleUnitStorages), this.elements.vehicleDepot, getUnitId(module.vehiclePreferredDepotUnit));
+    module.on('vehiclePreferredDepotUnit.change', (unit, value) => this.elements.vehicleDepot.value = getUnitId(value), this);
 
     // ItemStorage
 
     this.vehicleItemStorages.on('add', () => {
-        renderItems.bind(this)(prepareStorage(this.vehicleUnitStorages), this.elements.vehicleStorage);
+        renderItems.bind(this)(prepareStorage(this.vehicleItemStorages), this.elements.transporterStorage);
     }, this).on('remove', () => {
-        renderItems.bind(this)(prepareStorage(this.vehicleUnitStorages), this.elements.vehicleStorage);
+        renderItems.bind(this)(prepareStorage(this.vehicleItemStorages), this.elements.transporterStorage);
     }, this);
-    renderItems.bind(this)(prepareStorage(this.vehicleUnitStorages), this.elements.vehicleStorage);
-
+    renderItems.bind(this)(prepareStorage(this.vehicleItemStorages), this.elements.transporterStorage, getUnitId(module.transporterPreferredStorageUnit));
+    module.on('transporterPreferredStorageUnit.change', (unit, value) => this.elements.transporterStorage.value = getUnitId(value), this);
 }
 
 function prepareStorage(storages) {
     return storages.map(storage => {
         return {
             title: `${storage.type} (${storage.id})`,
-            value: storage.id
+            id: storage.id
         };
     });
 }
@@ -228,6 +237,14 @@ function addDropdownItem(el, title, value) {
     }));
 }
 
+
+function getUnitId(unit) {
+    if (unit) {
+        return unit.id;
+    }
+    return null;
+}
+
 // Storage
 
 function setupStorage(module, active) {
@@ -236,6 +253,7 @@ function setupStorage(module, active) {
             // .on('storage.value.add', onStorageTransfer, this)
             // .on('storage.value.remove', onStorageTransfer, this);
             .on('storage.value.transfer', () => {
+                console.log('???');
                 renderStorage.bind(this)(module);
             }, this);
         renderStorage.bind(this)(module);
@@ -273,6 +291,7 @@ function setupDepot(module, active) {
 function renderDepot(module) {
     this.elements.depotUnits.innerHTML = '';
     module.unitStorageUnits.forEach(unit => {
+        console.log('unit',unit);
         this.elements.depotUnits.appendChild(this.itemTmpl.toFragment({
             id: unit.id,
             title: unit.type
@@ -282,7 +301,8 @@ function renderDepot(module) {
 
 function renderItems(items, el, value) {
     el.innerHTML = null;
-    addDropdownItem.bind(this)(el, el.dataset.defaultTitle, el.dataset.defaultValue);
+    console.log('???',el.dataset.defaultTitle || ' ', el.dataset.defaultValue|| ' ');
+    addDropdownItem.bind(this)(el, el.dataset.defaultTitle || ' ', el.dataset.defaultValue);
     items.forEach(item => addDropdownItem.bind(this)(el, item.title, item.id));
     if (value) {
         el.value = value;
@@ -295,7 +315,6 @@ function renderItems(items, el, value) {
 // Depot
 
 function onClickDepotUnitsStart(e) {
-
     const unit = this.model.unit.module.app.map.getUnitById(e.target.dataset.id);
     console.log(unit);
     this.model.unit.module.removeUnitStorageUnit(unit);
@@ -305,21 +324,35 @@ function onClickDepotUnitsStart(e) {
 // Vehicle
 
 function onClickVehicleMoveToDepot() {
-
+    if (this.model.unit.module.vehiclePreferredDepotUnit) {
+        this.model.unit.module.moveToDepot(this.model.unit.module.vehiclePreferredDepotUnit);
+    }
 }
 
-function onClickVehicleMoveToStorage() {
+function onClickTransporterMoveToStorage() {
+    if (this.model.unit.module.transporterPreferredStorageUnit) {
+        this.model.unit.module.moveToStroage(this.model.unit.module.transporterPreferredStorageUnit);
+    }
+}
 
+function onClickHarvesterMoveToResource() {
+
+    if (this.model.unit.module.harvesterPreferredResourceType) {
+        this.model.unit.module.collectResources(this.model.unit.module.harvesterPreferredResourceType);
+    }
 }
 
 function onChangeVehicleDepot(e) {
     console.log('onChangeVehicleDepot', e.target.value);
+    this.model.unit.module.vehiclePreferredDepotUnit = e.target.value;
 }
 
-function onChangeVehicleStorage(e) {
-    console.log('onChangeVehicleStorage', e.target.value);
+function onChangeTransporterStorage(e) {
+    console.log('onChangeTransporterStorage', e.target.value);
+    this.model.unit.module.transporterPreferredStorageUnit = e.target.value;
 }
 
 function onChangeVehicleResource(e) {
     console.log('onChangeVehicleResource', e.target.value);
+    this.model.unit.module.harvesterPreferredResourceType = e.target.value;
 }

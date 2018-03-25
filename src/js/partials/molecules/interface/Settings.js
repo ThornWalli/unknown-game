@@ -2,20 +2,20 @@
 import {
     ticker
 } from '../../../game/base/Ticker';
-import Dialog from '../Dialog';
+import Interface from '../Interface';
 import {
     getUrl,
     getGETValue
 } from '../../../game/utils/url';
-export default Dialog.extend({
+export default Interface.extend({
 
-    modelConstructor: Dialog.prototype.modelConstructor.extend({
+    modelConstructor: Interface.prototype.modelConstructor.extend({
         session: {
 
         }
     }),
 
-    events: Object.assign(Dialog.prototype.events, {
+    events: Object.assign(Interface.prototype.events, {
         // 'change [data-hook="testSelect"]': onChangeTest,
         'change [data-hook="mapSelect"]': onChangeMap,
         // 'change [data-hook="speedSelect"]': onChangeSpeed,
@@ -23,7 +23,7 @@ export default Dialog.extend({
     }),
 
     initialize() {
-        Dialog.prototype.initialize.apply(this, arguments);
+        Interface.prototype.initialize.apply(this, arguments);
         // this.queryByHook('testSelect').value = getGETValue('test');
         this.queryByHook('mapSelect').value = getGETValue('map-uri');
     }

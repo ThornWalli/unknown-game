@@ -13,6 +13,24 @@ class Vehicle extends Sprite(Bot) {
         super();
         this.setType(UNIT_TYPES.VEHICLE.DEFAULT);
         this.selectable = true;
+        this._vehiclePreferredDepotUnit = null;
+    }
+
+    /**
+     * Ruft das bevorzugte Depot ab.
+     * @return {game.types.types}
+     */
+    get vehiclePreferredDepotUnit() {
+        return this._vehiclePreferredDepotUnit;
+    }
+    /**
+     * Legt das bevorzugte Depot fest.
+     * @param {game.types.types} value
+     * @return {game.types.types}
+     */
+    set vehiclePreferredDepotUnit(value) {
+        this._vehiclePreferredDepotUnit = value;
+        this.trigger('vehiclePreferredDepotUnit.change', this, value);
     }
 }
 

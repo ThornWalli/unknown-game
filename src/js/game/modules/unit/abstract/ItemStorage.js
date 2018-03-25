@@ -52,8 +52,9 @@ export default Abstract => class extends Abstract {
         // Nur das was auch vorhanden ist.
         const transferedValue = to.addItemStorageItemValue(type, value);
         from.removeItemStorageItemValue(type, transferedValue);
-        // console.log('TRANSFER', type, value, transferedValue);
-        this.trigger('storage.value.transfer', this, type, value);
+        
+        from.trigger('storage.value.transfer', from, type, value);
+        to.trigger('storage.value.transfer', to, type, value);
         return transferedValue;
     }
 

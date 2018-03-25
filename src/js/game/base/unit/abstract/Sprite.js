@@ -40,6 +40,19 @@ const Sprite = Abstract => class extends Abstract {
         this._spriteVisible = spriteVisible;
         this.trigger('sprite.visible.change', this, spriteVisible);
     }
+
+    get walkable() {
+        if (!this._spriteVisible) {
+            return false;
+        } else {
+            return this._walkable;
+        }
+    }
+
+    set walkable(walkable) {
+        this._walkable = walkable;
+    }
+
     get sprite() {
         return this._sprite;
     }

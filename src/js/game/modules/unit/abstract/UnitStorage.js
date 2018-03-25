@@ -43,6 +43,7 @@ export default Abstract => class extends Abstract {
     addUnitStorageUnit(unit) {
         this._unitStorageUnits.add(unit);
         unit.spriteVisible = false;
+        this.app.unitSelect.clearSelectUnits();
         this.trigger('storage.units.add', this, unit);
     }
 

@@ -56,7 +56,7 @@ class Unit extends Events {
          * Wenn gesetzt, steht Unit nicht im Weg.
          * @type {Boolean}
          */
-        this.walkable = true;
+        this._walkable = true;
         /**
          * @type {game.base.Position}
          */
@@ -115,13 +115,13 @@ class Unit extends Events {
         return this.position.add(this._portOffset);
     }
 
-   /**
-    * Ruft die Port Offset der Unit ab.
-    * @return {game.base.Position}
-    */
-   get portOffset() {
-       return this._portOffset;
-   }
+    /**
+     * Ruft die Port Offset der Unit ab.
+     * @return {game.base.Position}
+     */
+    get portOffset() {
+        return this._portOffset;
+    }
 
     /**
      * Relativer abstand von vorheriger, zu aktueller Position.
@@ -140,6 +140,14 @@ class Unit extends Events {
 
     get type() {
         return this._types[this._types.length - 1];
+    }
+
+    get walkable() {
+        return this._walkable;
+    }
+
+    set walkable(walkable) {
+        this._walkable = walkable;
     }
 
     get selected() {
@@ -190,6 +198,8 @@ class Unit extends Events {
     get positionOffset() {
         return this._offsetPosition;
     }
+
+
 
 }
 

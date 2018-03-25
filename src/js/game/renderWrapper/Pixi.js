@@ -201,6 +201,7 @@ function toggleUnitVisible(unit, visible) {
     } else if (unit.sprite.parent) {
         this._application.stage.removeChild(unit.sprite);
     }
+    this.display.app.map.matrix.updateCell(unit.position.x, unit.position.y, this.display.app.map.isCellWalkable(unit.position.x, unit.position.y));
 }
 
 

@@ -13,7 +13,6 @@ import {
     GRID_CELL_TYPES
 } from './Matrix';
 
-
 import {
     UNIT_CLASSES,
     UNITS as UNIT_TYPES
@@ -210,15 +209,6 @@ function findPath(unit, position, options = {}, radius = 1) {
          */
         near: true
     });
-    // const path = this._matrix.getPath(unit.position, position);
-    // path.forEach((position, i) => {
-    //     path[i] = new Position(position[0], position[1]);
-    // });
-    // if (path.length > 0) {
-    //     return path;
-    // } else if (options.near) {
-    //     return findPath.bind(this)(unit, getPositionAroundPosition(this, position, radius), options, radius + 1);
-    // }
     return this._matrix.getPath(unit.position, position).then(path => {
         if (path) {
             for (var i = 0; i < path.length; i++) {
@@ -239,31 +229,18 @@ function findPath(unit, position, options = {}, radius = 1) {
  * @return {Position}
  */
 function getPositionAroundPosition(map, position, radius = 1) {
-    const range = getPositionAroundPosition_createRadius(radius);
-    for (var x = 0; x < range.length; x++) {
-        for (var y = 0; y < range.length; y++) {
-            if (map.isCellWalkable(position.x + range[x], position.y + range[y]) !== GRID_CELL_TYPES.BLOCKED) {
-                return position.setValues(position.x + range[x], position.y + range[y]);
-            }
+    const positions = getPositionsAroundPositionCircle(position, radius);
+    for (var i = 0; i < positions.length; i++) {
+        if (map.isCellWalkable(positions[i].x, positions[i].y) !== GRID_CELL_TYPES.BLOCKED) {
+            return position.setValues(positions[i].x, positions[i].y);
         }
     }
-    return null;
-}
-
-/**
- * Create Radius Range.
- * [1, 0, -1]
- * @param  {Number} x
- * @return {Array}
- */
-function getPositionAroundPosition_createRadius(x) {
-    const radius = Array(1 + x * 2);
-    for (var i = 0; i < radius.length; i++) {
-        radius[i] = x - i;
+    const result = getPositionAroundPosition(map, position, radius + 1);
+    if (!result) {
+        return null;
     }
-    return radius;
+    return result;
 }
-
 
 class MoveData {
     constructor(startPosition, path) {

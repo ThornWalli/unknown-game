@@ -27,7 +27,8 @@
     }
   }
 
-  &.tab-container--dialog {
+  &.tab-container--dialog,
+  &.tab-container--sidebar {
     color: $color_green;
     display: flex;
     flex-direction: column;
@@ -76,6 +77,15 @@
       height: 100%;
     }
 
+    &.tab-container--sidebar {
+      .tab-container {
+        &__navigation {
+          padding-top: 4px;
+          padding-bottom: 4px;
+        }
+      }
+    }
+
     .tab-container {
       &__navigation {
         text-transform: uppercase;
@@ -107,7 +117,7 @@
 
         flex-grow: 1;
         overflow-y: auto;
-          background: $color_black;
+        background: $color_black;
 
         > div {
           padding: 2px 5px;

@@ -7,16 +7,8 @@ test-select:
     - 'MapBuilder'
 map-select:
   options:
-    - title: 'Map 1.'
-      value: 'external/maps/map-1.json'
-    - title: 'Map 2.'
-      value: 'external/maps/map-2.json'
-    - title: 'Map 3.'
-      value: 'external/maps/map-3.json'
-    - title: 'Map 4.'
-      value: 'external/maps/map-4.json'
-    - title: 'Map 5.'
-      value: 'external/maps/map-5.json'
+    - title: 'Demo 1.'
+      value: 'external/maps/demo-1.json'
 speed-select:
   options:
     - '1'
@@ -27,26 +19,10 @@ speed-select:
     - '32'
     - '64'
 timewarp-button:
-  title: 'Skip 5 min'
+  title: 'Skip 1 min'
 ---
 {{#mixin "organisms/dialog" this partial-name="organisms/dialog/settings" controller-name="./partials/organisms/dialog/Settings" }}
-  {{#content "content"}}
-
-    {{#mixin "atoms/form" this}}
-      {{#content "content"}}
-        <div>
-          <label>Test:</label>{{{mixin "atoms/input/dropdown" test-select hook="testSelect" }}}
-        </div>
-        <div>
-          <label>Map:</label>{{{mixin "atoms/input/dropdown" map-select hook="mapSelect" }}}
-        </div>
-        <div>
-          <label>Speed:</label>{{{mixin "atoms/input/dropdown" speed-select hook="speedSelect" }}}
-        </div>
-        <div>
-          {{{mixin "atoms/button" timewarp-button hook="timewarpButton" }}}
-        </div>
-      {{/content}}
-    {{/mixin}}
-  {{/content}}
+{{#content "content"}}
+  {{{mixin "molecules/interface/settings" target=target}}}
+{{/content}}
 {{/mixin}}

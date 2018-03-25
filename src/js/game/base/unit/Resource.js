@@ -14,7 +14,7 @@ import Abstract_Module from './abstract/Module';
 class Resource extends Abstract_Sprite(Abstract_Module(Unit)) {
     constructor() {
         super();
-        this.setType(UNIT_TYPES.RESOURCE.DEFAULT );
+        this.setType(UNIT_TYPES.RESOURCE.DEFAULT);
         this.setModule(ResourceModule);
         this.selectable = true;
         this.walkable = true;
@@ -22,6 +22,13 @@ class Resource extends Abstract_Sprite(Abstract_Module(Unit)) {
     onModuleReady(module) {
         module.maxItemStorageItemValue = 10;
     }
+    // get walkable() {
+    //     return this._walkable;
+    // }
+    // set walkable(walkable) {
+    //     walkable = true;
+    //     this._walkable = walkable;
+    // }
 }
 UNIT_TYPES.RESOURCE.DEFAULT = 'resource.default';
 UNIT_CLASSES[UNIT_TYPES.RESOURCE.DEFAULT] = Resource;
