@@ -58,32 +58,51 @@ function render(module) {
 
     this.elements.storageAllowedItemsMultiselect.innerHTML = '';
     // console.log(UNIT_TYPES, pick(UNIT_TYPES, ['RESOURCE']));
-    renderUnitTypes(this.elements.storageAllowedItemsMultiselect, ITEMS);
-
+        let data = mapUnitTypes(ITEMS);
+        data.forEach(type => this.elements.storageAllowedItemsMultiselect.appendChild(this.tmpl.dropdownItem.toFragment(type)));
+        this.model.selectedUnit.module.allowedItemsStorageItems.forEach(type => {
+            this.elements.storageAllowedItemsMultiselect.querySelector(`[value="${type}"]`).setAttribute('selected', true);
+        });
 }
 
-function renderUnitTypes(el, data) {
-    const html = [];
-    Object.keys(data).forEach(key => {
-        const value = data[key];
+
+
+/*
+ * Functions
+ */
+
+function mapUnitTypes(types) {
+    const result = [];
+    Object.keys(types).forEach(key => {
+        const value = types[key];
         if (key !== 'DEFAULT') {
             if (typeof value === 'string') {
-                html.push('<option value="' + value + '">' + lang.get(value) + '</option>');
+                result.push({
+                    title: `${lang.get(value)}`,
+                    value: value
+                });
             } else {
-                html.push('<optgroup label="' + lang.get(value.DEFAULT) + '">' + '<option value="' + value.DEFAULT + '">' + lang.get(value.DEFAULT) + ' (Default)</option>' + renderUnitTypes(null, value) + '</optgroup>');
+                const options = [{
+                    title: `${lang.get(value.DEFAULT)} (Default)`,
+                    value: value
+                }].concat(mapUnitTypes(value));
+                result.push({
+                    title: `${lang.get(value.DEFAULT)}`,
+                    value: value.DEFAULT,
+                    options
+                });
             }
         }
     });
-    if (el) {
-        el.innerHTML = html.join();
-    }
-    return html;
+    return result;
 }
 
 /*
  * Events
  */
 
-function onChangeStorageAllowedItemsMultiselect() {
-
+function onChangeStorageAllowedItemsMultiselect(e) {
+    const options = Array.from(e.target.selectedOptions).map(option => option.value);
+    this.model.selectedUnit.module.allowedItemsStorageItems = options;
+    console.log('value', this.model.selectedUnit.module);
 }

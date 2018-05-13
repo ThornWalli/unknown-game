@@ -50,7 +50,8 @@ export default Abstract => class extends Abstract {
      * @return {Boolean}      [description]
      */
     isItemAllowed(type) {
-        return this._allowedItemsStorageItems.length === 0 || this._allowedItemsStorageItems.indexOf(type);
+        console.log('isItemAllowed',this._allowedItemsStorageItems,type, this._allowedItemsStorageItems.length === 0 || this._allowedItemsStorageItems.indexOf(type) !== -1);
+        return this._allowedItemsStorageItems.length === 0 || this._allowedItemsStorageItems.indexOf(type) !== -1;
     }
 
     /**
@@ -259,10 +260,17 @@ export default Abstract => class extends Abstract {
     }
     /**
      * Ruft die erlaubten Items ab.
-     * @type {Array<game.types.items>}
+     * @return {Array<game.types.items>}
      */
     get allowedItemsStorageItems() {
         return this._allowedItemsStorageItems;
+    }
+    /**
+     * Setzt die erlaubten Items fest.
+     * @type {Array<game.types.items>}
+     */
+    set allowedItemsStorageItems(value) {
+         this._allowedItemsStorageItems = value;
     }
 };
 

@@ -39,8 +39,6 @@ export default class Transfer extends Action {
      */
 
     start(targetUnit, type, value, direction) {
-        // console.log('transfer start', type, value, direction);
-        console.log(targetUnit.module.transferDirection);
         if (targetUnit.module.isItemStorageEmpty() && direction) {
             // target empty?
             return false;

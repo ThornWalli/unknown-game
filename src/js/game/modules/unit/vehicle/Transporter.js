@@ -104,6 +104,8 @@ export default class Transporter extends ItemStorage(Vehicle) {
                 if (!itemType) {
                     console.error('ItemStorage empty');
                     return abort();
+                } else if (!unit.module.isFreeAndAllowedItem()) {
+                    return this.moveToAvailableStorage();
                 }
                 this.log('Unload items…');
                 return this.app.unitActions.add({
@@ -178,13 +180,17 @@ export default class Transporter extends ItemStorage(Vehicle) {
     }
 
     getNearOptimalStorage() {
-        return getSortedUnitByDistance(this.unit.position, this.app.runtimeObserver.buildings.filter(building => {
+        const unit = getSortedUnitByDistance(this.unit.position, this.app.runtimeObserver.buildings.filter(building => {
             if (building.isType(UNIT_TYPES.BUILDING.STORAGE.DEFAULT) && building.isType(UNIT_TYPES.ITEM_STORAGE)) {
                 console.log(building.module.isFreeAndAllowedItem(this.getAvailableItem()), this.getAvailableItem(), building.module.allowedItemsStorageItems);
             }
 
             return building.isType(UNIT_TYPES.BUILDING.STORAGE.DEFAULT) && building.isType(UNIT_TYPES.ITEM_STORAGE) && building.module.isFreeAndAllowedItem(this.getAvailableItem());
-        })).shift().unit;
+        })).shift();
+        if (unit) {
+            return unit.unit;
+        }
+        return null;
     }
 
     getAvailableItem() {
@@ -193,9 +199,14 @@ export default class Transporter extends ItemStorage(Vehicle) {
     moveToAvailableStorage() {
         const storage = this.getNearOptimalStorage();
         this._transporterPreferredStorageUnit = storage;
-        return this.moveToUnit(storage).then(() => {
-            return this.unloadItems(storage);
-        });
+        if (storage) {
+
+            return this.moveToUnit(storage).then(() => {
+                return this.unloadItems(storage);
+            });
+        } else {
+            return SyncPromise.resolve();
+        }
     }
 
     getStorage() {
