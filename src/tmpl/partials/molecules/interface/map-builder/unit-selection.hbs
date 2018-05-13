@@ -1,0 +1,9 @@
+---
+timewarp-button:
+  title: 'Skip 1 min'
+---
+{{#mixin "molecules/interface" this partial-name="molecules/interface/map-builder/unit-selection" controller-name="./partials/molecules/interface/mapBuilder/UnitSelection"}}
+  {{#content "content"}}
+      {{{mixin "atoms/list" units hook="unitSelectionItems" class="list--buttons list--scroll"}}}
+  {{/content}}
+{{/mixin}}

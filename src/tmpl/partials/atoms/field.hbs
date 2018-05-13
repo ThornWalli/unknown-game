@@ -1,0 +1,10 @@
+<div class="partial {{{class}}}" data-partial="atoms/field">
+  {{#if title}}
+    <label{{#if id}} for="{{{id}}}"{{/if}}>
+      {{{title}}}
+    </label>
+  {{/if}}
+  <div>
+    {{#block "content"}}{{/block}}
+  </div>
+</div>

@@ -1,0 +1,21 @@
+---
+user:
+  options: []
+  title: 'User'
+---
+{{#mixin "molecules/interface" this partial-name="molecules/interface/map-builder/unit-options" controller-name="./partials/molecules/interface/mapBuilder/UnitOptions"}}
+  {{#content "content"}}
+    {{#mixin "atoms/fieldset" class="unit-view__storage__allowed_items"}}
+      {{#content "title"}}Unit Options{{/content}}
+        {{#content "content"}}
+          {{#mixin "atoms/form" hook="unitOptionsForm"}}
+            {{#content "content"}}
+              {{#mixin "atoms/field" ../../user}}
+                {{#content "content"}}{{{mixin "atoms/input/dropdown" options=options hook="unitOptionsUserDropdown"}}}{{/content}}
+              {{/mixin}}
+            {{/content}}
+          {{/mixin}}
+      {{/content}}
+    {{/mixin}}
+  {{/content}}
+{{/mixin}}

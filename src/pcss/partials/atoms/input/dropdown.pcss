@@ -5,9 +5,13 @@
   border: solid $color_green 1px;
   display: inline-block;
   padding: 4px;
+  box-sizing: border-box;
+  width: 100%;
 
   select {
     display: block;
+    width: calc(100% - 26px);
+    box-sizing: content-box;
     appearance: none;
     line-height: 1;
     font-size: 11px;
@@ -36,6 +40,35 @@
   &:hover {
     &::after {
       opacity: 1;
+    }
+  }
+
+  &.dropdown {
+    &--multiple {
+      display: block;
+      padding: 0;
+      border: none;
+      &::after {
+        display: none;
+      }
+
+      select {
+        padding-right: 0;
+        overflow: auto;
+        width: 100%;
+        background-color: $color_black;
+        color: $color_green;
+
+        optgroup,
+        option {
+          font-weight: 400;
+          padding: 4px;
+        }
+
+        optgroup {
+          font-weight: 500;
+        }
+      }
     }
   }
 }

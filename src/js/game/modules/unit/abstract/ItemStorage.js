@@ -1,5 +1,10 @@
 'use strict';
 
+import {
+    UNITS as UNIT_TYPES,
+    TRANSFER_DIRECTIONS
+} from '../../../types';
+
 /**
  * Abstract Class Module
  * @class ItemStorage
@@ -20,12 +25,70 @@ export default Abstract => class extends Abstract {
         /**
          * @type {Array<game.types.items>}
          */
-        this._allowedItemStorageItems = [];
+        this._allowedItemsStorageItems = [];
+
+        this._transferDirection = TRANSFER_DIRECTIONS.BOTH;
+
     }
 
     /*
      * Functions
      */
+
+    /**
+     * Gibt an ob für das anegeben Item noch Platz ist.
+     * @param  {game.types.items} type
+     * @return {Boolean}
+     */
+    isFreeAndAllowedItem(type) {
+        return !this.isItemStorageFull(type) && this.isItemAllowed(type);
+    }
+
+    /**
+     * Ruft ab, ob das angegebene Item erlaubt ist.
+     * @param  {[type]}  type [description]
+     * @return {Boolean}      [description]
+     */
+    isItemAllowed(type) {
+        return this._allowedItemsStorageItems.length === 0 || this._allowedItemsStorageItems.indexOf(type);
+    }
+
+    /**
+     * Ruft einen freien Transporter.
+     */
+    requestTransporter() {
+        const transporters = this.app.runtimeObserver.vehicles.filter(unit => unit.isType(UNIT_TYPES.VEHICLE.TRANSPORTER.DEFAULT));
+        if (transporters.length > 0) {
+            const transporter = transporters.shift();
+            return transporter.module.moveToResource(this.unit);
+        }
+    }
+
+    /**
+     * Überprüft ob der angegebene Typ vorhanden ist.
+     * @param  {game.types.items} type
+     * @return {Boolean}
+     */
+    hasItem(type) {
+        if (/\.default$/.test(type) && !(type in this._itemStorageItems)) {
+            type = type.replace(/\.default$/, '');
+            return Object.keys(this._itemStorageItems).find(key => key.indexOf(type) === 0);
+        }
+        return type in this._itemStorageItems;
+    }
+
+    isTransferDirection(transferDirection) {
+        if (this._transferDirection === TRANSFER_DIRECTIONS.BOTH) {
+            if (transferDirection === TRANSFER_DIRECTIONS.IN || transferDirection === TRANSFER_DIRECTIONS.OUT) {
+                return true;
+            }
+        } else if (
+            this._transferDirection === TRANSFER_DIRECTIONS.IN && transferDirection === TRANSFER_DIRECTIONS.IN || this._transferDirection === TRANSFER_DIRECTIONS.OUT && transferDirection === TRANSFER_DIRECTIONS.OUT
+        ) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Überträgt Inhalt zum angegebenen Modul.
@@ -52,7 +115,7 @@ export default Abstract => class extends Abstract {
         // Nur das was auch vorhanden ist.
         const transferedValue = to.addItemStorageItemValue(type, value);
         from.removeItemStorageItemValue(type, transferedValue);
-        
+
         from.trigger('storage.value.transfer', from, type, value);
         to.trigger('storage.value.transfer', to, type, value);
         return transferedValue;
@@ -152,6 +215,23 @@ export default Abstract => class extends Abstract {
      * Properties
      */
 
+
+
+    /**
+     * Ruft die Transferausrichtung ab.
+     * @return {Number}
+     */
+    get transferDirection() {
+        return this._transferDirection;
+    }
+    /**
+     * Legt die Transferausrichtung fest.
+     * @param {Number} value
+     */
+    set transferDirection(value) {
+        this._transferDirection = value;
+    }
+
     /**
      * Ruft das maximal Volumen ab.
      * @return {Number}
@@ -181,13 +261,13 @@ export default Abstract => class extends Abstract {
      * Ruft die erlaubten Items ab.
      * @type {Array<game.types.items>}
      */
-    get allowedItemStorageItems() {
-        return this._allowedItemStorageItems;
+    get allowedItemsStorageItems() {
+        return this._allowedItemsStorageItems;
     }
 };
 
 function checkMaxTypes(storage, type) {
-    if (storage.allowedItemStorageItems.length < 1 || storage.allowedItemStorageItems.indexOf(type) > -1) {
+    if (storage.allowedItemsStorageItems.length < 1 || storage.allowedItemsStorageItems.indexOf(type) > -1) {
         return true;
     } else {
         return false;

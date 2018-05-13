@@ -12,7 +12,7 @@ const CSS_CLASS_ACTIVE = 'js--active';
 
 class Events_Model {
     static onRender() {
-        render.bind(this)();
+        this.render();
     }
     static onChangeIndex(model, index) {
         // Tab
@@ -93,6 +93,15 @@ export default Controller.extend({
                 type: 'boolean',
                 required: true,
                 default: true
+            },
+            autoOpenName: {
+                type: 'string',
+                required: false
+            },
+            hideEmptyTabs: {
+                type: 'boolean',
+                required: true,
+                default: true
             }
         },
         openByName(name) {
@@ -121,6 +130,10 @@ export default Controller.extend({
         'model.ready': {
             type: 'booleanClass',
             name: 'js--ready'
+        },
+        'model.hideEmptyTabs': {
+            type: 'booleanClass',
+            name: 'js--hide-empty-tabs'
         }
     },
 
@@ -151,28 +164,30 @@ export default Controller.extend({
     },
 
     setup() {
-        render.bind(this)();
+        this.render();
         this.model.ready = true;
+    },
 
+    render() {
+        this.elements.containers = Array.from(this.elements.wrapper.children);
+        this.elements.dropdown.innerHTML = '';
+        this.elements.navigation.innerHTML = '';
+        this.elements.containers.forEach(container => {
+            this.elements.dropdown.appendChild(this.optionTmpl.toFragment({
+                title: container.dataset.title
+            }));
+            this.elements.navigation.appendChild(this.tabTmpl.toFragment({
+                title: container.dataset.title
+            }));
+            this.model.names.push(container.dataset.name);
+        });
+        this.elements.tabs = Array.from(this.elements.navigation.children);
+        if (this.model.autoOpen) {
+            this.model.index = 0;
+            if (this.model.autoOpenName) {
+                this.model.openByName(this.model.autoOpenName);
+            }
+        }
     }
 
 });
-
-function render() {
-    this.elements.containers = Array.from(this.elements.wrapper.children);
-    this.elements.dropdown.innerHTML = '';
-    this.elements.navigation.innerHTML = '';
-    this.elements.containers.forEach(container => {
-        this.elements.dropdown.appendChild(this.optionTmpl.toFragment({
-            title: container.dataset.title
-        }));
-        this.elements.navigation.appendChild(this.tabTmpl.toFragment({
-            title: container.dataset.title
-        }));
-        this.model.names.push(container.dataset.name);
-    });
-    this.elements.tabs = Array.from(this.elements.navigation.children);
-    if (this.model.autoOpen) {
-        this.model.index = 0;
-    }
-}

@@ -14,23 +14,31 @@ export default class MapBuilder extends App {
     }
 
     onPointerDown(event) {
-        App.prototype.onPointerDown.apply(this, arguments);
+        console.log('event', event);
 
-        if (this.display.isIntersectedPosition(event.matrixPosition)) {
-            const x = event.matrixPosition.x,
-                y = event.matrixPosition.y;
-            let unit = this.map.getUnitByCell(x, y);
+        if (event.primaryClick) {
+            // primary
 
-            if (unit) {
-                this.map.units.remove(unit);
-            } else {
-                const unit = new(UNIT_CLASSES[this.selectedUnitType])();
-                unit.position.setValuesLocal(x, y);
-                this.map.units.add(unit, {
-                    silence: false
-                });
+            return App.prototype.onPointerDown.apply(this, arguments);
+        } else {
+            App.prototype.onPointerDown.apply(this, arguments);
+            if (this.display.isIntersectedPosition(event.matrixPosition)) {
+                const x = event.matrixPosition.x,
+                    y = event.matrixPosition.y;
+                let unit = this.map.getUnitByCell(x, y);
+                // secondary
+                if (unit) {
+                    this.map.units.remove(unit);
+                } else if (this.selectedUnitType) {
+                    const unit = new(UNIT_CLASSES[this.selectedUnitType])();
+                    unit.position.setValuesLocal(x, y);
+                    this.map.units.add(unit, {
+                        silence: false
+                    });
+                }
+                this.map.refresh();
             }
-            this.map.refresh();
+
         }
     }
 }

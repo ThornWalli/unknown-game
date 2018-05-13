@@ -6,10 +6,11 @@ import {
 } from '../../types';
 
 import Unit from '../Unit';
+import Abstract_User from './abstract/User';
 import Abstract_Road from './abstract/Road';
 import Abstract_Sprite from './abstract/Sprite';
 
-class Road extends Abstract_Sprite(Abstract_Road(Unit)) {
+class Road extends Abstract_Sprite(Abstract_Road(Abstract_User(Unit))) {
     constructor() {
         super();
         this.setType(UNIT_TYPES.ROAD.DEFAULT);

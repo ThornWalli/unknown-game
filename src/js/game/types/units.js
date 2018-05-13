@@ -3,7 +3,8 @@
 const TYPES = {
     BUILDING: {},
     VEHICLE: {},
-    RESOURCE: {}
+    RESOURCE: {},
+    CONTAINER: {}
 };
 
 export default TYPES;

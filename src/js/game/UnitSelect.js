@@ -17,20 +17,34 @@ export default class UnitSelect extends Events {
      */
 
     selectUnit(unit) {
-        unit.selected = true;
         this._selectedUnits.push(unit);
-        this.trigger('select', unit);
+        this.select(unit);
     }
-    
+
+    removeSelectUnit(unit) {
+        if (this._selectedUnits.indexOf(unit) > -1) {
+            this._selectedUnits.splice(this._selectedUnits.indexOf(unit), 1);
+            this.unselect(unit);
+        }
+    }
+
     clearSelectUnits() {
         if (this._selectedUnits.length) {
             while (this._selectedUnits.length) {
-                const unit = this._selectedUnits.shift();
-                unit.selected = false;
-                this.trigger('select', null);
-                this.trigger('unselect', unit);
+                this.unselect(this._selectedUnits.shift());
             }
         }
+    }
+
+    select(unit) {
+        unit.selected = true;
+        this.trigger('select', unit);
+    }
+
+    unselect(unit) {
+        unit.selected = false;
+        this.trigger('select', null);
+        this.trigger('unselect', unit);
     }
 
     /*

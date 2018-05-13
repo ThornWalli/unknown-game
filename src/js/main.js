@@ -12,9 +12,10 @@ import 'jquery/../data';
 
 import 'modernizr-loader!modernizr';
 
-
 import js from 'gp-module-parser';
 import './services/touchIndicator';
 import packages from './packages';
 
 js.parse(null, packages);
+
+console.log(11);

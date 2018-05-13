@@ -8,11 +8,14 @@ import {
 import Bot from './Bot';
 import Sprite from './abstract/Sprite';
 
-class Vehicle extends Sprite(Bot) {
+import Abstract_User from './abstract/User';
+
+class Vehicle extends Sprite(Abstract_User(Bot) ) {
     constructor() {
         super();
         this.setType(UNIT_TYPES.VEHICLE.DEFAULT);
         this.selectable = true;
+        this.walkable = false;
         this._vehiclePreferredDepotUnit = null;
     }
 

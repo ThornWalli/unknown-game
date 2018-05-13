@@ -1,0 +1,18 @@
+---
+
+---
+<div class="partial controller" data-partial="molecules/interface/unit/teleporter" data-controller="./partials/molecules/interface/unit/Teleporter"{{#if target}} data-target="{{{target}}}"{{/if}}>
+  {{#mixin "atoms/form" vehicle}}
+    {{#content "content"}}
+    {{#mixin "atoms/fieldset" class="unit-teleporter__favorite_items" }}
+      {{#content "title"}}Allowed Items:{{/content}}
+      {{#content "content"}}
+      <p>
+        Select multiple Items to request.<br />
+        Items comes random.
+      </p>
+      {{{mixin "atoms/input/dropdown" multiple=true size="12" hook="unitTeleporterItemsDropdown"}}}{{/content}}
+    {{/mixin}}
+    {{/content}}
+  {{/mixin}}
+</div>

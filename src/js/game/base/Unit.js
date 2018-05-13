@@ -20,6 +20,14 @@ class Unit extends Events {
 
         this._id = uuid();
 
+        this._active = true;
+
+        /**
+         * Gibt die UnitStorage, in dem sich die Unit befindet.
+         * @type {Unit}
+         */
+        this._storage = null;
+
         /**
          * Aktuelle Position.
          * @type {Position}
@@ -47,11 +55,6 @@ class Unit extends Events {
          * @type {Boolean}
          */
         this._selected = false;
-        /**
-         * Wenn gesetzt, kann Unit ausgewählt werden.
-         * @type {Boolean}
-         */
-        this.selectable = false;
         /**
          * Wenn gesetzt, steht Unit nicht im Weg.
          * @type {Boolean}
@@ -141,11 +144,50 @@ class Unit extends Events {
     get type() {
         return this._types[this._types.length - 1];
     }
-
-    get walkable() {
-        return this._walkable;
+    get types() {
+        return this._types;
     }
 
+
+    get active() {
+        return this._active;
+    }
+    set active(value) {
+        this._active = value;
+        this.trigger('change.active', this, value);
+    }
+
+
+    get storage() {
+        return this._storage;
+    }
+    set storage(value) {
+        this._storage = value;
+        this.trigger('change.storage', this, value);
+    }
+
+    /**
+     * Wenn gesetzt, kann Unit ausgewählt werden.
+     * @type {Boolean}
+     */
+    get selectable() {
+        if (!this._active) {
+            return false;
+        } else {
+            return this._selectable;
+        }
+    }
+    set selectable(selectable) {
+        this._selectable = selectable;
+    }
+
+    get walkable() {
+        if (!this._active) {
+            return true;
+        } else {
+            return this._walkable;
+        }
+    }
     set walkable(walkable) {
         this._walkable = walkable;
     }
@@ -155,7 +197,7 @@ class Unit extends Events {
     }
     set selected(value) {
         this._selected = value;
-        this.trigger('selected.change', this, value);
+        this.trigger('change.selected', this, value);
     }
 
     get direction() {

@@ -7,12 +7,9 @@ import {
 import Position from './base/Position';
 import SyncPromise from 'sync-p';
 
-const GRID_CELL_TYPES = {
-    DEFAULT: 0,
-    BLOCKED: 1,
-    ROAD: 2
-};
-
+import {
+    GRID_CELL_TYPES
+} from './utils/matrix';
 
 class Matrix {
     constructor(size, invert) {

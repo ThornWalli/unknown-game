@@ -15,4 +15,11 @@
       vertical-align: middle;
     }
   }
+
+  transition: opacity 0.2s linear;
+
+  &[disabled="true"] {
+    opacity: 0.4;
+    pointer-events: none;
+  }
 }

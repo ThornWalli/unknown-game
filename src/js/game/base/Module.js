@@ -1,6 +1,7 @@
 'use strict';
 
 import Events from './Events';
+import lang from '../utils/lang';
 
 export default class Module extends Events {
     constructor(app, unit) {
@@ -14,7 +15,7 @@ export default class Module extends Events {
  */
 
     log(text) {
-        this._app.logger.log('module', text);
+        this._app.logger.log(lang.get(this.unit.type), text);
     }
 
     /*

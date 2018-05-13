@@ -1,5 +1,9 @@
 'use strict';
 
+import {
+    TRANSFER_DIRECTIONS
+} from '../../types';
+
 import Unit from '../Unit';
 import ItemStorage from './abstract/ItemStorage';
 
@@ -7,6 +11,7 @@ export default class Resource extends ItemStorage(Unit) {
 
     constructor(app, unit) {
         super(app, unit);
+        this.transferDirection = TRANSFER_DIRECTIONS.OUT;
     }
 
     /*

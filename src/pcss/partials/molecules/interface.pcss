@@ -1,4 +1,11 @@
 .partial[data-partial="molecules/interface"],
 .partial[data-partial^="molecules/interface/"] {
-  /* empty */
+  transition: opacity 0.2s linear;
+  pointer-events: none;
+  opacity: 0.4;
+
+  &.js--visible {
+    pointer-events: auto;
+    opacity: 1;
+  }
 }

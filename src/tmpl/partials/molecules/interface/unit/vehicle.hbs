@@ -1,0 +1,72 @@
+---
+vehicle:
+  depot-select:
+    default-title: 'Auto'
+    default-value: ''
+    options: ['Depot 1.','Depot 2.','Depot 3.']
+  move-to-depot:
+    title: 'Move To Depot'
+  storage-select:
+    default-title: 'Auto'
+    default-value: ''
+    options: ['Storage 1.','Storage 2.','Storage 3.']
+  move-to-storage:
+    title: 'Move To Storage'
+  preferred-item-select:
+    default-title: 'Auto'
+    default-value: ''
+    options: ['Resource 1.','Resource 2.','Resource 3.']
+  move-to-item:
+    title: 'Move To Item'
+---
+<div class="partial controller" data-partial="molecules/interface/unit/vehicle" data-controller="./partials/molecules/interface/unit/Vehicle"{{#if target}} data-target="{{{target}}}"{{/if}}>
+  {{#mixin "atoms/form" vehicle hook="unitTransporterDepotForm"}}
+    {{#content "content"}}
+      {{#mixin "atoms/fieldset" this}}
+        {{#content "title"}}Depot:{{/content}}
+        {{#content "content"}}
+            {{#mixin "atoms/field" this title=false}}
+              {{#content "content"}}{{{mixin "atoms/input/dropdown" depot-select hook="unitTransporterDepotDropdown" }}}{{/content}}
+            {{/mixin}}
+            {{#mixin "atoms/field" this title=false}}
+              {{#content "content"}}{{{mixin "atoms/button" move-to-depot hook="unitTransporterMoveToDepotButton"}}}{{/content}}
+            {{/mixin}}
+        {{/content}}
+      {{/mixin}}
+    {{/content}}
+  {{/mixin}}
+
+  {{#mixin "atoms/form" vehicle hook="unitTransporterStorageForm"}}
+    {{#content "content"}}
+
+      {{#mixin "atoms/fieldset" this}}
+        {{#content "title"}}Storage:{{/content}}
+        {{#content "content"}}
+            {{#mixin "atoms/field" this title=false}}
+              {{#content "content"}}{{{mixin "atoms/input/dropdown" storage-select hook="unitTransporterStorageDropdown" }}}{{/content}}
+            {{/mixin}}
+            {{#mixin "atoms/field" this title=false}}
+              {{#content "content"}}{{{mixin "atoms/button" move-to-storage hook="unitTransporterMoveToStorageButton"}}}{{/content}}
+            {{/mixin}}
+        {{/content}}
+      {{/mixin}}
+
+    {{/content}}
+  {{/mixin}}
+
+    {{#mixin "atoms/form" vehicle hook="unitPreferredItemForm"}}
+      {{#content "content"}}
+      {{#mixin "atoms/fieldset" this}}
+        {{#content "title"}}Harvester / Transporter:{{/content}}
+        {{#content "content"}}
+              {{#mixin "atoms/field" this title="Preferred Resource / Item"}}
+                {{#content "content"}}{{{mixin "atoms/input/dropdown" preferred-item-select hook="unitTransporterPreferredItemDropdown" }}}{{/content}}
+              {{/mixin}}
+              {{#mixin "atoms/field" this title=false}}
+                {{#content "content"}}{{{mixin "atoms/button" move-to-item hook="unitTransporterMoveToResourceButton"}}}{{/content}}
+              {{/mixin}}
+            {{/content}}
+          {{/mixin}}
+        {{/content}}
+      {{/mixin}}
+</div>

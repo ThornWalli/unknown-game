@@ -1,5 +1,9 @@
 'use strict';
 
+import {
+    UNITS as UNIT_TYPES
+} from '../types';
+
 /*
  * Functions
  */
@@ -43,21 +47,31 @@ function getSortedUnitByDistance(position, units, desc = false) {
 }
 
 /**
- * Such nach dem nächsten Rohstoff vorkmmen.
- * @param  {game.base.Unit} unit
- * @return {Array<game.base.Unit>}
- */
-
-/**
  * Sucht nach einer nächstgelegenden Unit nach Typ.
  * @param  {Array<game.base.Unit>} units
  * @param  {game.base.Position} position
- * @param  {[game.utils.unit.TYPES]} type
+ * @param  {game.types.units} unitType
  * @return {Array<game.base.Unit>}
  */
-function getNearUnitsByType(units, position, type) {
+function getNearUnitsByUnitType(units, position, unitType) {
     const distances = getSortedUnitByDistance(position, units.filter(unit => {
-        if (unit.isType(type)) {
+        if (unit.isType(unitType)) {
+            return unit;
+        }
+    }));
+    return distances;
+}
+
+/**
+ * Sucht nach einer nächstgelegenden Unit das Items beinhaltet.
+ * @param  {Array<game.base.Unit>} units
+ * @param  {game.base.Position} position
+ * @param  {game.types.items} itemType
+ * @return {Array<game.base.Unit>}
+ */
+function getNearUnitsByItemType(units, position, itemType) {
+    const distances = getSortedUnitByDistance(position, units.filter(unit => {
+        if (unit.isType(UNIT_TYPES.ITEM_STORAGE) && unit.isType(UNIT_TYPES.ITEM_PRODUCTION) && unit.module.hasItem(itemType)) {
             return unit;
         }
     }));
@@ -67,5 +81,6 @@ function getNearUnitsByType(units, position, type) {
 export {
     getDistance,
     getSortedUnitByDistance,
-    getNearUnitsByType
+    getNearUnitsByUnitType,
+    getNearUnitsByItemType
 };

@@ -1,0 +1,22 @@
+.partial[data-partial="atoms/field"] {
+  margin: 10px 0;
+
+  label {
+    display: inline-block;
+  }
+
+  label + * {
+    display: inline-block;
+  }
+
+  [data-partial="molecules/sidebar"] & {
+    label {
+      display: inline-block;
+      margin-bottom: 5px;
+    }
+
+    label + * {
+      display: block;
+    }
+  }
+}

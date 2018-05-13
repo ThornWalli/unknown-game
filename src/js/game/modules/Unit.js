@@ -8,7 +8,7 @@ import {
 export default class Unit extends Module {
     constructor(app, unit) {
         super(app, unit);
-        this.unit.on('selected.change', (unit, selected) => {
+        this.unit.on('change.selected', (unit, selected) => {
             if (selected) {
                 this.app.unitSelect.on('selectSecondary', onSelectSecondary, this);
             } else {
@@ -35,7 +35,7 @@ export default class Unit extends Module {
 
 function onSelectSecondary(selectedUnits, position) {
     if (selectedUnits.indexOf(this.unit) > -1) {
-        this.onSelectSecondary(this.app.map.getUnitsByCell(position.x, position.y).filter(unit => isUnitNotRoad(unit))[0], selectedUnits, position);
+        this.onSelectSecondary(this.app.map.getUnitsByCell(position.x, position.y).filter(unit => unit.active && isUnitNotRoad(unit))[0], selectedUnits, position);
     }
 }
 

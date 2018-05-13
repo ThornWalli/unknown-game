@@ -5,5 +5,5 @@ items:
   - 'Log 3.'
 ---
 {{#mixin "organisms/dialog" this partial-name="organisms/dialog/log" controller-name="./partials/organisms/dialog/Log" title="Log"}}
-  {{#content "content"}}{{{mixin "atoms/list" items hook="unitSelectionItems" class="list--small-text list--log list--scroll"}}}{{/content}}
+  {{#content "content"}}{{{mixin "molecules/interface/log" target=target}}}{{/content}}
 {{/mixin}}

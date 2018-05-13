@@ -19,7 +19,7 @@ export default Abstract => class extends Abstract {
      */
 
     onSelectSecondary(unit, selectedUnits, position) {
-        this.moveToPosition(position);
+        return this.moveToPosition(position);
     }
 
     /**

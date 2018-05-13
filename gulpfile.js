@@ -14,5 +14,8 @@ gulp.task('run', function(callback) {
         runSequence('build', 'server', callback);
     }
 });
+gulp.task('build', function(callback) {
+    runSequence('prebuild', 'webpack:app', 'zip:default', callback);
+});
 
 process.once('SIGINT', function() { process.exit(0); });

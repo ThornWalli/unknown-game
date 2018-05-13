@@ -12,7 +12,8 @@ import Module_Storage from '../../../modules/unit/Storage';
 import Abstract_ItemStorage from '../abstract/ItemStorage';
 import Abstract_Module from '../abstract/Module';
 
-class Storage extends Abstract_Module(Abstract_ItemStorage(Building)) {
+const Extends = Abstract_Module(Abstract_ItemStorage(Building));
+class Storage extends Extends {
     constructor() {
         super();
         this.setType(UNIT_TYPES.BUILDING.STORAGE.DEFAULT);
@@ -23,6 +24,7 @@ class Storage extends Abstract_Module(Abstract_ItemStorage(Building)) {
         this.portOffset.setValuesLocal(0, 1);
     }
     onModuleReady(module) {
+        Extends.prototype.onModuleReady.apply(this, arguments);
         module.maxItemStorageItemValue = 1000;
     }
 }

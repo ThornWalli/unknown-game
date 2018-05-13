@@ -1,34 +1,40 @@
 'use strict';
 
 const ITEMS = {
+
+    FOOD: {
+        DEFAULT: 'food.default'
+    },
+
     RESOURCE: {
+        DEFAULT: 'resource.default',
 
         // GAS
 
-        HELIUM: 'helium',
-        HYDROGEN: 'hydrogen',
-        CARBON: 'carbon',
-        OXYGEN: 'oxygen',
+        HELIUM: 'resource.helium',
+        HYDROGEN: 'resource.hydrogen',
+        CARBON: 'resource.carbon',
+        OXYGEN: 'resource.oxygen',
 
 
         // LIQUID
 
-        WATER: 'water',
+        WATER: 'resource.water',
 
         // SOLID
 
-        IRON: 'iron',
-        COPPER: 'copper',
-        GOLD: 'gold',
-        PLATIN: 'platin',
-        TITAN: 'titan',
-        COBALT: 'cobalt',
-        LITHIUM: 'lithium',
-        URAN: 'uran',
-        PLUTONIUM: 'plutoniumt',
+        IRON: 'resource.iron',
+        COPPER: 'resource.copper',
+        GOLD: 'resource.gold',
+        PLATIN: 'resource.platin',
+        TITAN: 'resource.titan',
+        COBALT: 'resource.cobalt',
+        LITHIUM: 'resource.lithium',
+        URAN: 'resource.uran',
+        PLUTONIUM: 'resource.plutonium',
 
 
-        PLASTIC: 'plastic'
+        PLASTIC: 'resource.plastic'
 
 
     }

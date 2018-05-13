@@ -5,7 +5,7 @@ tabs:
   - name: 'Tab 3.'
 ---
 
-<div class="partial controller{{#if hide-tabs}} tab-container--hide-tabs{{/if}} {{{class}}}" data-partial="molecules/tab-container" data-controller="./partials/molecules/TabContainer"{{#if target}} data-target="{{{target}}}"{{/if}}>
+<div class="partial controller{{#if hide-tabs}} tab-container--hide-tabs{{/if}} {{{class}}}" data-partial="molecules/tab-container" data-controller="./partials/molecules/TabContainer"{{#if auto-open}} data-auto-open="true"{{/if}}{{#if auto-open-name}} data-auto-open-name="{{{auto-open-name}}}"{{/if}}{{#if target}} data-target="{{{target}}}"{{/if}}>
   <div class="tab-container__navigation">
     <select class="tab-container__dropdown" data-hook="tabContainerNavigationDropDown">
       {{#each tabs}}

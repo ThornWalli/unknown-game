@@ -15,8 +15,8 @@ class Iron extends Resource {
         this.setSprite(UNIT_TYPES.RESOURCE.IRON);
     }
     onModuleReady(module) {
-        module.maxItemStorageItemValue = 10;
-        module.itemStorageItems[ITEMS.RESOURCE.IRON] = 10;
+        module.maxItemStorageItemValue = 30;
+        module.itemStorageItems[ITEMS.RESOURCE.IRON] = 30;
     }
 }
 UNIT_TYPES.RESOURCE.IRON = 'resource.iron';

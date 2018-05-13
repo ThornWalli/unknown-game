@@ -1,0 +1,30 @@
+.partial[data-partial="molecules/interface/map"] {
+  .map-view {
+    &__time {
+      @mixin clearfix;
+
+      letter-spacing: 2px;
+      color: $color_green;
+      padding: 4px;
+      font-size: 10px;
+      text-align: center;
+
+      > span {
+        display: inline-block;
+        line-height: 22px;
+        font-weight: 400;
+      }
+    }
+
+    &__controls {
+      float: right;
+    }
+  }
+
+  canvas {
+    display: block;
+    width: 256px;
+    height: 256px;
+    cursor: pointer;
+  }
+}

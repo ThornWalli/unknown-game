@@ -6,9 +6,10 @@ import {
 } from '../../types';
 
 import Unit from '../Unit';
+import Abstract_User from './abstract/User';
 import Abstract_Sprite from './abstract/Sprite';
 
-class Building extends Abstract_Sprite(Unit) {
+class Building extends Abstract_Sprite(Abstract_User(Unit)) {
     constructor() {
         super();
         this.setType(UNIT_TYPES.BUILDING.DEFAULT);

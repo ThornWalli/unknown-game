@@ -1,3 +1,13 @@
 {{#mixin "organisms/app" this partial-name="organisms/app/map-builder" controller-name="./partials/organisms/app/MapBuilder"}}
-
+  {{#content "content-after"}}
+    {{#mixin "molecules/sidebar" class="app__sidebar" target="[data-controller='./partials/organisms/app/MapBuilder']"}}
+      {{#content "content"}}
+          {{{mixin "molecules/interface/map" target=target}}}
+          {{{mixin "molecules/interface/map-builder/unit-options" target=target}}}
+          {{{mixin "molecules/interface/map-builder/unit-selection" target=target}}}
+      {{/content}}
+    {{/mixin}}
+    {{{mixin "organisms/dialog/map-builder/map-settings" target="[data-partial='organisms/app/map-builder']" class="dialog-position--horizontal-center dialog-position--bottom"}}}
+    {{!-- {{{mixin "organisms/dialog/map-builder/unit-selection" target="[data-partial='organisms/app/map-builder']" class="dialog-position--left dialog-position--bottom"}}} --}}
+{{/content}}
 {{/mixin}}

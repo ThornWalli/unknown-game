@@ -37,8 +37,8 @@ class Ticker extends Events {
     }
 
     /*
- * Functions
- */
+     * Functions
+     */
 
     start() {
         this._ticker.start();
@@ -57,8 +57,19 @@ class Ticker extends Events {
         }
         this._now = null;
         // reset listeners timestamp
-        now = this.now();
-        this._listeners.forEach(listener => listener.timestamp = now);
+        // now = this.now();
+        // this._listeners.forEach(listener => listener.timestamp = now);
+
+
+                // TODO Ich bin mir nicht sicher ob ich es richtig auskommentiert habe…
+                now = this.now();
+                this._listeners.forEach(listener => {
+                    if (listener.duration <= milliseconds) {
+                        listener.timestamp = now;
+                    }
+                });
+
+
 
         this._timestamp -= milliseconds;
         this._ticker.start();
@@ -68,8 +79,14 @@ class Ticker extends Events {
         this.register(null, func, duration, true);
     }
 
-    register(func, complete, duration = DEFAULT_DURATION, once = false) {
-        const listener = new Listener(func, complete, duration, once);
+    /**
+     * @param  {Function} tick
+     * @param  {Function} complete
+     * @param  {Number} [duration=DEFAULT_DURATION]
+     * @param  {Boolean} [once=false]
+     */
+    register(tick, complete, duration = DEFAULT_DURATION, once = false) {
+        const listener = new Listener(tick, complete, duration, once);
         this._listeners.add(listener);
         addListenerToTicker(this, listener);
     }
@@ -81,8 +98,8 @@ class Ticker extends Events {
     }
 
     /*
- * Properties
- */
+     * Properties
+     */
 
     get ticker() {
         return this._ticker;
@@ -94,7 +111,7 @@ function addListenerToTicker(ticker, listener) {
 }
 
 class Listener {
-    constructor(tick, complete, duration, once) {
+    constructor(tick, complete, duration, once = false) {
         this.tick = tick;
         this.complete = complete;
         this.duration = duration;
@@ -104,11 +121,12 @@ class Listener {
     onTick() {
         const now = this._ticker.now();
         if (this.tick) {
-            this.tick(clamp((now - this.timestamp) / this.duration, 0, 1), this);
+            this.tick(this.normalize, this);
         }
         if ((now - this.timestamp) > this.duration) {
             if (this.complete) {
-                if (this.complete(this)) {
+                const complete = this.complete(this);
+                if (complete || complete === undefined) {
                     if (this.once) {
                         this.remove();
                     } else {
@@ -122,16 +140,20 @@ class Listener {
     }
 
     /*
- * Functions
- */
+     * Functions
+     */
 
     remove() {
         this._ticker.unregister(this);
     }
 
     /*
- * Properties
- */
+     * Properties
+     */
+
+     get normalize() {
+         return clamp((this._ticker.now() - this.timestamp) / this.duration, 0, 1);
+     }
 
     get ticker() {
         return this._ticker;

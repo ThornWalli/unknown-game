@@ -1,0 +1,69 @@
+{
+  "building": {
+    "container_teleporter": "Container Teleporter",
+    "storage": {
+      "default": "Storage",
+      "iron": "Iron Storage",
+      "copper": "Copper Storage",
+      "container" : "Container Storage"
+    },
+    "depot": {
+      "default": "Depot",
+      "vehicle": "Vehicle Depot"
+    },
+    "food": {
+      "greenhouse": "Greenhouse"
+    },
+    "house": {
+      "default": "House"
+    }
+  },
+  "vehicle": {
+    "harvester": {
+      "grabber": "Grabber"
+    },
+    "transporter": {
+      "default": "Transporter"
+    }
+  },
+  "source": {
+    "default": "Source",
+    "iron": "Iron Source",
+    "copper": "Copper Source"
+  },
+  "log": {
+    "vehicle": {
+      "harvester": {
+        "grabber": "Grabber"
+      }
+    }
+  },
+  "views": {
+    "info": {
+      "resources": "Resources"
+    }
+  },
+
+  "food": {
+    "default": "General Food"
+  },
+
+  "resource": {
+    "default": "General Resource",
+    "helium": "Helium",
+    "hydrogen": "Hydrogen",
+    "carbon": "Carbon",
+    "oxygen": "Oxygen",
+    "water": "Water",
+    "iron": "Iron",
+    "copper": "Copper",
+    "gold": "Gold",
+    "platin": "Platin",
+    "titan": "Titan",
+    "cobalt": "Cobalt",
+    "lithium": "Lithium",
+    "uran": "Uran",
+    "plutonium": "Plutonium",
+    "plastic": "Plastic"
+  }
+}

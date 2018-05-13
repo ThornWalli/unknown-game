@@ -37,10 +37,14 @@ export default class MapSettings {
         return getDefaultMapData({
             matrix: this._app.map.matrix.size.toJSON(),
             units: this._app.map.units.map(unit => {
-                return {
+                const data = {
                     type: unit.type,
                     position: unit.position.toJSON()
                 };
+                if (unit.user) {
+                    data.user = unit.user.id;
+                }
+                return data;
             })
         });
     }

@@ -1,7 +1,9 @@
 'use strict';
 
 import Collection from '../../../base/Collection';
-
+import {
+    GRID_CELL_TYPES
+} from '../../../utils/matrix';
 /**
  * Abstract Class Module
  * @class Storage
@@ -41,10 +43,14 @@ export default Abstract => class extends Abstract {
      * @param {game.base.Unit} unit
      */
     addUnitStorageUnit(unit) {
+        this.app.unitSelect.removeSelectUnit(unit);
         this._unitStorageUnits.add(unit);
-        unit.spriteVisible = false;
-        this.app.unitSelect.clearSelectUnits();
-        this.trigger('storage.units.add', this, unit);
+
+        unit.storage = this.unit;
+        unit.active = false;
+        unit.setPosition(this.unit.position);
+
+        this.trigger('add.storage.units', this, unit);
     }
 
     /**
@@ -52,12 +58,24 @@ export default Abstract => class extends Abstract {
      * @param {game.base.Unit} unit
      */
     removeUnitStorageUnit(unit) {
+        unit.storage = null;
         this._unitStorageUnits.remove(unit);
-        unit.spriteVisible = true;
 
-        unit.setPosition(this.unit.portPosition);
-        this.trigger('storage.units.remove', this, unit);
+        let position = this.unit.portPosition;
+        console.log(position, GRID_CELL_TYPES.BLOCKED === this.app.map.isCellWalkable(this.unit.portPosition.x, this.unit.portPosition.y));
+        if (GRID_CELL_TYPES.BLOCKED === this.app.map.isCellWalkable(this.unit.portPosition.x, this.unit.portPosition.y)) {
+            console.log(position.toString());
+            position = this.app.map.getPositionAroundPosition(this.unit.position);
+            console.log(position.toString());
+        }
+        unit.setPosition(position);
+        unit.active = true;
+
+        this.trigger('remove.storage.units', this, unit);
+
     }
+
+
 
     /**
      * Trifft zu wenn keine Unit enthalten ist.

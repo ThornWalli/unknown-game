@@ -15,7 +15,7 @@ export default Interface.extend({
         }
     }),
 
-    events: Object.assign(Interface.prototype.events, {
+    events: Object.assign({}, Interface.prototype.events, {
         // 'change [data-hook="testSelect"]': onChangeTest,
         'change [data-hook="mapSelect"]': onChangeMap,
         // 'change [data-hook="speedSelect"]': onChangeSpeed,

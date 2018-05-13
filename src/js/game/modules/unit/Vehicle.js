@@ -3,12 +3,19 @@
 import Unit from '../Unit';
 
 import Moveable from './abstract/Moveable';
+import SyncPromise from 'sync-p/extra';
 
 import {
     UNITS as UNIT_TYPES
 } from '../../types';
 
-export default class Vehicle extends Moveable(Unit) {
+
+import {
+    ACTIONS as ACTION_TYPES
+} from '../../types';
+
+const Extends = Moveable(Unit);
+export default class Vehicle extends Extends {
 
     constructor(app, unit) {
         super(app, unit);
@@ -18,7 +25,15 @@ export default class Vehicle extends Moveable(Unit) {
     /*
      * Functions
      */
-    
+
+    onSelectSecondary(unit) {
+        if (unit && unit.isType(UNIT_TYPES.BUILDING.DEPOT.DEFAULT)) {
+            return this.moveToDepot(unit);
+        } else if (!Unit.prototype.onSelectSecondary.apply(this, arguments)) {
+            return Extends.prototype.onSelectSecondary.apply(this, arguments);
+        }
+    }
+
     /**
      * Bewegt Unit zu angegebener Position.
      * @param  {game.base.Unit} unit
@@ -26,7 +41,15 @@ export default class Vehicle extends Moveable(Unit) {
      * @return {Promise}
      */
     moveToUnit(unit) {
-        return this.moveToPosition(unit.portPosition);
+        let promise;
+        if (this.unit.storage) {
+            promise = this.unpark();
+        } else {
+            promise = SyncPromise.resolve();
+        }
+        return promise.then(() => {
+            return this.moveToPosition(unit.portPosition);
+        });
     }
 
     /**
@@ -35,12 +58,36 @@ export default class Vehicle extends Moveable(Unit) {
      */
     moveToDepot(depotUnit) {
         depotUnit = depotUnit || getPreferredDepot.bind(this)();
+        this.log('Go to depot');
         if (!depotUnit) {
             this.log('Can\'t find Depot…');
             return Promise.resolve();
         } else {
-            this.park(depotUnit);
+            return this.park(depotUnit);
         }
+    }
+
+
+    park(unit) {
+        if (!unit.activeAction || unit.activeAction.type !== ACTION_TYPES.PARK) {
+            return this.moveToUnit(unit).then(() => {
+                console.log('jooo');
+                // Steht beim Depot.
+                return this.app.unitActions.add({
+                    type: ACTION_TYPES.PARK,
+                    unit: this.unit,
+                    startArgs: [unit]
+                });
+            });
+        } else {
+            console.log('BAAAAAM');
+        }
+    }
+
+    unpark() {
+        this.unit.storage.module.removeUnitStorageUnit(this.unit);
+        this.unit.module.start();
+        return SyncPromise.resolve();
     }
 
     /*

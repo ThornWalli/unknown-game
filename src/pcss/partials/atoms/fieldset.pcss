@@ -1,0 +1,19 @@
+.partial[data-partial="atoms/fieldset"] {
+  margin: 10px 5px;
+  border: solid $color_green 1px;
+  font-size: 11px;
+
+  legend {
+    color: $color_green;
+    background: $color_black;
+    padding: 0 8px;
+  }
+
+  .partial[data-partial="atoms/field"] {
+    width: 100%;
+  }
+
+  & + .partial[data-partial="atoms/fieldset"] {
+    margin-top: 20px;
+  }
+}

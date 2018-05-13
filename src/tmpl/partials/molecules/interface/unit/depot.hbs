@@ -1,0 +1,15 @@
+---
+
+---
+<div class="partial controller" data-partial="molecules/interface/unit/depot" data-controller="./partials/molecules/interface/unit/Depot"{{#if target}} data-target="{{{target}}}"{{/if}}>
+  {{#mixin "atoms/fieldset" }}
+    {{#content "title"}}Vehicles:{{/content}}
+    {{#content "content"}}
+      {{#mixin "atoms/list" depot class="list--text-action" hook="unitDepotItems" }}
+        {{#content "content"}}
+          {{#each items}}{{{mixin "molecules/interface/unit/depot/depot-item" this}}}{{/each}}
+        {{/content}}
+      {{/mixin}}
+    {{/content}}
+  {{/mixin}}
+</div>

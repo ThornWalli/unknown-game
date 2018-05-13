@@ -9,9 +9,11 @@ import {
 } from './utils/matrix';
 import UnitCollection from './base/collection/UnitCollection';
 import {
-    default as Matrix,
-    GRID_CELL_TYPES
+    default as Matrix
 } from './Matrix';
+import {
+    GRID_CELL_TYPES
+} from './utils/matrix';
 
 import {
     UNIT_CLASSES,
@@ -62,7 +64,8 @@ export default class Map extends Events {
             for (var i = 0; i < units.length; i++) {
                 if (units[i].type === UNIT_TYPES.ROAD.DEFAULT) {
                     return GRID_CELL_TYPES.ROAD;
-                } else if (walkable) {
+                } else
+                if (walkable) {
                     walkable = units[i].walkable;
                 }
             }
@@ -138,8 +141,6 @@ export default class Map extends Events {
 
     refreshNeighbor(x, y, type, deep = true) {
 
-        // getPositionAroundPositionBasic(x, y)
-
         const key = getPositionsAroundPositionCircle(new Position(x, y), 1).reduce((result, position) => {
 
             if (position) {
@@ -158,6 +159,26 @@ export default class Map extends Events {
             return result;
         }, []);
         return key;
+    }
+
+    /**
+     * Gibt die nächste freie Position an. (Radial)
+     * @param  {Position} position
+     * @param  {Number} radius
+     * @return {Position}
+     */
+    getPositionAroundPosition(position, radius = 1) {
+        const positions = getPositionsAroundPositionCircle(position, radius);
+        for (var i = 0; i < positions.length; i++) {
+            if (this.isCellWalkable(positions[i].x, positions[i].y) !== GRID_CELL_TYPES.BLOCKED) {
+                return position.setValues(positions[i].x, positions[i].y);
+            }
+        }
+        const result = this.getPositionAroundPosition(position, radius + 1);
+        if (!result) {
+            return null;
+        }
+        return result;
     }
 
     /*
@@ -186,6 +207,9 @@ function reset(size, units = []) {
     setupMatrix(this);
     units.forEach(unitData => {
         const unit = new UNIT_CLASSES[unitData.type]();
+        if ('user' in unitData && unitData.user) {
+            unit.user = unitData.user;
+        }
         unit.position.setLocal(unitData.position);
         this.units.add(unit);
     });
@@ -217,29 +241,9 @@ function findPath(unit, position, options = {}, radius = 1) {
             return path;
         }
         if (options.near) {
-            return findPath.bind(this)(unit, getPositionAroundPosition(this, position, radius), options, radius + 1);
+            return findPath.bind(this)(unit, this.getPositionAroundPosition(position, radius), options, radius + 1);
         }
     });
-}
-/**
- * Gibt die nächste freie Position an. (Radial)
- * @param  {Map} map
- * @param  {Position} position
- * @param  {Number} radius
- * @return {Position}
- */
-function getPositionAroundPosition(map, position, radius = 1) {
-    const positions = getPositionsAroundPositionCircle(position, radius);
-    for (var i = 0; i < positions.length; i++) {
-        if (map.isCellWalkable(positions[i].x, positions[i].y) !== GRID_CELL_TYPES.BLOCKED) {
-            return position.setValues(positions[i].x, positions[i].y);
-        }
-    }
-    const result = getPositionAroundPosition(map, position, radius + 1);
-    if (!result) {
-        return null;
-    }
-    return result;
 }
 
 class MoveData {
@@ -303,7 +307,6 @@ function onAddRemoveUnit(unit) {
 
 
 function onChangeUnitPosition(unit, position, lastPosition) {
-
     this.removeNeighbor(lastPosition.x, lastPosition.y, unit);
 
     this._matrix.updateCell(lastPosition.x, lastPosition.y, this.isCellWalkable(lastPosition.x, lastPosition.y));

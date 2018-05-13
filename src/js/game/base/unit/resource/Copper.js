@@ -15,8 +15,8 @@ class Copper extends Resource {
         this.setSprite(UNIT_TYPES.RESOURCE.COPPER);
     }
     onModuleReady(module) {
-        module.maxItemStorageItemValue = 10;
-        module.itemStorageItems[ITEMS.RESOURCE.COPPER] = 10;
+        module.maxItemStorageItemValue = 30;
+        module.itemStorageItems[ITEMS.RESOURCE.COPPER] = 30;
     }
 }
 UNIT_TYPES.RESOURCE.COPPER = 'resource.copper';

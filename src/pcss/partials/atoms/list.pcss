@@ -5,6 +5,37 @@
     list-style: none;
   }
 
+  &.list--text-action {
+    li {
+      padding: 4px 4px;
+      line-height: 13px;
+      display: flex;
+      flex-direction: row;
+
+      span {
+        flex: 0;
+        white-space: nowrap;
+
+        &:first-child {
+          flex: 1;
+        }
+      }
+
+      a {
+        text-decoration: underline;
+        cursor: pointer;
+      }
+
+      > span {
+        display: inline-block;
+
+        &.secondary {
+          opacity: 0.6;
+        }
+      }
+    }
+  }
+
   &.list--text-border {
     ul {
       border: solid $color_green;

@@ -28,12 +28,17 @@ const Action = Abstract => class extends Abstract {
                 this._activeAction = null;
             }).on('complete', () => {
                 this._activeAction = null;
+                this.onActionComplete();
             });
             this.trigger('setAction', this._activeAction, this);
             return true;
         } else {
             return false;
         }
+    }
+
+    onActionComplete() {
+
     }
 
     /**

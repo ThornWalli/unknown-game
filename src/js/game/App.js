@@ -6,7 +6,7 @@ import Size from './base/Size';
 import Position from './base/Position';
 import InputKeyEvent from './base/InputKeyEvent';
 import InputPointerEvent from './base/InputPointerEvent';
-
+import User from './base/User';
 
 import './bootloader';
 
@@ -15,6 +15,7 @@ import Map from './Map';
 import Logger from './Logger';
 import UnitSelect from './UnitSelect';
 import UnitActions from './UnitActions';
+import RuntimeObserver from './RuntimeObserver';
 // import BotControl from './BotControl';
 import UnitModuleControl from './UnitModuleControl';
 
@@ -40,11 +41,14 @@ class App extends Events {
         super();
 
         /*
- * Properties
- */
+         * Properties
+         */
         this._map = null;
         this._display = null;
         this._inputControl = null;
+        this._user = null;
+        this._runtimeObserver = null;
+
         this._ready = ready.bind(this)(containerEl, options);
     }
 
@@ -62,10 +66,20 @@ class App extends Events {
         this.display.reset();
     }
 
+    getUser(id){
+        return this.users.find(user => user.is(id));
+    }
+
     /*
      * Properties
      */
 
+    get user() {
+        return this._user;
+    }
+    get users() {
+        return [this._user];
+    }
     get ready() {
         return this._ready;
     }
@@ -98,6 +112,9 @@ class App extends Events {
     }
     get botControl() {
         return this._botControl;
+    }
+    get runtimeObserver() {
+        return this._runtimeObserver;
     }
 
     /*
@@ -158,10 +175,19 @@ function ready(containerEl, options) {
         mapUri = mapUri || DEFAULT_MAP_URI;
     }
 
+    setupUser(this);
+
     return loadMap(mapUri).then(data => {
         if (options.size && options.size instanceof Size) {
             data.matrix = data.size || options.size;
         }
+        data.units.forEach(unit => {
+            if ('user' in unit && unit.user) {
+                if (this._user.id === unit.user) {
+                    unit.user = this._user;
+                }
+            }
+        });
         this._map = new Map(data.matrix, data.units);
     }).then(() => {
         this._display = new Display(this, containerEl, options);
@@ -169,10 +195,13 @@ function ready(containerEl, options) {
         return this._display.ready;
     }).then(() => {
         this._logger = new Logger(this);
+
+        setupUnitSelect(this);
+
         if ('loadModules' in options && options.loadModules || !('loadModules' in options)) {
-            setupUnitSelect(this);
             setupUnitActions(this);
             setupUnitModuleControl(this);
+            setupRuntimeObserver(this);
         }
 
         if (this._activeTest) {
@@ -187,6 +216,10 @@ function ready(containerEl, options) {
 
 }
 
+function setupUser(app) {
+    app._user = new User(app, 1, 'Player 1');
+}
+
 function setupUnitSelect(app) {
     app._unitSelect = new UnitSelect(app);
     // Events
@@ -199,6 +232,10 @@ function setupUnitActions(app) {
 
 function setupUnitModuleControl(app) {
     app._unitModuleControl = new UnitModuleControl(app);
+}
+
+function setupRuntimeObserver(app) {
+    app._runtimeObserver = new RuntimeObserver(app);
 }
 
 function getGETParam(name) {

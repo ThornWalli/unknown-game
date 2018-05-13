@@ -15,7 +15,11 @@ class Harvester extends Abstract_ItemStorage(Vehicle) {
     constructor() {
         super();
         this.setType(UNIT_TYPES.VEHICLE.HARVESTER.DEFAULT);
+        this.setSpriteType(UNIT_TYPES.VEHICLE.HARVESTER.DEFAULT);
         this.setModule(HarvesterModule);
+    }
+    onModuleReady(module) {
+        module.maxItemStorageItemValue = 20;
     }
 }
 

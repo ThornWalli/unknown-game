@@ -1,0 +1,36 @@
+{{#mixin "molecules/interface" this partial-name="molecules/interface/general-info" controller-name="./partials/molecules/interface/GeneralInfo" }}
+  {{#content "content"}}
+
+    <div class="general-info__container_split">
+
+      <div class="general-info__container">
+        <span>Resources</span>
+        <ul data-hook="generalInfoResourcesList">
+          <li>
+            Resource 1.
+          </li>
+        </ul>
+      </div>
+      <div>
+        <div class="general-info__container">
+          <span>Vehicles</span>
+          <ul data-hook="generalInfoVehiclesList">
+            <li>
+              Vehicle 1.
+            </li>
+          </ul>
+        </div>
+        <div class="general-info__container">
+          <span>Buildings</span>
+          <ul data-hook="generalInfoBuildingsList">
+            <li>
+              Building 1.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+  {{/content}}
+{{/mixin}}

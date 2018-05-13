@@ -93,19 +93,24 @@ function setupApp() {
         .on('add', onAddUnit, this)
         .on('remove', onRemoveUnit, this)
         .on('render.unit.sprite', onRenderUnitSprite, this)
-        .on('change.unit.sprite.visible', onChangeUnitSpriteVisible, this);
+        .on('change.unit.active', onChangeUnitActive, this);
 
 }
 
-function onChangeUnitSpriteVisible(unit, visible) {
+function onChangeUnitActive(unit, visible) {
     toggleUnitVisible.bind(this)(unit, visible);
+    onRenderUnitSprite.bind(this)(unit);
 }
 
 // Events
 
 function onRenderUnitSprite(unit) {
     let position;
-    position = getPosition(unit.floatingPosition, this.display);
+    if (unit.activeAction) {
+        position = getPosition(unit.floatingPosition, this.display);
+    } else {
+        position = getPosition(unit.position, this.display);
+    }
     unit.sprite.position.set(
         position.x,
         position.y
@@ -179,7 +184,7 @@ function onAddUnit(unit) {
     }
 
     // this._application.stage.addChild(sprite);
-    toggleUnitVisible.bind(this)(unit, unit.spriteVisible);
+    toggleUnitVisible.bind(this)(unit, unit.active);
     sprite.onAdded();
     orderSpritesByZOrder(this._application.stage);
 }

@@ -1,6 +1,7 @@
 'use strict';
 
 import {
+    TRANSFER_DIRECTIONS,
     ACTIONS as ACTION_TYPES
 } from '../../types';
 
@@ -39,12 +40,15 @@ export default class Transfer extends Action {
 
     start(targetUnit, type, value, direction) {
         // console.log('transfer start', type, value, direction);
-
+        console.log(targetUnit.module.transferDirection);
         if (targetUnit.module.isItemStorageEmpty() && direction) {
             // target empty?
             return false;
         } else if (this.unit.module.isItemStorageEmpty() && !direction) {
             // unit empty
+            return false;
+        } else if (direction && targetUnit.module.isTransferDirection( direction ? TRANSFER_DIRECTIONS.IN : TRANSFER_DIRECTIONS.OUT)) {
+            // not allowed transfer direction
             return false;
         }
 

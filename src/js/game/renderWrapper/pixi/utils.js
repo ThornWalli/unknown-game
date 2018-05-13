@@ -56,25 +56,25 @@ function splitImageSprite(data, img) {
     const name = data.name,
         width = data.width,
         height = data.height,
-        offset = data.offset;
+        offset = data.offset || 0;
     const cellWidth = (img.naturalWidth - ((width - 1) * offset)) / width,
         cellHeight = (img.naturalHeight - ((height - 1) * offset)) / height;
 
+    console.log(img.naturalWidth, width, offset, cellWidth, cellHeight);
     const frames = [];
     for (var i = 0; i < width; i++) {
         frames.push([]);
         for (var j = 0; j < height; j++) {
-            const canvas = createFrame(img, j, i, offset, cellWidth, cellHeight);
+            const canvas = createFrame(img, i, j, offset, cellWidth, cellHeight);
             // logImage(canvas);
             let texture = new BaseTexture(canvas);
-            BaseTexture.addToCache(texture, `${name}_${j}_${i}`);
-            Texture.addToCache(new Texture(texture), `${name}_${j}_${i}`);
+            BaseTexture.addToCache(texture, `${name}_${i}_${j}`);
+            Texture.addToCache(new Texture(texture), `${name}_${i}_${j}`);
         }
     }
 }
 
 function createFrame(img, x, y, offset, width, height) {
-
     const canvas = document.createElement('canvas');
     canvas.width = CELL_SIZE.width;
     canvas.height = CELL_SIZE.height;

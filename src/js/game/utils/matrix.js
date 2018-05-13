@@ -49,7 +49,15 @@ function hasFreePositionAroundPosition() {
 
 }
 
+
+const GRID_CELL_TYPES = {
+    DEFAULT: 0,
+    BLOCKED: 1,
+    ROAD: 2
+};
+
 export {
+    GRID_CELL_TYPES,
     getPositionsAroundPositionCircle,
     getRandomPositionCircle,
     hasFreePositionAroundPosition

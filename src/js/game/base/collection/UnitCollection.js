@@ -13,8 +13,8 @@ export default class UnitCollection extends Collection {
         unit
             .on('change.direction', onUnitChangeDirection, this)
             .on('change.position', onUnitChangePosition, this)
-            .on('sprite.render', onUnitRenderSprite, this)
-            .on('sprite.visible.change', onUnitChangeSpriteVisible, this);
+            .on('render.sprite', onUnitRenderSprite, this)
+            .on('change.active', onUnitChangeUnitActive, this);
         Collection.prototype.add.apply(this, arguments);
     }
 
@@ -44,8 +44,8 @@ export default class UnitCollection extends Collection {
 }
 
 
-function onUnitChangeSpriteVisible(unit, visible) {
-    this.trigger('change.unit.sprite.visible', unit, visible);
+function onUnitChangeUnitActive(unit, active) {
+    this.trigger('change.unit.active', unit, active);
 }
 function onUnitRenderSprite(unit) {
     this.trigger('render.unit.sprite', unit);

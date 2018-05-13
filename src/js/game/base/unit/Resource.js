@@ -9,9 +9,10 @@ import ResourceModule from '../../modules/unit/Resource';
 
 import Unit from '../Unit';
 import Abstract_Sprite from './abstract/Sprite';
+import Abstract_ItemStorage from './abstract/ItemStorage';
+import Abstract_ItemProduction from './abstract/ItemProduction';
 import Abstract_Module from './abstract/Module';
-
-class Resource extends Abstract_Sprite(Abstract_Module(Unit)) {
+class Resource extends Abstract_Sprite(Abstract_ItemStorage(Abstract_ItemProduction(Abstract_Module(Unit)))) {
     constructor() {
         super();
         this.setType(UNIT_TYPES.RESOURCE.DEFAULT);
