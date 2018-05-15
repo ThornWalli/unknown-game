@@ -45,7 +45,7 @@ export default class Transfer extends Action {
         } else if (this.unit.module.isItemStorageEmpty() && !direction) {
             // unit empty
             return false;
-        } else if (direction && targetUnit.module.isTransferDirection( direction ? TRANSFER_DIRECTIONS.IN : TRANSFER_DIRECTIONS.OUT)) {
+        } else if (direction && !targetUnit.module.isTransferDirection(direction ? TRANSFER_DIRECTIONS.IN : TRANSFER_DIRECTIONS.OUT)) {
             // not allowed transfer direction
             return false;
         }
@@ -54,6 +54,7 @@ export default class Transfer extends Action {
         this._targetUnit = targetUnit;
         this._transferType = type;
         this._transferMaxValue = value;
+
         addListener(this);
         Action.prototype.start.apply(this, arguments);
     }
@@ -130,16 +131,23 @@ function onTick() {
 
 function onComplete() {
     return () => {
+        console.log('??');
         const val = this.unit.module.itemStorageTransfer(this._targetUnit.module, this._transferType, (this.transferValue * this.transferEfficiency), this._transferDirection);
-        this._transferedValue += val;
-        if (this.stopped) {
+        if (val === false) {
+            // Tansfer wurde abgebrochen
             this.onStop();
             return false;
-        } else if ((!this._transferMaxValue || this._transferMaxValue && (this._transferedValue >= this._transferMaxValue || (this._transferDirection ? this._targetUnit.module : this.unit.module).isItemStorageEmpty() || (!this._transferDirection ? this._targetUnit.module : this.unit.module).isItemStorageFull()))) {
-            this.onComplete();
-            return false;
         } else {
-            return true;
+            this._transferedValue += val;
+            if (this.stopped) {
+                this.onStop();
+                return false;
+            } else if ((!this._transferMaxValue || this._transferMaxValue && (this._transferedValue >= this._transferMaxValue || (this._transferDirection ? this._targetUnit.module : this.unit.module).isItemStorageEmpty() || (!this._transferDirection ? this._targetUnit.module : this.unit.module).isItemStorageFull()))) {
+                this.onComplete();
+                return false;
+            } else {
+                return true;
+            }
         }
     };
 }

@@ -96,6 +96,17 @@ export default class RuntimeObserver extends Events {
         });
     }
 
+    /**
+     * Ruft einen freien Transporter.
+     * @param {game.types.items} type
+     */
+    requestTransporter() {
+        const transporters = this.vehicles.filter(unit => unit.isType(UNIT_TYPES.VEHICLE.TRANSPORTER.DEFAULT));
+        if (transporters.length > 0) {
+            return transporters.shift();
+        }
+    }
+
     // Properties
 
     get resources() {

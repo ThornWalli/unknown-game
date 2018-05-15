@@ -22,7 +22,7 @@ export default class Transporter extends ItemStorage(Vehicle) {
     constructor(app, unit) {
         super(app, unit);
         this.maxItemStorageItemValue = 20;
-        this._transporterAvailableItemTypes = [ITEMS.FOOD.DEFAULT];
+        this._transporterAvailableItemTypes = []; // ITEMS.FOOD.DEFAULT
         this._transporterPreferredItemType = null;
         this._transporterPreferredStorageUnit = null;
     }
@@ -62,14 +62,15 @@ export default class Transporter extends ItemStorage(Vehicle) {
     /**
      * Zieht Rohstoffe von der angegebenen Unit ab.
      * @param  {game.base.Unit} unit
+     * @param {game.types.items} itemType
      * @return {Promise}
      */
-    loadItems(unit) {
+    loadItems(unit, itemType) {
         if (unit.module.isItemStorageEmpty()) {
             // Resource is empty
-            return this.collectItems();
+            return this.collectItems(itemType);
         } else {
-            const itemType = unit.module.getItemStorageAvailableItems(this.allowedItemsStorageItems).shift();
+            itemType = itemType || unit.module.getItemStorageAvailableItems(this.allowedItemsStorageItems).shift();
             if (!itemType) {
                 console.error('ItemStorage empty');
                 return SyncPromise.resolve();
@@ -161,7 +162,9 @@ export default class Transporter extends ItemStorage(Vehicle) {
         return this.unloadItems(this.transporterPreferredStorageUnit || this.getNearOptimalStorage());
     }
 
-    moveToResource(unit) {
+    cleanStorage(unit, type){}
+
+    moveToResource(unit, type) {
         this.transporterPreferredItemType = this.getAvailableItem();
         if (this.unit.module.isItemStorageFull()) {
             // Ist voll und fährt zum Lager.
@@ -170,7 +173,7 @@ export default class Transporter extends ItemStorage(Vehicle) {
         } else {
             return this.moveToUnit(unit).then(() => {
                 this.log('Collect resource…');
-                return this.loadItems(unit);
+                return this.loadItems(unit, type);
             }).then(() => {
                 // Noch leer, sammelt weiter Ressourcen.
                 this.log('Resource collected, go to next Resource');
@@ -181,10 +184,6 @@ export default class Transporter extends ItemStorage(Vehicle) {
 
     getNearOptimalStorage() {
         const unit = getSortedUnitByDistance(this.unit.position, this.app.runtimeObserver.buildings.filter(building => {
-            if (building.isType(UNIT_TYPES.BUILDING.STORAGE.DEFAULT) && building.isType(UNIT_TYPES.ITEM_STORAGE)) {
-                console.log(building.module.isFreeAndAllowedItem(this.getAvailableItem()), this.getAvailableItem(), building.module.allowedItemsStorageItems);
-            }
-
             return building.isType(UNIT_TYPES.BUILDING.STORAGE.DEFAULT) && building.isType(UNIT_TYPES.ITEM_STORAGE) && building.module.isFreeAndAllowedItem(this.getAvailableItem());
         })).shift();
         if (unit) {

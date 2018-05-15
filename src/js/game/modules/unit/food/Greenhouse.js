@@ -32,11 +32,14 @@ export default class Greenhouse extends Food {
         }
         if (this.isItemStorageFull() && !this._transporterRequested) {
             this._transporterRequested = true;
-            this.requestTransporter().then(() => {
-                console.log('SHON FERTIG?');
-                this._transporterRequested = false;
-            });
+            const transporter = this.app.runtimeObserver.requestTransporter();
+            if (transporter) {
+                return transporter.module.moveToResource(this.unit).then(() => {
+                    console.log('SCHON FERTIG?');
+                    this._transporterRequested = false;
+                });
+            }
         }
     }
-
+    
 }

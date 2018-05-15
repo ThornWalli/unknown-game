@@ -46,23 +46,12 @@ export default Abstract => class extends Abstract {
 
     /**
      * Ruft ab, ob das angegebene Item erlaubt ist.
-     * @param  {[type]}  type [description]
+     * @param  {game.types.items}  type [description]
      * @return {Boolean}      [description]
      */
     isItemAllowed(type) {
-        console.log('isItemAllowed',this._allowedItemsStorageItems,type, this._allowedItemsStorageItems.length === 0 || this._allowedItemsStorageItems.indexOf(type) !== -1);
+        console.log('isItemAllowed', this._allowedItemsStorageItems, type, this._allowedItemsStorageItems.length === 0 || this._allowedItemsStorageItems.indexOf(type) !== -1);
         return this._allowedItemsStorageItems.length === 0 || this._allowedItemsStorageItems.indexOf(type) !== -1;
-    }
-
-    /**
-     * Ruft einen freien Transporter.
-     */
-    requestTransporter() {
-        const transporters = this.app.runtimeObserver.vehicles.filter(unit => unit.isType(UNIT_TYPES.VEHICLE.TRANSPORTER.DEFAULT));
-        if (transporters.length > 0) {
-            const transporter = transporters.shift();
-            return transporter.module.moveToResource(this.unit);
-        }
     }
 
     /**
@@ -84,7 +73,7 @@ export default Abstract => class extends Abstract {
                 return true;
             }
         } else if (
-            this._transferDirection === TRANSFER_DIRECTIONS.IN && transferDirection === TRANSFER_DIRECTIONS.IN || this._transferDirection === TRANSFER_DIRECTIONS.OUT && transferDirection === TRANSFER_DIRECTIONS.OUT
+            this._transferDirection === TRANSFER_DIRECTIONS.OUT && transferDirection === TRANSFER_DIRECTIONS.IN || this._transferDirection === TRANSFER_DIRECTIONS.IN && transferDirection === TRANSFER_DIRECTIONS.OUT
         ) {
             return true;
         }
@@ -115,6 +104,13 @@ export default Abstract => class extends Abstract {
 
         // Nur das was auch vorhanden ist.
         const transferedValue = to.addItemStorageItemValue(type, value);
+
+        if (transferedValue === false) {
+            // Transfer konnte nicht ausgeführt werden.
+            // - Kann am wechsel von erlaubten Items wärend des Transfers eintreten
+            return false;
+        }
+
         from.removeItemStorageItemValue(type, transferedValue);
 
         from.trigger('storage.value.transfer', from, type, value);
@@ -125,8 +121,8 @@ export default Abstract => class extends Abstract {
     /**
      * Fügt dem angegebenen Typ, Inhalt hinzu.
      * Gibt den wirklich hinzugefügten Inhalt zurück.
-     * @param {[type]} type  [description]
-     * @param {[type]} value [description]
+     * @param {game.types.items} type  [description]
+     * @param {game.types.items} value [description]
      */
     addItemStorageItemValue(type, value) {
         if (!checkMaxTypes(this, type)) {
@@ -146,8 +142,8 @@ export default Abstract => class extends Abstract {
     /**
      * Entfernt dem angegebenen Typ, den angegebenen Inhalt.
      * Gibt den wirklich entfernter Inhalt zurück.
-     * @param {[type]} type  [description]
-     * @param {[type]} value [description]
+     * @param {game.types.items} type  [description]
+     * @param {game.types.items} value [description]
      */
     removeItemStorageItemValue(type, value) {
         value = Math.abs(value);
@@ -205,7 +201,7 @@ export default Abstract => class extends Abstract {
      */
     getItemStorageAvailableItems(allowedItems = []) {
         return Object.keys(this.itemStorageItems).map(item => {
-            if (!allowedItems.length || allowedItems.indexOf(item) > -1) {
+            if (allowedItems.length === 0 || allowedItems.indexOf(item) > -1) {
                 return item;
             }
         });
@@ -270,7 +266,8 @@ export default Abstract => class extends Abstract {
      * @type {Array<game.types.items>}
      */
     set allowedItemsStorageItems(value) {
-         this._allowedItemsStorageItems = value;
+        this._allowedItemsStorageItems = value;
+        this.trigger('change.allowedItemsStorageItems', this._allowedItemsStorageItems, this);
     }
 };
 
