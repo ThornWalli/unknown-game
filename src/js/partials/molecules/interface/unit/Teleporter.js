@@ -1,7 +1,7 @@
 "use strict";
 
 import {
-    ITEMS,
+    ITEMS_DATA,
     UNITS as UNIT_TYPES
 } from '../../../../game/types';
 import lang from '../../../../game/utils/lang';
@@ -47,18 +47,15 @@ export default Interface.extend({
     render() {
 
         this.elements.unitTeleporterItemsDropdown.innerHTML = '';
-        // console.log(UNIT_TYPES, pick(UNIT_TYPES, ['RESOURCE']));
-
-        let items = null;
-        // if (module.transporterAvailableItemTypes.length > 0) {
-        //     items = module.transporterAvailableItemTypes;
-        // } else {
-        items = getFlatList(ITEMS);
-        // }
-        mapUnitTypes(ITEMS).forEach(type => {
+        mapUnitTypes(ITEMS_DATA.map(data => {
+            return data.type;
+        })).forEach(type => {
             this.elements.unitTeleporterItemsDropdown.appendChild(this.tmpl.dropdownItem.toFragment(type));
         });
-
+        Array.from(this.elements.unitTeleporterItemsDropdown.querySelectorAll('option')).forEach(option => {
+            console.log(option,option.value);
+            option.selected = this.model.selectedUnit.module.teleporterRequestedItems.indexOf(option.value) !== -1;
+        });
     }
 
 
@@ -79,27 +76,30 @@ function mapUnitTypes(types) {
                     value: value
                 });
             } else {
-                result.push({
-                    title: `${lang.get(value.DEFAULT)} (Default)`,
-                    value: value.DEFAULT,
-                    options: mapUnitTypes(value)
-                });
+                const options = mapUnitTypes(value);
+                if (options.length > 0) {
+                    result.push({
+                        title: `${lang.get(value.DEFAULT)}`,
+                        value: value.DEFAULT,
+                        options: mapUnitTypes(value)
+                    });
+                }
             }
         }
     });
     return result;
 }
 
-function getFlatList(items, result = []) {
-    return Object.values(items).reduce((result, item) => {
-        if (typeof item === 'object') {
-            getFlatList(item, result);
-        } else {
-            result.push(item);
-        }
-        return result;
-    }, result);
-}
+// function getFlatList(items, result = []) {
+//     return Object.values(items).reduce((result, item) => {
+//         if (typeof item === 'object') {
+//             getFlatList(item, result);
+//         } else {
+//             result.push(item);
+//         }
+//         return result;
+//     }, result);
+// }
 
 /*
  * Events
@@ -108,5 +108,4 @@ function getFlatList(items, result = []) {
 function onChangeTeleporterItems(e) {
     const options = Array.from(e.target.selectedOptions).map(option => option.value);
     this.model.selectedUnit.module.teleporterRequestedItems = options;
-    console.log('value', this.model.selectedUnit.module);
 }

@@ -11,8 +11,9 @@ import Module_Greenhouse from '../../../../modules/unit/food/Greenhouse';
 import Abstract_Module from '../../abstract/Module';
 import Abstract_ItemStorage from '../../abstract/ItemStorage';
 import Abstract_ItemProduction from '../../abstract/ItemProduction';
+import Abstract_Consumption from '../../abstract/Consumption';
 
-class Greenhouse extends Abstract_ItemProduction(Abstract_ItemStorage(Abstract_Module(Food))) {
+class Greenhouse extends Abstract_Consumption(Abstract_ItemProduction(Abstract_ItemStorage(Abstract_Module(Food)))) {
     constructor() {
         super();
         this.setType(UNIT_TYPES.BUILDING.FOOD.GREENHOUSE);

@@ -25,7 +25,8 @@ export default Interface.extend({
                 `Type: ${types}`,
                 `ID: ${unit.id}`,
                 `Name: ${lang.get(unit.type)}`,
-                `Position: ${unit.position.toString()}`
+                `Position: ${unit.position.toString()}`,
+                `Z-Index: ${unit.sprite.zIndex}`
             ];
             if (unit.user) {
                 infos.push(`User: ${unit.user.name}[${unit.user.id}]`);

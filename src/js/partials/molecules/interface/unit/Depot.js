@@ -7,8 +7,13 @@ import {
 
 import Interface from '../../Interface';
 
+import Template from '../../../../base/Template';
+import depotItemTmpl from './tmpl/depotItem.hbs';
+
 
 export default Interface.extend({
+
+    depotItemTmpl: new Template(depotItemTmpl),
 
     modelConstructor: Interface.prototype.modelConstructor.extend({
         session: {
@@ -18,11 +23,12 @@ export default Interface.extend({
                 default () {
                     return [UNIT_TYPES.UNIT_STORAGE];
                 }
-            }}
+            }
+        }
     }),
 
     events: Object.assign({}, Interface.prototype.events, {
-        'click [data-hook="unitDepotItems"] li': onClickDepotItem
+        'click [data-hook="unitDepotItemsStart"]': onClickDepotItem
     }),
 
     initialize() {
@@ -45,7 +51,7 @@ export default Interface.extend({
     render(module) {
         this.elements.depotItems.innerHTML = '';
         module.unitStorageUnits.forEach(unit => {
-            this.elements.depotItems.appendChild(this.tmpl.listItem.toFragment({
+            this.elements.depotItems.appendChild(this.depotItemTmpl.toFragment({
                 id: unit.id,
                 name: lang.get(unit.type)
             }));

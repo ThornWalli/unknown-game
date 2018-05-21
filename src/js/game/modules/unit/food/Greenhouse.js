@@ -8,7 +8,12 @@ import {
     ticker
 } from '../../../base/Ticker';
 
-const TYPE = ITEMS.FOOD.DEFAULT;
+const TYPE = ITEMS.FOOD.VEGETABLE;
+const CONSUMPTION_TYPE_WATER = ITEMS.RESOURCE.WATER;
+
+import {
+    Consumption
+} from '../abstract/Consumption';
 
 export default class Greenhouse extends Food {
     constructor(app, unit) {
@@ -16,30 +21,41 @@ export default class Greenhouse extends Food {
 
         console.log('Start Date', Date.now());
 
+        this.consumptions.add(new Consumption(CONSUMPTION_TYPE_WATER, 100, 10));
+
         this.maxItemStorageItemValue = 100;
+        this.allowedItemsStorageItems.push(ITEMS.RESOURCE.WATER);
         this.allowedItemsStorageItems.push(TYPE);
         this.addItemStorageItemValue(TYPE, 20);
 
-        this._transporterRequested = false;
+
 
         ticker.register(null, this.onTickerComplete.bind(this), 60 * 2 * 1000);
+
+        // setTimeout(() => {
+        //     this.requestItem(ITEMS.RESOURCE.WATER, 50);
+        // }, 5000);
+
+
+        // this.getStorageWithResource
+
+    }
+
+    requiredItems(items) {
+        items.forEach(item => this.requestItem(item.type, item.maxCapacity));
 
     }
 
     onTickerComplete() {
-        if (!this.isItemStorageFull() && this.addItemStorageItemValue(TYPE, 10) !== 0) {
-            this.log('Food created');
-        }
-        if (this.isItemStorageFull() && !this._transporterRequested) {
-            this._transporterRequested = true;
-            const transporter = this.app.runtimeObserver.requestTransporter();
-            if (transporter) {
-                return transporter.module.moveToResource(this.unit).then(() => {
-                    console.log('SCHON FERTIG?');
-                    this._transporterRequested = false;
-                });
+        if (!this.isItemStorageFull() && this.runConsumption()) {
+            if (this.addItemStorageItemValue(TYPE, 10) !== 0) {
+                this.log('Food created');
+            } else {
+                this.requestTransporterToEmpty();
             }
+        } else {
+            this.requestTransporterToEmpty();
         }
     }
-    
+
 }

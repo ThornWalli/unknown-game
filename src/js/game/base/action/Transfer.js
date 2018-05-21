@@ -39,10 +39,10 @@ export default class Transfer extends Action {
      */
 
     start(targetUnit, type, value, direction) {
-        if (targetUnit.module.isItemStorageEmpty() && direction) {
+        if (targetUnit.module.isItemStorageEmpty(type) && direction) {
             // target empty?
             return false;
-        } else if (this.unit.module.isItemStorageEmpty() && !direction) {
+        } else if (this.unit.module.isItemStorageEmpty(type) && !direction) {
             // unit empty
             return false;
         } else if (direction && !targetUnit.module.isTransferDirection(direction ? TRANSFER_DIRECTIONS.IN : TRANSFER_DIRECTIONS.OUT)) {
@@ -53,7 +53,12 @@ export default class Transfer extends Action {
         this._transferDirection = direction || false;
         this._targetUnit = targetUnit;
         this._transferType = type;
-        this._transferMaxValue = value;
+
+        if (direction) {
+            this._transferMaxValue = Math.min(value, targetUnit.module.getItemStorageItemValue(type) || value);
+        } else {
+            this._transferMaxValue = Math.min(value, this.unit.module.getItemStorageItemValue(type) || value);
+        }
 
         addListener(this);
         Action.prototype.start.apply(this, arguments);
@@ -106,7 +111,7 @@ export default class Transfer extends Action {
  */
 
 function addListener(action) {
-    action._timerListener = ticker.register(onTick.bind(action)(), onComplete.bind(action)(), action.duration);
+    action._timerListener = ticker.register(onTick.bind(action), onComplete.bind(action)(), action.duration);
 }
 
 function removeListener(action) {
@@ -123,15 +128,13 @@ function reset(action) {
 
 // Events
 
-function onTick() {
-    return value => {
-        this.trigger('transferring', this, value);
-    };
+function onTick(value) {
+    this.trigger('transferring', this, value);
 }
 
 function onComplete() {
+    console.log('test');
     return () => {
-        console.log('??');
         const val = this.unit.module.itemStorageTransfer(this._targetUnit.module, this._transferType, (this.transferValue * this.transferEfficiency), this._transferDirection);
         if (val === false) {
             // Tansfer wurde abgebrochen
@@ -139,10 +142,12 @@ function onComplete() {
             return false;
         } else {
             this._transferedValue += val;
+            console.log(this._transferMaxValue, this._transferMaxValue, !this._transferMaxValue, this._transferedValue >= this._transferMaxValue, !(this._transferDirection ? this._targetUnit.module : this.unit.module).isItemStorageFull(this._transferType), (!this._transferDirection ? this._targetUnit.module : this.unit.module).isItemStorageFull());
             if (this.stopped) {
                 this.onStop();
                 return false;
-            } else if ((!this._transferMaxValue || this._transferMaxValue && (this._transferedValue >= this._transferMaxValue || (this._transferDirection ? this._targetUnit.module : this.unit.module).isItemStorageEmpty() || (!this._transferDirection ? this._targetUnit.module : this.unit.module).isItemStorageFull()))) {
+            } else if (
+                (!this._transferMaxValue || this._transferMaxValue && (this._transferedValue >= this._transferMaxValue || (!this._transferDirection ? this._targetUnit.module : this.unit.module).isItemStorageFull()))) {
                 this.onComplete();
                 return false;
             } else {

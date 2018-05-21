@@ -1,5 +1,8 @@
 {
   "building": {
+    "power_station":{
+      "default": "Power Plant"
+    },
     "container_teleporter": "Container Teleporter",
     "storage": {
       "default": "Storage",
@@ -45,7 +48,8 @@
   },
 
   "food": {
-    "default": "General Food"
+    "default": "General Food",
+    "vegetable": "Vegetable Food"
   },
 
   "resource": {

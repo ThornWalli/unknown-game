@@ -1,15 +1,17 @@
 {{#mixin "molecules/interface" this partial-name="molecules/interface/general-info" controller-name="./partials/molecules/interface/GeneralInfo" }}
   {{#content "content"}}
-
+    {{{mixin "atoms/button" title="Detail…" dialog="detail-info"}}}
     <div class="general-info__container_split">
-
-      <div class="general-info__container">
-        <span>Resources</span>
-        <ul data-hook="generalInfoResourcesList">
-          <li>
-            Resource 1.
-          </li>
-        </ul>
+      <div>
+        <div class="general-info__container">
+          <span>Resources</span>
+          <ul data-hook="generalInfoResourcesList">
+            <li>
+              <span>Resource</span>
+              <span>0</span>
+            </li>
+          </ul>
+        </div>
       </div>
       <div>
         <div class="general-info__container">
@@ -29,7 +31,6 @@
           </ul>
         </div>
       </div>
-
     </div>
 
   {{/content}}

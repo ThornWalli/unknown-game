@@ -23,8 +23,3 @@ class Road extends Abstract_Area(Sprite) {
 
 SPRITE_CLASSES[UNIT_TYPES.ROAD.DEFAULT] = Road;
 export default Road;
-
-//
-// function getSpriteType(spriteType, x = 1, y = 1) {
-//     return `${spriteType}_${x}_${y}`;
-// }

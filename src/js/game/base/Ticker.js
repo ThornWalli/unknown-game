@@ -61,13 +61,13 @@ class Ticker extends Events {
         // this._listeners.forEach(listener => listener.timestamp = now);
 
 
-                // TODO Ich bin mir nicht sicher ob ich es richtig auskommentiert habe…
-                now = this.now();
-                this._listeners.forEach(listener => {
-                    if (listener.duration <= milliseconds) {
-                        listener.timestamp = now;
-                    }
-                });
+        // TODO Ich bin mir nicht sicher ob ich es richtig auskommentiert habe…
+        now = this.now();
+        this._listeners.forEach(listener => {
+            if (listener.duration <= milliseconds) {
+                listener.timestamp = now;
+            }
+        });
 
 
 
@@ -113,7 +113,9 @@ function addListenerToTicker(ticker, listener) {
 class Listener {
     constructor(tick, complete, duration, once = false) {
         this.tick = tick;
-        this.complete = complete;
+        this.complete = complete || function (){
+            return true;
+        };
         this.duration = duration;
         this.once = once;
         this.timestamp = null;
@@ -151,9 +153,9 @@ class Listener {
      * Properties
      */
 
-     get normalize() {
-         return clamp((this._ticker.now() - this.timestamp) / this.duration, 0, 1);
-     }
+    get normalize() {
+        return clamp((this._ticker.now() - this.timestamp) / this.duration, 0, 1);
+    }
 
     get ticker() {
         return this._ticker;

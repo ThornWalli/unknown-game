@@ -6,7 +6,11 @@ import {
 
 import ACTIONS from './types/actions';
 import UNITS from './types/units';
-import ITEMS from './types/items';
+import {
+    default as ITEMS,
+    ITEMS_DATA,
+    ITEMS_DATA_MAP
+} from './types/items';
 import {
     default as DIRECTIONS,
     TRANSFER_DIRECTIONS
@@ -37,6 +41,8 @@ export {
     ACTIONS,
     UNITS,
     ITEMS,
+    ITEMS_DATA,
+    ITEMS_DATA_MAP,
     DIRECTIONS,
     TRANSFER_DIRECTIONS,
     UNIT_CLASSES,

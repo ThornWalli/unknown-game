@@ -1,0 +1,33 @@
+{{#mixin "organisms/dialog" this partial-name="organisms/dialog/detail-info" controller-name="./partials/organisms/dialog/DetailInfo" name="detail-info" title=false }}
+  {{#content "content"}}
+    {{#mixin "molecules/tab-container" class="tab-container--dialog tab-container--scroll" hide-tabs=false auto-open-name="default" }}
+      {{#content "content"}}
+
+        <div data-name="default" data-title="Resources">
+
+          {{{mixin "atoms/table" hook="detaiInfo_resources"}}}
+
+        </div>
+
+        <div data-name="storages" data-title="Storages">
+
+          {{{mixin "atoms/table" hook="detaiInfo_storages"}}}
+
+        </div>
+
+        <div data-name="vehicles" data-title="Vehicles">
+
+          {{{mixin "atoms/table" hook="detaiInfo_vehicles"}}}
+
+        </div>
+
+        <div data-name="buildings" data-title="Buildings">
+
+          {{{mixin "atoms/table" hook="detaiInfo_buildings"}}}
+
+        </div>
+
+      {{/content}}
+    {{/mixin}}
+  {{/content}}
+{{/mixin}}

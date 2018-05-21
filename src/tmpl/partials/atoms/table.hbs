@@ -1,21 +1,12 @@
 ---
-rows:
-  - head: true
-    cells: ['Cell 1.', 'Cell 1.2.']
-  - cells: ['Cell 1.', 'Cell 1.2.']
-  - cells: ['Cell 2.1.', 'Cell 2.2.']
-  - cells: ['Cell 3.1.', 'Cell 3.2.']
+content:
+  rows:
+    - head: true
+      cells: ['Cell 1.', 'Cell 1.2.']
+    - cells: ['Cell 1.', 'Cell 1.2.']
+    - cells: ['Cell 2.1.', 'Cell 2.2.']
+    - cells: ['Cell 3.1.', 'Cell 3.2.']
 ---
-<div class="partial" data-partial="atoms/table">
-  {{#each rows}}
-    <div class="table__row">
-      {{#each cells}}
-        <div class="{{#if ../head}}table__head{{else}}table__cell{{/if}}">
-          <span>
-            {{{this}}}
-          </span>
-        </div>
-      {{/each}}
-    </div>
-  {{/each}}
+<div class="partial" data-partial="atoms/table"{{#if hook}} data-hook="{{{hook}}}"{{/if}}>
+  {{{mixin "atoms/table/content" content}}}
 </div>

@@ -10,6 +10,10 @@ import {
     SPRITE_CLASSES
 } from '../../../../types';
 
+import {
+    getSpriteType
+} from '../../Sprite';
+
 import Storage from '../Storage';
 
 class Container extends Storage {
@@ -47,18 +51,9 @@ class Container extends Storage {
 SPRITE_CLASSES[UNIT_TYPES.BUILDING.STORAGE.CONTAINER] = Container;
 export default Container;
 
-
-
 function onChangeStorageValue(itemStorage) {
-    console.log(itemStorage.totalItemStorageValue , itemStorage.maxItemStorageItemValue);
     const count = Math.round(this._containerSprites.length * (itemStorage.totalItemStorageValue / itemStorage.maxItemStorageItemValue));
-    console.log(count);
     for (var i = 0; i < this._containerSprites.length; i++) {
         this._containerSprites[i].visible = i < count;
     }
-}
-
-
-function getSpriteType(spriteType, x = 1, y = 1) {
-    return `${spriteType}_${x}_${y}`;
 }

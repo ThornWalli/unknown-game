@@ -57,7 +57,7 @@ export default class Sprite extends PIXI_Sprite {
 
     setFrame(x, y = 0) {
         const spriteType = this._spriteType || this.unit.spriteType;
-        this._root.texture = Texture.fromFrame(`${spriteType}_${x}_${y}`);
+        this._root.texture = Texture.fromFrame(`${spriteType}_${Math.round(x)}_${Math.round(y)}`);
     }
 
     /*
@@ -109,3 +109,12 @@ function createSelectedHelper(width, height, strokeWidth = 1) {
     graphics.visible = false;
     return graphics;
 }
+
+
+function getSpriteType(spriteType, x = 1, y = 1) {
+    return `${spriteType}_${x}_${y}`;
+}
+
+export {
+    getSpriteType
+};

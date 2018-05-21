@@ -41,6 +41,7 @@ import './base/unit/source/Copper';
 /*
  * Building
  */
+import './base/unit/building/PowerStation';
 import './base/unit/building/Storage';
 import './base/unit/building/House';
 import './base/unit/building/food/Greenhouse';

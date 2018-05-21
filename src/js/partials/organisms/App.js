@@ -68,6 +68,18 @@ export default Controller.extend({
                 default () {
                     return new Position();
                 }
+            },
+            dialogs: {
+                type: 'AmpersandCollection',
+                required: true
+            }
+        },
+
+        getApp(cb) {
+            if (this.app) {
+                cb(this.app);
+            } else {
+                this.once('change:app', () => cb(this.app));
             }
         }
 
@@ -112,7 +124,7 @@ export default Controller.extend({
         };
     },
 
-    getApp(){
+    getApp() {
         return App;
     }
 
@@ -127,7 +139,7 @@ function onRefreshApp() {
 }
 
 function onViewportInit() {
-    this.model.app = new (this.getApp())(this.elements.container, this.getOptions());
+    this.model.app = new(this.getApp())(this.elements.container, this.getOptions());
     this.model.app.on('refresh', onRefreshApp, this);
     viewport.on(viewport.EVENT_TYPES.RESIZE, onViewportResize.bind(this));
     global.requestAnimationFrame(onViewportResize.bind(this));

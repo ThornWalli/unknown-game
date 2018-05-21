@@ -2,12 +2,17 @@
 
 import Events from './base/Events';
 
+import {
+    getZIndexByUnit
+} from './utils/unit';
+
 /**
  * Verwaltet die Unit-Auswahl.
  */
 export default class UnitSelect extends Events {
-    constructor(app) {
+    constructor(app, forcedSelectable = false) {
         super();
+        this._forcedSelectable = forcedSelectable;
         this._app = app;
         this._selectedUnits = [];
     }
@@ -102,15 +107,25 @@ export default class UnitSelect extends Events {
 
             // const x = Math.floor((event.x - offset.x) / this.app.map.cellSize.width) + this.visibleBounds.min.x,
             //     y = Math.floor((event.y - offset.y) / this.app.map.cellSize.height) + this.visibleBounds.min.y;
-            const units = this.app.map.getUnitsByCell(position.x, position.y);
+            let units = this.app.map.getUnitsByCell(position.x, position.y);
             if (units.length > 0) {
-                // select
-                for (var i = 0; i < units.length; i++) {
-                    if (units[i].selectable) {
-                        this.selectUnit(units[i]);
-                        break;
+                units.sort(function(a, b) {
+                    a = getZIndexByUnit(a) || 0;
+                    b = getZIndexByUnit(b) || 0;
+                    return b - a;
+                }).find(unit => {
+                    if (this._forcedSelectable || unit.selectable) {
+                        this.selectUnit(unit);
+                        return true;
                     }
-                }
+                });
+                // select
+                // for (var i = 0; i < units.length; i++) {
+                //     if (units[i].selectable) {
+                //         this.selectUnit(units[i]);
+                //         break;
+                //     }
+                // }
             }
         }
 

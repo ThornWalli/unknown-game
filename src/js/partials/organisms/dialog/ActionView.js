@@ -25,12 +25,12 @@ export default Dialog.extend({
         }
     }),
 
-    bindings: {
+    bindings: Object.assign(Dialog.prototype.bindings, {
         'model.unit': {
             type: 'booleanClass',
             name: 'js--visible'
         }
-    },
+    }),
 
     initialize() {
         Dialog.prototype.initialize.apply(this, arguments);
@@ -45,6 +45,9 @@ export default Dialog.extend({
         this.elements.moveTo = this.queryByHook('actionViewMoveTo');
         this.elements.moveProgress = this.queryByHook('actionViewMoveProgress');
 
+        // Wait
+        this.elements.waitProgress = this.queryByHook('actionViewWaitProgress');
+
         this.targetModel.on('change:app', (model, app) => {
             app.ready.then(() => {
                 app.unitSelect.on('select', unit => {
@@ -58,6 +61,7 @@ export default Dialog.extend({
                 if (app.unitSelect.selectedUnits.length > 0) {
                     register.bind(this)(app.unitSelect.selectedUnits[0]);
                 }
+                this.model.isReady = true;
             });
         });
 
@@ -93,7 +97,12 @@ function onSetAction(action) {
 }
 
 function setupAction(action) {
-    if (action.type === 'transfer') {
+    if (action.type === 'wait') {
+        action.on('waiting', renderWaitWaiting, this);
+        if (action.started) {
+            renderWaitWaiting.bind(this)(action, 0);
+        }
+    } else if (action.type === 'transfer') {
         action.on('transferring', renderTransferTransferring, this);
         if (action.started) {
             renderTransferTransferring.bind(this)(action);
@@ -108,9 +117,7 @@ function setupAction(action) {
 }
 
 function renderTransferTransferring(action, value) {
-
     this.elements.transferInfo.innerHTML = `${Math.round(value * 100)}%`;
-
     let fromEl, toEl;
     if (action.transferDirection) {
         fromEl = this.elements.transformTo;
@@ -127,7 +134,6 @@ function renderTransferTransferring(action, value) {
         this.elements.transferFrom.innerHTML = `${action.transferType}: ${Math.round((action.unit.module.itemStorageItems[action.transferType] || 0) - action.transferValue * value)}<br />`;
         this.elements.transferTo.innerHTML = `${action.transferType}: ${Math.round((action._targetUnit.module.itemStorageItems[action.transferType] || 0) + action.transferValue * value)}<br />`;
     }
-
 }
 
 function renderMoveStart(action) {
@@ -141,10 +147,13 @@ function renderMoveStart(action) {
 
 
 function renderMoveMoving(action, value) {
-
     const length = action.moveData.length - 1,
         pathLength = action.moveData.path.length;
 
     let val = Math.max((1 - pathLength / length) + value * (1 / length) - (1 / length), 0);
     this.elements.moveProgress.innerHTML = `${Math.round(val * 100 )}%`;
+}
+
+function renderWaitWaiting(action, value) {
+    this.elements.waitProgress.innerHTML = `${Math.round(value * 100 )}%`;
 }

@@ -9,6 +9,7 @@ export default class UnitCollection extends Collection {
      */
 
     add(unit) {
+        this.addEventsForwarding('unit', unit);
         unit.on('remove', onUnitRemove, this);
         unit
             .on('change.direction', onUnitChangeDirection, this)
@@ -19,6 +20,7 @@ export default class UnitCollection extends Collection {
     }
 
     remove(unit, options = {}) {
+        this.removeEventsForwarding(unit);
         unit.off(null, null, this);
         Collection.prototype.remove.apply(this, arguments);
         if (!options.passive) {

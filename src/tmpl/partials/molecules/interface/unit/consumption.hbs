@@ -1,0 +1,15 @@
+---
+table:
+  content:
+    rows:
+      - head: true
+        cells: ['Item', 'Capacity / Max. Capacity', 'Cost' ]
+      - cells: ['0', '0 / 0', '-0']
+      - class: 'table__row--warning'
+        cells: ['0', '0', '0']
+      - class: 'table__row--error'
+        cells: ['0', '0', '0']
+---
+<div class="partial controller" data-partial="molecules/interface/unit/consumption" data-controller="./partials/molecules/interface/unit/Consumption"{{#if target}} data-target="{{{target}}}"{{/if}}>
+  {{{mixin "atoms/table" table hook="consumptionsTable"}}}
+</div>

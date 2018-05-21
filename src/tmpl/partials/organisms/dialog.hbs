@@ -1,12 +1,16 @@
-<div class="partial controller {{{class}}}" data-partial="{{#if partial-name}}{{{partial-name}}}{{else}}organisms/dialog{{/if}}" data-controller="{{#if controller-name}}{{{controller-name}}}{{else}}./partials/organisms/Dialog{{/if}}" {{#if target}} data-target="{{{target}}}"
-  {{/if}} {{{block "attributes"}}}>
+---
+close: '[close]'
+---
+<div class="partial controller {{{class}}}" data-partial="{{#if partial-name}}{{{partial-name}}}{{else}}organisms/dialog{{/if}}" data-controller="{{#if controller-name}}{{{controller-name}}}{{else}}./partials/organisms/Dialog{{/if}}" {{#if target}} data-target="{{{target}}}"{{/if}}{{#if isStatic}} data-is-static="true"{{/if}}{{#if isOpen}} data-is-open="true"{{/if}} {{#if name}} data-name="{{{name}}}"{{/if}} {{{block "attributes"}}}>
   {{#if title}}
   <div class="dialog__title">
     <span data-hook="dialogTitle">{{{title}}}</span>
   </div>
   {{/if}}
+  {{#if isStatic}}
+  <span class="dialog__close" data-hook="dialogClose">{{{fallback close "[close]"}}}</span>
+  {{/if}}
   <div class="dialog__content">
     {{#block "content"}}{{/block}}
   </div>
-
 </div>

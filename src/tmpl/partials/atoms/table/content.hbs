@@ -1,0 +1,19 @@
+---
+rows:
+  - head: true
+    cells: ['Cell 1.', 'Cell 1.2.']
+  - cells: ['Cell 1.', 'Cell 1.2.']
+  - cells: ['Cell 2.1.', 'Cell 2.2.']
+  - cells: ['Cell 3.1.', 'Cell 3.2.']
+---
+{{#each rows}}
+  <div class="table__row {{{class}}}" data-row="{{{@index}}}">
+    {{#each cells}}
+      <div class="{{#if ../head}}table__head{{else}}table__cell{{/if}} {{{class}}}" data-column="{{{@index}}}">
+        <span>
+            {{{fallback content this}}}
+          </span>
+      </div>
+    {{/each}}
+  </div>
+{{/each}}

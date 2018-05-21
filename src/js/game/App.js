@@ -66,7 +66,7 @@ class App extends Events {
         this.display.reset();
     }
 
-    getUser(id){
+    getUser(id) {
         return this.users.find(user => user.is(id));
     }
 
@@ -196,9 +196,10 @@ function ready(containerEl, options) {
     }).then(() => {
         this._logger = new Logger(this);
 
-        setupUnitSelect(this);
+        const loadModules = 'loadModules' in options && options.loadModules || !('loadModules' in options);
+        setupUnitSelect(this, !loadModules);
 
-        if ('loadModules' in options && options.loadModules || !('loadModules' in options)) {
+        if (loadModules) {
             setupUnitActions(this);
             setupUnitModuleControl(this);
             setupRuntimeObserver(this);
@@ -220,8 +221,8 @@ function setupUser(app) {
     app._user = new User(app, 1, 'Player 1');
 }
 
-function setupUnitSelect(app) {
-    app._unitSelect = new UnitSelect(app);
+function setupUnitSelect(app, forcedSelectable) {
+    app._unitSelect = new UnitSelect(app,forcedSelectable);
     // Events
     app.inputControl.on('pointerdown', app._unitSelect.onPointerDown, app._unitSelect);
 }

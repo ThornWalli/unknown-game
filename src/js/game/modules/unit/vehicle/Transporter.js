@@ -7,13 +7,11 @@ import SyncPromise from 'sync-p';
 
 import {
     ACTIONS as ACTION_TYPES,
-    UNITS as UNIT_TYPES,
-    ITEMS
+    UNITS as UNIT_TYPES
 } from '../../../types';
 
 import {
-    getSortedUnitByDistance,
-    getNearUnitsByItemType
+    getSortedUnitByDistance
 } from '../../../utils/unit';
 
 
@@ -25,6 +23,7 @@ export default class Transporter extends ItemStorage(Vehicle) {
         this._transporterAvailableItemTypes = []; // ITEMS.FOOD.DEFAULT
         this._transporterPreferredItemType = null;
         this._transporterPreferredStorageUnit = null;
+        this._transporterIgnoredUnitTypes = [UNIT_TYPES.RESOURCE.DEFAULT];
     }
 
     /*
@@ -34,7 +33,7 @@ export default class Transporter extends ItemStorage(Vehicle) {
     start() {}
 
     onSelectSecondary(unit) {
-        if (unit) {
+        if (unit && !this.isIgnoredUnit(unit) && unit.isType(UNIT_TYPES.ITEM_STORAGE)) {
             console.log('Transporter onSelectSecondary');
             if (
                 (this._transporterAvailableItemTypes.length < 1 || unit.isType(UNIT_TYPES.ITEM_STORAGE) && this._transporterAvailableItemTypes.find(itemType => unit.module.hasItem(itemType)))
@@ -43,8 +42,6 @@ export default class Transporter extends ItemStorage(Vehicle) {
                     console.error(err);
                     throw err;
                 });
-            } else if (unit.isType(UNIT_TYPES.BUILDING.STORAGE.DEFAULT)) {
-                return this.unloadItems(unit);
             }
         }
         return Vehicle.prototype.onSelectSecondary.apply(this, arguments);
@@ -65,7 +62,7 @@ export default class Transporter extends ItemStorage(Vehicle) {
      * @param {game.types.items} itemType
      * @return {Promise}
      */
-    loadItems(unit, itemType) {
+    loadItems(unit, itemType, value) {
         if (unit.module.isItemStorageEmpty()) {
             // Resource is empty
             return this.collectItems(itemType);
@@ -80,7 +77,7 @@ export default class Transporter extends ItemStorage(Vehicle) {
             return this.app.unitActions.add({
                 type: ACTION_TYPES.TRANSFER,
                 unit: this.unit,
-                startArgs: [unit, itemType, this.getFreeItemStorageValue(), true]
+                startArgs: [unit, itemType, Math.min(value, this.getFreeItemStorageValue(itemType)), true]
             });
         }
     }
@@ -88,88 +85,105 @@ export default class Transporter extends ItemStorage(Vehicle) {
     /**
      * Transferiert Rohstoffe zur angegebenen Unit.
      * @param  {game.base.Unit} unit
+     * @param  {game.types.Items} itemType
+     * @param  {number} value
      * @return {Promise}
      */
-    unloadItems(unit) {
+    unloadItemsToStorage(unit, itemType, value) {
         var abort = () => {
             this._transporterPreferredItemType = null;
             return this.moveToDepot();
         };
         if (unit.module.isItemStorageFull()) {
             this.log('Storage full, move to other…');
-            return this.moveToAvailableStorage();
+            return this.moveToAvailableStorage().then(unit => {
+                if (!unit) {
+                    return this.moveToDepot();
+                }
+                return unit;
+            });
         } else if (!unit.module.isItemStorageFull()) {
             return this.moveToStorage().then(() => {
                 // Ist beim Lager und entleert sich.
-                const itemType = this.getAvailableItem();
+                itemType = itemType || this.getAvailableItem();
                 if (!itemType) {
                     console.error('ItemStorage empty');
                     return abort();
-                } else if (!unit.module.isFreeAndAllowedItem()) {
+                } else if (!unit.module.isFreeAndAllowedItem(itemType)) {
                     return this.moveToAvailableStorage();
                 }
-                this.log('Unload items…');
-                return this.app.unitActions.add({
-                    type: ACTION_TYPES.TRANSFER,
-                    unit: this.unit,
-                    startArgs: [unit, itemType, this.getItemStorageItemValue(itemType)]
-                }).then(() => {
-                    return this.afterUnloadItems(unit);
+                return this.unloadItems(unit, itemType, value).then(() => {
+                    return this.afterUnloadItemsToStorage(unit, itemType, value);
                 });
             });
         } else {
             return abort();
         }
     }
+    unloadItems(unit, itemType, value) {
+        this.log('Unload items…', itemType);
+        return this.app.unitActions.add({
+            type: ACTION_TYPES.TRANSFER,
+            unit: this.unit,
+            startArgs: [unit, itemType, Math.min(value, this.getItemStorageItemValue(itemType))]
+        });
+    }
 
-    afterUnloadItems() {
-        if (this.unit.module.isItemStorageEmpty()) {
-            return this.collectItems();
+    afterUnloadItemsToStorage(unit, itemType, value) {
+        if (!this.unit.module.isItemStorageEmpty() && (!value || value >= this.unit.module.getItemStorageItemValue(itemType))) {
+            return this.unloadItemsToStorage(unit);
+        } else {
+            return SyncPromise.resolve();
         }
     }
 
 
     /**
      * Startet zum einsammeln von Rohstoffen.
+     * @param {game.types.Units} itemType
      * @return {Promise}
      */
-    collectItems(itemType) {
-        if (!this.isItemStorageFull()) {
-
-            itemType = itemType || this.transporterPreferredItemType || (this._transporterAvailableItemTypes ? this._transporterAvailableItemTypes[0] : null);
-            // console.log('collectItems', type || this.transporterPreferredItemType);
-            const units = getNearUnitsByItemType(this.app.map.units, this.unit.position, itemType);
-
-            let unit = null;
-
-            // Eine nicht volle Resource wird bevorzugt.
-            units.forEach(data => {
-                if (!unit || data.unit.module.getItemStorageItemValue(itemType) < unit.module.getItemStorageItemValue(itemType)) {
-                    unit = data.unit;
-                }
-            });
-
-            if (units.length > 0) {
-                this.log('Go to resource…');
-                if (!unit) {
-                    unit = units.shift().unit;
-                }
-                if (!unit.module.isItemStorageEmpty()) {
-                    return this.moveToResource(unit);
-                }
-            }
+    collectItems() {
+        const storage = this.transporterPreferredStorageUnit || this.getFreeStorage();
+        if (storage && !this.isItemStorageEmpty()) {
+            return this.unloadItemsToStorage(storage);
+        } else {
+            this.log('No Empty Storage, Move To Depot…');
+            return this.moveToDepot();
         }
-        return this.unloadItems(this.transporterPreferredStorageUnit || this.getNearOptimalStorage());
     }
 
-    cleanStorage(unit, type){}
+    /**
+     * Entleert das Storage vom angegebenen Item.
+     * @param  {game.base.Unit} unit
+     * @param  {game.types.items} type
+     * @return {SyncPromise}
+     */
+    cleanStorage(unit, type) {
+        return this.moveToUnit(unit).then(() => {
+            this.log('Clean Storage…');
+            return this.loadItems(unit, type).then(() => {
+                return this.moveToAvailableStorage([unit]);
+            });
+        }).then(() => {
+            if (!unit.module.isItemAllowed(type)) {
+                this.log('Storage no allowed Item');
+                return this.moveToDepot();
+            } else if (unit.module.isItemStorageEmpty(type)) {
+                this.log('Storage is cleaned from Item');
+                return this.moveToDepot();
+            } else {
+                return this.cleanStorage.apply(this, arguments);
+            }
+        });
+    }
 
     moveToResource(unit, type) {
         this.transporterPreferredItemType = this.getAvailableItem();
         if (this.unit.module.isItemStorageFull()) {
             // Ist voll und fährt zum Lager.
             this.log('Resource collected, go to Storage');
-            return this.unloadItems();
+            return this.unloadItemsToStorage(unit);
         } else {
             return this.moveToUnit(unit).then(() => {
                 this.log('Collect resource…');
@@ -182,34 +196,87 @@ export default class Transporter extends ItemStorage(Vehicle) {
         }
     }
 
-    getNearOptimalStorage() {
-        const unit = getSortedUnitByDistance(this.unit.position, this.app.runtimeObserver.buildings.filter(building => {
-            return building.isType(UNIT_TYPES.BUILDING.STORAGE.DEFAULT) && building.isType(UNIT_TYPES.ITEM_STORAGE) && building.module.isFreeAndAllowedItem(this.getAvailableItem());
-        })).shift();
-        if (unit) {
-            return unit.unit;
+    getStorageWithItem(type, ignoredUnits = []) {
+        return this.getStoragesByDistance().find(building => {
+            return ignoredUnits.indexOf(building) === -1 && building.module.getItemStorageItemValue(type);
+        });
+    }
+
+    bringItemFromStorage(unit, type, value) {
+        const storage = this.getStorageWithItem(type);
+        if (storage) {
+            return this.moveToUnit(storage).then(() => {
+                return this.loadItems(storage, type, value);
+            }).then(() => {
+                console.log('this.getItemStorageItemValue(type) < value', this.getItemStorageItemValue(type) , value, this.getItemStorageItemValue(type) < value);
+                if (this.getItemStorageItemValue(type) < value) {
+                    return this.bringItemFromStorage(unit, type, value - this.getItemStorageItemValue(type));
+                } else {
+                    return this.moveToUnit(unit).then(() => {
+                        console.log('unloadItems', unit, type, Math.min(value, this.getItemStorageItemValue(type)), JSON.stringify(this.itemStorageItems));
+                        return this.unloadItems(unit, type, Math.min(value, this.getItemStorageItemValue(type))).then(() => {
+                            if (value > this.getItemStorageItemValue(type)) {
+                                return this.bringItemFromStorage(unit, type, value - this.getItemStorageItemValue(type));
+                            }
+                        });
+                    });
+                }
+            });
+        } else if (this.getItemStorageItemValue(type) > 0) {
+            return this.moveToUnit(unit).then(() => {
+                console.log('unloadItems', unit, type, Math.min(value, this.getItemStorageItemValue(type)), JSON.stringify(this.itemStorageItems));
+                return this.unloadItems(unit, type, value);
+            });
+        } else {
+            this.log('Can\'t Find Storage With Item');
+            return SyncPromise.resolve();
         }
-        return null;
+    }
+
+    getStoragesByDistance() {
+        const storages = getSortedUnitByDistance(this.unit.position, this.app.runtimeObserver.buildings.filter(building => {
+            return building.isType(UNIT_TYPES.BUILDING.STORAGE.DEFAULT) && building.isType(UNIT_TYPES.ITEM_STORAGE);
+        }));
+        storages.forEach((storage, i, storages) => {
+            storages[i] = storage.unit;
+        });
+        return storages;
+    }
+
+    getFreeStorage(ignoredUnits = []) {
+        const storages = this.getStoragesByDistance();
+        return storages.find(storage => ignoredUnits.indexOf(storage) === -1 && storage.module.isFreeAndAllowedItem(this.getAvailableItem()));
     }
 
     getAvailableItem() {
         return this.unit.module.getItemStorageAvailableItems(this.allowedItemsStorageItems).shift();
     }
-    moveToAvailableStorage() {
-        const storage = this.getNearOptimalStorage();
+    moveToAvailableStorage(ignoredUnits = []) {
+        const storage = this.getFreeStorage(ignoredUnits);
         this._transporterPreferredStorageUnit = storage;
         if (storage) {
-
             return this.moveToUnit(storage).then(() => {
-                return this.unloadItems(storage);
+                return this.unloadItemsToStorage(storage).then(() => {
+                    return storage;
+                });
             });
         } else {
-            return SyncPromise.resolve();
+            return SyncPromise.resolve(null);
         }
     }
 
     getStorage() {
-        return this._transporterPreferredStorageUnit || this.getNearOptimalStorage();
+        return this._transporterPreferredStorageUnit || this.getFreeStorage();
+    }
+
+
+    /**
+     * Überprüft ob Unit-Type ignoriert wird.
+     * @param  {game.base.Unit}  unit
+     * @return {Boolean}
+     */
+    isIgnoredUnit(unit) {
+        return this._transporterIgnoredUnitTypes.find(type => unit.isType(type));
     }
 
     /*

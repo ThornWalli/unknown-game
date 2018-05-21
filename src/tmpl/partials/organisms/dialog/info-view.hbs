@@ -2,13 +2,13 @@
   {{#content "content"}}
 
 
-    {{#mixin "molecules/tab-container" class="tab-container--dialog tab-container--scroll" hide-tabs=false auto-open-name="log"}}
+    {{#mixin "molecules/tab-container" class="tab-container--dialog tab-container--scroll" hide-tabs=false auto-open-name="default" }}
 
       {{#content "content"}}
 
         <div data-name="default" data-title="General Info">
 
-{{{mixin "molecules/interface/general-info" target=../target}}}
+          {{{mixin "molecules/interface/general-info" target=../target}}}
 
         </div>
 

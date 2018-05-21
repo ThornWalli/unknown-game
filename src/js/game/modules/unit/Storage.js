@@ -22,18 +22,17 @@ export default class Storage extends ItemStorage(Unit) {
         unit.on('module.ready', onVehiclerModuleReady, this);
         this.app.map.units.add(unit);
     }
+
+    cleanStorage(key) {
+        this.requestTransporterToEmpty(key);
+    }
 }
 
 
 function onChangeAllowedItemsStorageItems(allowedItemsStorageItems) {
     Object.keys(this.itemStorageItems).forEach(key => {
-        console.log(key, allowedItemsStorageItems.indexOf(key), allowedItemsStorageItems.indexOf(key) === -1);
         if (allowedItemsStorageItems.indexOf(key) === -1) {
-            const transporter = this.app.runtimeObserver.requestTransporter();
-            if (transporter) {
-                console.log('onChangeAllowedItemsStorageItems',this.unit, key);
-                return transporter.module.cleanStorage(this.unit, key);
-            }
+            this.cleanStorage(key);
         }
     });
 }

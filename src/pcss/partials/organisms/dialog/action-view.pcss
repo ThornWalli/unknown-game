@@ -3,10 +3,13 @@
   font-size: 11px;
   width: 240px;
   height: 200px;
-  visibility: hidden;
 
-  &.js--visible {
-    visibility: visible;
+  &.js--is-ready {
+    opacity: 0;
+
+    &.js--visible {
+      opacity: 1;
+    }
   }
 
   .action-view {

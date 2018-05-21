@@ -74,7 +74,9 @@ function removeListener(action) {
 
 // Events
 
-function onTick() {}
+function onTick(value) {
+        this.trigger('waiting', this, value);
+}
 
 function onComplete() {
     this.onComplete();

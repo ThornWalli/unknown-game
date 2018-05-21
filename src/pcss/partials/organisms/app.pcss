@@ -4,11 +4,15 @@
 
   .app {
     &__sidebar {
+      @extend .scrollbar-style;
+
       position: absolute;
       left: 0;
       top: 0;
       width: auto;
       height: 100%;
+      overflow-y: scroll;
+      overflow-x: hidden;
     }
 
     &__container {

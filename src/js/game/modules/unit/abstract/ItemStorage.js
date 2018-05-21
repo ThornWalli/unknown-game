@@ -5,6 +5,8 @@ import {
     TRANSFER_DIRECTIONS
 } from '../../../types';
 
+import SyncPromise from 'sync-p';
+
 /**
  * Abstract Class Module
  * @class ItemStorage
@@ -27,6 +29,9 @@ export default Abstract => class extends Abstract {
          */
         this._allowedItemsStorageItems = [];
 
+        this._itemsRequested = false;
+        this._transporterRequested = false;
+
         this._transferDirection = TRANSFER_DIRECTIONS.BOTH;
 
     }
@@ -34,6 +39,61 @@ export default Abstract => class extends Abstract {
     /*
      * Functions
      */
+
+
+
+    /**
+     * Fordert die angegebene Resource an.
+     * @param  {game.types.Items} type
+     */
+    requestItem(type, value) {
+
+        if ( !this.isItemStorageFull()) {
+            // this._itemsRequested = true;
+            console.log('requestItem', type, value);
+            return this.app.runtimeObserver.requestTransporters().then(transporters => {
+                const transporter = transporters.shift();
+                console.log('requestItem', transporter, this.unit, type, value);
+                return transporter.module.bringItemFromStorage(this.unit, type, value);
+            }).then(() => {
+                // this._itemsRequested = false;
+            }).catch(err => {
+                throw err;
+            });
+        }
+    }
+
+    requestTransporterToEmpty(item) {
+        if (!this._transporterRequested) {
+            this._transporterRequested = true;
+            // const key = item || Object.keys(this.itemStorageItems)[0];
+
+            let items = [];
+            if (item) {
+                items.push(item);
+            } else {
+                items = items.concat(Object.keys(this.itemStorageItems));
+            }
+            const result = [];
+            for (var i = 0; i < items.length; i++) {
+                const transporter = this.app.runtimeObserver.requestTransporter();
+                if (transporter) {
+                    result.push(transporter.module.cleanStorage(this.unit, items[i]));
+                } else {
+                    break;
+                }
+            }
+
+            return Promise.all(result).then(() => {
+                return this.requestTransporterToEmpty(item);
+            }).then(() => {
+                console.log('SCHON FERTIG?');
+                this._transporterRequested = false;
+            });
+        }
+
+        return SyncPromise.resolve();
+    }
 
     /**
      * Gibt an ob für das anegeben Item noch Platz ist.
@@ -50,7 +110,6 @@ export default Abstract => class extends Abstract {
      * @return {Boolean}      [description]
      */
     isItemAllowed(type) {
-        console.log('isItemAllowed', this._allowedItemsStorageItems, type, this._allowedItemsStorageItems.length === 0 || this._allowedItemsStorageItems.indexOf(type) !== -1);
         return this._allowedItemsStorageItems.length === 0 || this._allowedItemsStorageItems.indexOf(type) !== -1;
     }
 
@@ -89,7 +148,7 @@ export default Abstract => class extends Abstract {
      * @return {Number}
      */
     itemStorageTransfer(target, type, value, direction) {
-        value = Math.abs(value);
+
         let from, to;
         if (direction) {
             // from -> to
@@ -100,6 +159,12 @@ export default Abstract => class extends Abstract {
             from = this;
             to = target;
         }
+
+        if (!(type in from.itemStorageItems)) {
+            return false;
+        }
+
+        value = Math.abs(value);
         value = Math.min(value, from.getItemStorageItemValue(type));
 
         // Nur das was auch vorhanden ist.
@@ -147,10 +212,9 @@ export default Abstract => class extends Abstract {
      */
     removeItemStorageItemValue(type, value) {
         value = Math.abs(value);
-        if (this._itemStorageItems[type] <= value) {
+        this._itemStorageItems[type] = (this._itemStorageItems[type] || 0) - value;
+        if (this._itemStorageItems[type] === 0) {
             delete this._itemStorageItems[type];
-        } else {
-            this._itemStorageItems[type] = (this._itemStorageItems[type] || 0) - value;
         }
         this.trigger('storage.value.remove', this, type, value);
         return value;

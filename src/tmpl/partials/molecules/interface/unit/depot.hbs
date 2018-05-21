@@ -7,7 +7,7 @@
     {{#content "content"}}
       {{#mixin "atoms/list" depot class="list--text-action" hook="unitDepotItems" }}
         {{#content "content"}}
-          {{#each items}}{{{mixin "molecules/interface/unit/depot/depot-item" this}}}{{/each}}
+          {{#each items}}{{{mixin "molecules/interface/unit/tmpl/depot-item" this}}}{{/each}}
         {{/content}}
       {{/mixin}}
     {{/content}}

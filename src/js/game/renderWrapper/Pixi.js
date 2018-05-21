@@ -2,9 +2,12 @@
 
 import {
     SPRITE_CLASSES,
-    DIRECTIONS,
-    UNITS as UNIT_TYPES
+    DIRECTIONS
 } from '../types';
+
+import {
+    getZIndexByUnit
+} from '../utils/unit';
 
 import {
     CELL_SIZE,
@@ -150,18 +153,6 @@ function createSprite(unit) {
     return new SPRITE_CLASSES[unit.type](unit);
 }
 
-function getZIndexByUnit(unit) {
-    if (unit.isType(UNIT_TYPES.ROAD.DEFAULT)) {
-        return 1;
-    }
-    if (unit.isType(UNIT_TYPES.BUILDING.DEFAULT)) {
-        return 3;
-    }
-    if (unit.isType(UNIT_TYPES.VEHICLE.DEFAULT)) {
-        return 5;
-    }
-}
-
 function onAddUnit(unit) {
     const sprite = createSprite(unit);
     // sprite.on('render', onRenderUnit, this);
@@ -177,11 +168,11 @@ function onAddUnit(unit) {
 
     sprite.zIndex = getZIndexByUnit(unit);
 
-    if (unit.isType(UNIT_TYPES.ROAD.DEFAULT)) {
-        sprite.zIndex = 1;
-    } else {
-        sprite.zIndex = 2;
-    }
+    // if (unit.isType(UNIT_TYPES.ROAD.DEFAULT)) {
+    //     sprite.zIndex = 1;
+    // } else {
+    //     sprite.zIndex = 2;
+    // }
 
     // this._application.stage.addChild(sprite);
     toggleUnitVisible.bind(this)(unit, unit.active);

@@ -1,13 +1,19 @@
 ---
-
+clean-storage:
+  title: 'Clean Storage'
 ---
 <div class="partial controller" data-partial="molecules/interface/unit/storage" data-controller="./partials/molecules/interface/unit/Storage"{{#if target}} data-target="{{{target}}}"{{/if}}>
-  {{#mixin "atoms/form" }}
+  {{#mixin "atoms/form" this }}
     {{#content "content"}}
+      {{{mixin "atoms/button" clean-storage hook="unitStorageCleanStorage"}}}
       {{#mixin "atoms/fieldset" class="unit-view__storage__items" }}
         {{#content "title"}}Items:{{/content}}
         {{#content "content"}}
-          <div data-hook="unitStorageItems"></div>
+          {{#mixin "atoms/list" depot class="list--text-action" hook="unitStorageItems" }}
+            {{#content "content"}}
+              {{#each items}}{{{mixin "molecules/interface/unit/tmpl/storage-item" this}}}{{/each}}
+            {{/content}}
+          {{/mixin}}
         {{/content}}
       {{/mixin}}
       {{#mixin "atoms/fieldset" class="unit-view__storage__allowed_items" }}

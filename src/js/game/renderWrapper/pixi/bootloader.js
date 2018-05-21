@@ -56,6 +56,14 @@ SPRITE_BLUEPRINTS[UNIT_TYPES.VEHICLE.HARVESTER.SPIDER] = {
 
 // Building
 
+import './sprite/PowerStation';
+SPRITE_BLUEPRINTS[UNIT_TYPES.BUILDING.POWER_STATION.DEFAULT] = {
+    name: UNIT_TYPES.BUILDING.POWER_STATION.DEFAULT,
+    path: 'assets/img/building/power_station.png',
+    width: 1,
+    height: 1
+};
+
 import './sprite/Storage';
 SPRITE_BLUEPRINTS[UNIT_TYPES.BUILDING.STORAGE.DEFAULT] = {
     name: UNIT_TYPES.BUILDING.STORAGE.DEFAULT,

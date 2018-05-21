@@ -3,7 +3,8 @@
 const ITEMS = {
 
     FOOD: {
-        DEFAULT: 'food.default'
+        DEFAULT: 'food.default',
+        VEGETABLE: 'food.vegetable'
     },
 
     RESOURCE: {
@@ -36,8 +37,30 @@ const ITEMS = {
 
         PLASTIC: 'resource.plastic'
 
-
     }
 };
 
-export default ITEMS;
+const ITEMS_DATA = [{
+        type: ITEMS.FOOD.VEGETABLE,
+        title: 'Gemüse (Vegetable)',
+        description: 'Gemüse dient zur pflanzlichen Ernährung der Bewohner.',
+        teleporterEnergy: 0.8
+    },
+    {
+        type: ITEMS.RESOURCE.WATER,
+        title: 'Wasser (Water)',
+        description: 'Wasser wird überall dort benötigt, wo sich leben befindet. Menschen und Pflanzen können ohne nicht existieren.',
+        teleporterEnergy: 0.2
+    }
+];
+const ITEMS_DATA_MAP = ITEMS_DATA.reduce((result, data) => {
+    result[data.type] = data;
+    return result;
+}, {});
+
+export {
+    ITEMS as
+    default,
+    ITEMS_DATA,
+    ITEMS_DATA_MAP
+};

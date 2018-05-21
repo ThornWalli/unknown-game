@@ -7,10 +7,15 @@ import viewport from 'gp-module-viewport';
 import Template from '../../base/Template';
 import listItemTmpl from '../../tmpl/listItem.hbs';
 import dropdownItemTmpl from '../../tmpl/dropdownItem.hbs';
+import tableContentTmpl from '../../tmpl/tableContent.hbs';
+
+
+
 
 export default Controller.extend({
 
     tmpl: {
+        tableContentTmpl: new Template(tableContentTmpl),
         listItem: new Template(listItemTmpl),
         dropdownItem: new Template(dropdownItemTmpl),
     },

@@ -23,9 +23,8 @@ export default Interface.extend({
 
     initialize() {
         Interface.prototype.initialize.apply(this, arguments);
-
         this.elements = {
-            resourceList: this.queryByHook('generalInfoResourcesList'),
+            resourcesList: this.queryByHook('generalInfoResourcesList'),
             vehiclesList: this.queryByHook('generalInfoVehiclesList'),
             buildingsList: this.queryByHook('generalInfoBuildingsList')
         };
@@ -42,8 +41,8 @@ export default Interface.extend({
 });
 
 function onChangeResources(resources) {
-    this.elements.resourceList.innerHTML = '';
-    Object.keys(resources).forEach(key => this.elements.resourceList.appendChild(this.itemTmpl.toFragment({
+    this.elements.resourcesList.innerHTML = '';
+    Object.keys(resources).forEach(key => this.elements.resourcesList.appendChild(this.itemTmpl.toFragment({
         name: lang.get(key),
         value: resources[key]
     })));
@@ -55,9 +54,17 @@ function onChangeVehicles(vehicles) {
         name: lang.get(vehicle.type)
     })));
 }
+
 function onChangeBuildings(buildings) {
     this.elements.buildingsList.innerHTML = '';
-    buildings.forEach(building => this.elements.buildingsList.appendChild(this.itemTmpl.toFragment({
-        name: lang.get(building.type)
-    })));
+    buildings.forEach(building => {
+        // if (building.isType(UNIT_TYPES.BUILDING.STORAGE.DEFAULT)) {
+        //     this.elements.storagesList.appendChild(this.itemTmpl.toFragment({
+        //         name: lang.get(building.type)
+        //     }));
+        // }
+        this.elements.buildingsList.appendChild(this.itemTmpl.toFragment({
+            name: lang.get(building.type)
+        }));
+    });
 }

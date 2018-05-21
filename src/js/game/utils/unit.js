@@ -8,6 +8,20 @@ import {
  * Functions
  */
 
+function getZIndexByUnit(unit) {
+    const types = [
+        UNIT_TYPES.ROAD.DEFAULT,
+        UNIT_TYPES.RESOURCE.DEFAULT,
+        UNIT_TYPES.BUILDING.DEFAULT,
+        UNIT_TYPES.VEHICLE.DEFAULT
+    ];
+    for (var i = 0; i < types.length; i++) {
+        if (unit.isType(types[i])) {
+            return i + 1;
+        }
+    }
+}
+
 /**
  * Ruft die Distanz zwischen zwei Units ab.
  * @param  {game.base.Unit} sourceUnit
@@ -79,6 +93,7 @@ function getNearUnitsByItemType(units, position, itemType) {
 }
 
 export {
+    getZIndexByUnit,
     getDistance,
     getSortedUnitByDistance,
     getNearUnitsByUnitType,

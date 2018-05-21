@@ -8,7 +8,12 @@ import Interface from '../../Interface';
 
 import lang from '../../../../game/utils/lang';
 
+import Template from '../../../../base/Template';
+import storageItemTmpl from './tmpl/storageItem.hbs';
+
 export default Interface.extend({
+
+    storageItemTmpl: new Template(storageItemTmpl),
 
     modelConstructor: Interface.prototype.modelConstructor.extend({
         session: {
@@ -23,7 +28,9 @@ export default Interface.extend({
     }),
 
     events: Object.assign({}, Interface.prototype.events, {
-        'change [data-hook="unitStorageAllowedItemsMultiselect"]': onChangeStorageAllowedItemsMultiselect
+        'change [data-hook="unitStorageAllowedItemsMultiselect"]': onChangeStorageAllowedItemsMultiselect,
+        'click [data-hook="unitStorageCleanStorage"]': onClickCleanStorageButton,
+        'click [data-hook="unitStorageItemDiscard"]': onClickItemDiscardButton
     }),
 
     initialize() {
@@ -38,32 +45,35 @@ export default Interface.extend({
         Interface.prototype.onSelectUnit.apply(this, arguments);
         if (unit && this.isAvailableUnit(unit)) {
             unit.module
-                .on('storage.value.add', render, this)
-                .on('storage.value.remove', render, this)
-                .on('storage.value.transfer', render, this);
-            render.bind(this)(unit.module);
+                .on('storage.value.add', this.render, this)
+                .on('storage.value.remove', this.render, this)
+                .on('storage.value.transfer', this.render, this);
+            this.render(unit.module);
         }
         this.model.visible = !!unit;
-    }
+    },
 
-});
+    render(module) {
+        this.elements.storageItems.innerHTML = '';
+        Object.keys(module.itemStorageItems).forEach(key => {
+            this.elements.storageItems.appendChild(this.storageItemTmpl.toFragment({
+                name: `${lang.get(key)}: ${module.itemStorageItems[key]}`,
+                id: key
+            }));
+        });
 
-
-function render(module) {
-    let html = '';
-    Object.keys(module.itemStorageItems).forEach(key => {
-        html += `${lang.get(key)}: ${module.itemStorageItems[key]}<br />`;
-    });
-    this.elements.storageItems.innerHTML = html;
-
-    this.elements.storageAllowedItemsMultiselect.innerHTML = '';
-    // console.log(UNIT_TYPES, pick(UNIT_TYPES, ['RESOURCE']));
+        this.elements.storageAllowedItemsMultiselect.innerHTML = '';
+        // console.log(UNIT_TYPES, pick(UNIT_TYPES, ['RESOURCE']));
         let data = mapUnitTypes(ITEMS);
         data.forEach(type => this.elements.storageAllowedItemsMultiselect.appendChild(this.tmpl.dropdownItem.toFragment(type)));
         this.model.selectedUnit.module.allowedItemsStorageItems.forEach(type => {
             this.elements.storageAllowedItemsMultiselect.querySelector(`[value="${type}"]`).setAttribute('selected', true);
         });
-}
+    }
+
+});
+
+
 
 
 
@@ -84,7 +94,7 @@ function mapUnitTypes(types) {
             } else {
                 const options = [{
                     title: `${lang.get(value.DEFAULT)} (Default)`,
-                    value: value
+                    value: value.DEFAULT
                 }].concat(mapUnitTypes(value));
                 result.push({
                     title: `${lang.get(value.DEFAULT)}`,
@@ -104,5 +114,14 @@ function mapUnitTypes(types) {
 function onChangeStorageAllowedItemsMultiselect(e) {
     const options = Array.from(e.target.selectedOptions).map(option => option.value);
     this.model.selectedUnit.module.allowedItemsStorageItems = options;
-    console.log('value', this.model.selectedUnit.module);
+}
+
+function onClickCleanStorageButton() {
+    this.model.selectedUnit.module.requestTransporterToEmpty();
+}
+
+function onClickItemDiscardButton(e) {
+    const item = e.target.dataset.id;
+    this.model.selectedUnit.module.removeItemStorageItemValue(item, this.model.selectedUnit.module.getItemStorageItemValue(item));
+    this.render(this.model.selectedUnit.module);
 }

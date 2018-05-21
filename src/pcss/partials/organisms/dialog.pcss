@@ -1,6 +1,7 @@
 .partial[data-partial="organisms/dialog"],
 .partial[data-partial^="organisms/dialog/"] {
   position: absolute;
+  z-index: 10;
   border: solid $dialog_borderColor;
   background: $dialog_backgroundColor;
   border-width: 4px;
@@ -8,6 +9,12 @@
   box-shadow: -5px -5px 10px $dialog_boxShadowColor;
   display: flex;
   flex-direction: column;
+  opacity: 0;
+  transition: opacity 0.15s 0s linear;
+
+  &.js--is-ready {
+    opacity: 1;
+  }
 
   .dialog__title {
     font-size: 11px;
@@ -19,6 +26,15 @@
     font-weight: 500;
     background: $dialog_borderColor;
     line-height: 1;
+  }
+
+  .dialog__close {
+    position: absolute;
+    top: -10px;
+    right: 0;
+    transform: translateY(-100%);
+    font-size: 11px;
+    cursor: pointer;
   }
 
   .dialog__content {
@@ -56,5 +72,44 @@
 
   &.dialog-position--bottom {
     bottom: 0;
+  }
+
+  &.js--is-static {
+    z-index: 12;
+    opacity: 0;
+    pointer-events: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    &.js--is-ready {
+      &.js--is-open {
+        opacity: 1;
+        transition: opacity 0.15s 0.15s linear;
+        pointer-events: auto;
+      }
+    }
+  }
+}
+
+[data-partial="organisms/app/game"]::after {
+  content: "";
+  display: block;
+  position: absolute;
+  z-index: 11;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: $color_black;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s 0.15s linear;
+}
+
+body.js--static-dialog-open {
+  [data-partial="organisms/app/game"]::after {
+    opacity: 0.8;
+    transition: opacity 0.15s 0s linear;
   }
 }

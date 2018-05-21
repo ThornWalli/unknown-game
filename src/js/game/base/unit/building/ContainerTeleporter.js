@@ -7,20 +7,27 @@ import {
 
 import Building from '../Building';
 
-import Module_Teleporter from '../../../modules/unit/Teleporter';
+import Module_ContainerTeleporter from '../../../modules/unit/building/ContainerTeleporter';
+import Abstract_Action from '../abstract/Action';
 import Abstract_Module from '../abstract/Module';
 import Abstract_ItemProduction from '../abstract/ItemProduction';
-import Abstract_TELEPORTER from '../abstract/TELEPORTER';
+import Abstract_ItemStorage from '../abstract/ItemStorage';
+import Abstract_Teleporter from '../abstract/Teleporter';
 
-class ContainerTeleporter extends Abstract_TELEPORTER(Abstract_ItemProduction(Abstract_Module(Building)) ){
+const Extends = Abstract_Action(Abstract_Teleporter(Abstract_ItemProduction(Abstract_ItemStorage(Abstract_Module(Building)))));
+class ContainerTeleporter extends Extends {
     constructor() {
         super();
         this.setType(UNIT_TYPES.BUILDING.CONTAINER_TELEPORTER);
         this.setSprite(UNIT_TYPES.BUILDING.CONTAINER_TELEPORTER);
-        this.setModule(Module_Teleporter);
+        this.setModule(Module_ContainerTeleporter);
         this.selectable = true;
         this.walkable = false;
         this.portOffset.setValuesLocal(0, 1);
+    }
+    onModuleReady(module) {
+        Extends.prototype.onModuleReady.apply(this, arguments);
+        module.maxItemStorageItemValue = 200;
     }
 }
 UNIT_TYPES.BUILDING.CONTAINER_TELEPORTER = 'building.container_teleporter';

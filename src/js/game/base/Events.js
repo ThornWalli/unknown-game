@@ -10,6 +10,17 @@ class Events {
         this[SymbolEvents] = Events.getClearEvents();
     }
 
+    addEventsForwarding(name, events) {
+        events.on('all', (...args) => {
+            args[0] = `${name}.${args[0]}`;
+            this.trigger.apply(this, args);
+        }, this);
+    }
+
+    removeEventsForwarding(events) {
+        events.off(null, null, this);
+    }
+
     /**
      * Removes all registred Events.
      */
@@ -69,8 +80,9 @@ class Events {
             });
         }
         // Triggers event "all" on every event
+        const allArgs = [name].concat(args);
         this[SymbolEvents].all.forEach(listener => {
-            listener.cb.apply(listener.scope || listener.cb, args);
+            listener.cb.apply(listener.scope || listener.cb, allArgs);
             if (listener.once) {
                 once.push(listener);
             }
@@ -88,7 +100,7 @@ class Events {
 }
 
 function removeListener(events, name, listener) {
-    if (events[name].indexOf(listener)< 0) {
+    if (events[name].indexOf(listener) < 0) {
         console.error(name, listener, events);
     }
     events[name].splice(events[name].indexOf(listener), 1);

@@ -14,6 +14,9 @@ depot:
 teleporter:
   title: 'Teleporter'
   name: 'teleporter'
+consumption:
+  title: 'Consumption'
+  name: 'consumption'
 ---
 
 {{#mixin "molecules/interface" this partial-name="molecules/interface/unit" controller-name="./partials/molecules/interface/Unit"}}
@@ -43,6 +46,10 @@ teleporter:
 
       <div data-name="{{{teleporter.name}}}" data-title="{{{teleporter.title}}}">
         {{{mixin "molecules/interface/unit/teleporter" visible=false target=../target}}}
+      </div>
+
+      <div data-name="{{{consumption.name}}}" data-title="{{{consumption.title}}}">
+        {{{mixin "molecules/interface/unit/consumption" visible=false target=../target}}}
       </div>
 
     {{/content}}

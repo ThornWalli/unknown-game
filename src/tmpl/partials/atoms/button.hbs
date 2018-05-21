@@ -1,5 +1,5 @@
 <span class="partial {{{class}}}" data-partial="{{#if partial-name}}{{{partial-name}}}{{else}}atoms/button{{/if}}">
   {{#block "content"}}
-  <input type="{{{fallback type 'button'}}}" value="{{{title}}}"{{#if hook}} data-hook="{{{hook}}}"{{/if}} />
+  <input type="{{{fallback type 'button'}}}" value="{{{title}}}"{{#if hook}} data-hook="{{{hook}}}"{{/if}}{{#if dialog}} data-dialog="{{{dialog}}}"{{/if}} />
   {{/block}}
 </span>

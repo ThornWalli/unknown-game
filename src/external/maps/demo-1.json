@@ -1,1 +1,501 @@
-{"matrix":{"x":32,"y":24},"units":[{"type":"road.default","position":{"x":8,"y":14}},{"type":"road.default","position":{"x":5,"y":12}},{"type":"road.default","position":{"x":15,"y":16}},{"type":"road.default","position":{"x":16,"y":14}},{"type":"road.default","position":{"x":15,"y":15}},{"type":"road.default","position":{"x":15,"y":13}},{"type":"road.default","position":{"x":5,"y":17}},{"type":"road.default","position":{"x":17,"y":14}},{"type":"road.default","position":{"x":18,"y":14}},{"type":"road.default","position":{"x":19,"y":14}},{"type":"road.default","position":{"x":12,"y":14}},{"type":"road.default","position":{"x":5,"y":16}},{"type":"resource.copper","position":{"x":18,"y":12}},{"type":"resource.iron","position":{"x":12,"y":13}},{"type":"road.default","position":{"x":5,"y":15}},{"type":"road.default","position":{"x":20,"y":14}},{"type":"road.default","position":{"x":11,"y":14}},{"type":"road.default","position":{"x":9,"y":14}},{"type":"road.default","position":{"x":10,"y":14}},{"type":"road.default","position":{"x":15,"y":11}},{"type":"road.default","position":{"x":15,"y":12}},{"type":"road.default","position":{"x":21,"y":14}},{"type":"road.default","position":{"x":15,"y":14}},{"type":"road.default","position":{"x":13,"y":14}},{"type":"road.default","position":{"x":14,"y":14}},{"type":"road.default","position":{"x":15,"y":17}},{"type":"resource.iron","position":{"x":18,"y":16}},{"type":"resource.iron","position":{"x":18,"y":15}},{"type":"resource.copper","position":{"x":12,"y":15}},{"type":"resource.iron","position":{"x":12,"y":12}},{"type":"resource.copper","position":{"x":18,"y":13}},{"type":"road.default","position":{"x":6,"y":14}},{"type":"road.default","position":{"x":5,"y":14}},{"type":"road.default","position":{"x":7,"y":14}},{"type":"road.default","position":{"x":22,"y":14}},{"type":"resource.copper","position":{"x":12,"y":16}},{"type":"road.default","position":{"x":5,"y":13}},{"type":"road.default","position":{"x":15,"y":21}},{"type":"road.default","position":{"x":15,"y":19}},{"type":"road.default","position":{"x":15,"y":20}},{"type":"road.default","position":{"x":15,"y":18}},{"type":"road.default","position":{"x":18,"y":20}},{"type":"road.default","position":{"x":17,"y":20}},{"type":"road.default","position":{"x":16,"y":20}},{"type":"road.default","position":{"x":12,"y":20}},{"type":"road.default","position":{"x":13,"y":20}},{"type":"road.default","position":{"x":14,"y":20}},{"type":"building.storage.container","position":{"x":13,"y":21},"user":"1"},{"type":"building.storage.container","position":{"x":14,"y":19},"user":"1"},{"type":"building.house.default","position":{"x":23,"y":14},"user":"1"},{"type":"building.storage.container","position":{"x":16,"y":21},"user":"1"},{"type":"source.iron","position":{"x":5,"y":5}},{"type":"building.storage.container","position":{"x":14,"y":21},"user":"1"},{"type":"building.storage.container","position":{"x":13,"y":19},"user":"1"},{"type":"building.storage.container","position":{"x":12,"y":19},"user":"1"},{"type":"building.storage.container","position":{"x":17,"y":19},"user":"1"},{"type":"building.storage.container","position":{"x":18,"y":19},"user":"1"},{"type":"building.storage.container","position":{"x":16,"y":19},"user":"1"},{"type":"building.storage.container","position":{"x":18,"y":21},"user":"1"},{"type":"building.storage.container","position":{"x":17,"y":21},"user":"1"},{"type":"building.storage.container","position":{"x":12,"y":21},"user":"1"},{"type":"source.copper","position":{"x":26,"y":5}},{"type":"building.container_teleporter","position":{"x":5,"y":18},"user":"1"},{"type":"building.food.greenhouse","position":{"x":4,"y":13},"user":"1"},{"type":"building.food.greenhouse","position":{"x":4,"y":12},"user":"1"},{"type":"building.storage.default","position":{"x":15,"y":10},"user":"1"},{"type":"building.depot.vehicle","position":{"x":16,"y":11},"user":"1"},{"type":"vehicle.harvester.grabber","position":{"x":16,"y":17},"user":"1"},{"type":"vehicle.harvester.grabber","position":{"x":17,"y":17},"user":"1"},{"type":"vehicle.transporter.default","position":{"x":14,"y":17},"user":"1"},{"type":"vehicle.transporter.default","position":{"x":13,"y":17},"user":"1"}]}
+{
+  "matrix": {
+    "x": 32,
+    "y": 24
+  },
+  "units": [{
+    "type": "road.default",
+    "position": {
+      "x": 7,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "resource.copper",
+    "position": {
+      "x": 18,
+      "y": 13
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 16
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 16,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 15
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 13
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 5,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 5,
+      "y": 13
+    },
+    "user": "1"
+  }, {
+    "type": "resource.copper",
+    "position": {
+      "x": 12,
+      "y": 16
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 19,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 12,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 5,
+      "y": 16
+    },
+    "user": "1"
+  }, {
+    "type": "resource.copper",
+    "position": {
+      "x": 18,
+      "y": 12
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 5,
+      "y": 17
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 5,
+      "y": 12
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 22,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "resource.iron",
+    "position": {
+      "x": 12,
+      "y": 13
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 18,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 11,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 11
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 12
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 21,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 13,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 8,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 9,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 20,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 17,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 10,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 5,
+      "y": 15
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 14,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 17
+    },
+    "user": "1"
+  }, {
+    "type": "resource.iron",
+    "position": {
+      "x": 18,
+      "y": 16
+    }
+  }, {
+    "type": "resource.iron",
+    "position": {
+      "x": 18,
+      "y": 15
+    }
+  }, {
+    "type": "resource.copper",
+    "position": {
+      "x": 12,
+      "y": 15
+    }
+  }, {
+    "type": "resource.iron",
+    "position": {
+      "x": 12,
+      "y": 12
+    }
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 6,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 21
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 19
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 20
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 15,
+      "y": 18
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 18,
+      "y": 20
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 17,
+      "y": 20
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 16,
+      "y": 20
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 12,
+      "y": 20
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 13,
+      "y": 20
+    },
+    "user": "1"
+  }, {
+    "type": "road.default",
+    "position": {
+      "x": 14,
+      "y": 20
+    },
+    "user": "1"
+  }, {
+    "type": "building.power_station.default",
+    "position": {
+      "x": 14,
+      "y": 13
+    },
+    "user": "1"
+  }, {
+    "type": "building.storage.container",
+    "position": {
+      "x": 16,
+      "y": 19
+    },
+    "user": "1"
+  }, {
+    "type": "building.storage.container",
+    "position": {
+      "x": 12,
+      "y": 19
+    },
+    "user": "1"
+  }, {
+    "type": "building.storage.container",
+    "position": {
+      "x": 16,
+      "y": 21
+    },
+    "user": "1"
+  }, {
+    "type": "source.iron",
+    "position": {
+      "x": 5,
+      "y": 5
+    }
+  }, {
+    "type": "building.storage.container",
+    "position": {
+      "x": 14,
+      "y": 19
+    },
+    "user": "1"
+  }, {
+    "type": "building.storage.container",
+    "position": {
+      "x": 18,
+      "y": 19
+    },
+    "user": "1"
+  }, {
+    "type": "building.house.default",
+    "position": {
+      "x": 23,
+      "y": 14
+    },
+    "user": "1"
+  }, {
+    "type": "building.storage.container",
+    "position": {
+      "x": 12,
+      "y": 21
+    },
+    "user": "1"
+  }, {
+    "type": "building.storage.container",
+    "position": {
+      "x": 14,
+      "y": 21
+    },
+    "user": "1"
+  }, {
+    "type": "building.storage.container",
+    "position": {
+      "x": 17,
+      "y": 21
+    },
+    "user": "1"
+  }, {
+    "type": "building.storage.container",
+    "position": {
+      "x": 13,
+      "y": 21
+    },
+    "user": "1"
+  }, {
+    "type": "building.storage.container",
+    "position": {
+      "x": 13,
+      "y": 19
+    },
+    "user": "1"
+  }, {
+    "type": "building.storage.container",
+    "position": {
+      "x": 17,
+      "y": 19
+    },
+    "user": "1"
+  }, {
+    "type": "source.copper",
+    "position": {
+      "x": 26,
+      "y": 5
+    }
+  }, {
+    "type": "building.container_teleporter",
+    "position": {
+      "x": 5,
+      "y": 18
+    },
+    "user": "1"
+  }, {
+    "type": "building.food.greenhouse",
+    "position": {
+      "x": 4,
+      "y": 13
+    },
+    "user": "1"
+  }, {
+    "type": "building.food.greenhouse",
+    "position": {
+      "x": 4,
+      "y": 12
+    },
+    "user": "1"
+  }, {
+    "type": "building.storage.default",
+    "position": {
+      "x": 15,
+      "y": 10
+    },
+    "user": "1"
+  }, {
+    "type": "building.depot.vehicle",
+    "position": {
+      "x": 16,
+      "y": 11
+    },
+    "user": "1"
+  }, {
+    "type": "vehicle.harvester.grabber",
+    "position": {
+      "x": 16,
+      "y": 17
+    },
+    "user": "1"
+  }, {
+    "type": "vehicle.harvester.grabber",
+    "position": {
+      "x": 17,
+      "y": 17
+    },
+    "user": "1"
+  }, {
+    "type": "vehicle.transporter.default",
+    "position": {
+      "x": 14,
+      "y": 17
+    },
+    "user": "1"
+  }, {
+    "type": "vehicle.transporter.default",
+    "position": {
+      "x": 13,
+      "y": 17
+    },
+    "user": "1"
+  }, {
+    "type": "building.storage.container",
+    "position": {
+      "x": 18,
+      "y": 21
+    },
+    "user": "1"
+  }]
+}
