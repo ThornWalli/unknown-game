@@ -1,5 +1,6 @@
 'use strict';
 
+import SyncPromise from 'sync-p';
 import Collection from '../../../base/Collection';
 import {
     GRID_CELL_TYPES
@@ -47,7 +48,7 @@ export default Abstract => class extends Abstract {
         this._unitStorageUnits.add(unit);
 
         unit.storage = this.unit;
-        unit.active = false;
+        unit.visible = unit.active = false;
         unit.setPosition(this.unit.position);
 
         this.trigger('add.storage.units', this, unit);
@@ -61,21 +62,22 @@ export default Abstract => class extends Abstract {
         unit.storage = null;
         this._unitStorageUnits.remove(unit);
 
-        let position = this.unit.portPosition;
-        console.log(position, GRID_CELL_TYPES.BLOCKED === this.app.map.isCellWalkable(this.unit.portPosition.x, this.unit.portPosition.y));
-        if (GRID_CELL_TYPES.BLOCKED === this.app.map.isCellWalkable(this.unit.portPosition.x, this.unit.portPosition.y)) {
-            console.log(position.toString());
+        let position = this.portPosition;
+        if (GRID_CELL_TYPES.BLOCKED === this.app.map.isCellWalkable(position.x, position.y)) {
             position = this.app.map.getPositionAroundPosition(this.unit.position);
-            console.log(position.toString());
         }
         unit.setPosition(position);
-        unit.active = true;
+
+        unit.visible = unit.active = true;
 
         this.trigger('remove.storage.units', this, unit);
 
     }
 
-
+    removeAllUnitStorageUnits() {
+        this._unitStorageUnits.forEach(unit => this.removeUnitStorageUnit(unit));
+        return SyncPromise.resolve();
+    }
 
     /**
      * Trifft zu wenn keine Unit enthalten ist.

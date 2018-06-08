@@ -8,8 +8,9 @@ import {
 import Unit from '../Unit';
 import Abstract_User from './abstract/User';
 import Abstract_Sprite from './abstract/Sprite';
+import Abstract_Neighbor from './abstract/Neighbor';
 
-class Building extends Abstract_Sprite(Abstract_User(Unit)) {
+class Building extends Abstract_Neighbor(Abstract_Sprite(Abstract_User(Unit))) {
     constructor() {
         super();
         this.setType(UNIT_TYPES.BUILDING.DEFAULT);

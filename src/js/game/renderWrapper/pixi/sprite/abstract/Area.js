@@ -13,8 +13,8 @@ const Area = Abstract => class extends Abstract {
         super(unit, getSpriteType(spriteType));
         this._originSpriteType = spriteType;
 
-        this.unit.on('change.neighbors', onChangeNeighbors, this);
-        onChangeNeighbors.bind(this)(unit.neighbors);
+        this.unit.on('change.neighborPositions', onChangeNeighborPositions, this);
+        onChangeNeighborPositions.bind(this)(unit.neighborPositions);
 
     }
     onAdded() {}
@@ -22,20 +22,24 @@ const Area = Abstract => class extends Abstract {
 
 export default Area;
 
+function onChangeNeighborPositions() {
+    // clearTimeout(this.timeout);
+    // this.timeout = setTimeout(() => {
+        // console.log('??');
+        createNeighborsSprites(this.unit, this.root, this._originSpriteType, false);
+    // }, 1000);
 
-
-function onChangeNeighbors(neighbors) {
-    createNeighborsSprites(this.root, this._originSpriteType, neighbors, false);
 }
 
 
-function createNeighborsSprites(sprite, spriteType, neighbors) {
-
+function createNeighborsSprites(unit, sprite, spriteType) {
     sprite.children.forEach(childSprite => sprite.removeChild(childSprite));
-    neighbors.forEach(neighbor => {
-        const neighborSprite = new PIXI_Sprite(Texture.fromFrame(getSpriteType(spriteType, 1 + neighbor[0], 1 + neighbor[1])));
-        neighborSprite.anchor.set(0.5);
-        sprite.addChild(neighborSprite);
+    unit.neighborPositions.forEach((neighborPosition, i) => {
+        if (!unit.neighbors || unit.neighbors && unit.isType(unit.neighbors[i].type)) {
+            const neighborSprite = new PIXI_Sprite(Texture.fromFrame(getSpriteType(spriteType, 1 + neighborPosition[0], 1 + neighborPosition[1])));
+            neighborSprite.anchor.set(0.5);
+            sprite.addChild(neighborSprite);
+        }
     });
 }
 

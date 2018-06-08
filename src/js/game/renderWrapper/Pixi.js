@@ -92,17 +92,25 @@ function setupApp() {
     this.display.containerEl.appendChild(this._application.view);
 
     [].concat(this.map.units.items).forEach(onAddUnit.bind(this));
-    this.map.units
-        .on('add', onAddUnit, this)
-        .on('remove', onRemoveUnit, this)
-        .on('render.unit.sprite', onRenderUnitSprite, this)
-        .on('change.unit.active', onChangeUnitActive, this);
-
+    this.map
+        .on('units.add', onAddUnit, this)
+        .on('units.remove', onRemoveUnit, this)
+        .on('units.item.render.sprite', onRenderUnitSprite, this)
+        .on('units.item.change.visible', onChangeUnitVisible, this)
+        .on('units.item.change.active', onChangeUnitActive, this);
 }
 
-function onChangeUnitActive(unit, visible) {
+function onChangeUnitVisible(unit, visible) {
     toggleUnitVisible.bind(this)(unit, visible);
     onRenderUnitSprite.bind(this)(unit);
+}
+
+function onChangeUnitActive(unit, active) {
+    if (active) {
+        unit.sprite.alpha = 1;
+    } else {
+        unit.sprite.alpha = 0.5;
+    }
 }
 
 // Events

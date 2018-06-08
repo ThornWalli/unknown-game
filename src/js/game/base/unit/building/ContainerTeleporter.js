@@ -23,11 +23,11 @@ class ContainerTeleporter extends Extends {
         this.setModule(Module_ContainerTeleporter);
         this.selectable = true;
         this.walkable = false;
-        this.portOffset.setValuesLocal(0, 1);
     }
     onModuleReady(module) {
         Extends.prototype.onModuleReady.apply(this, arguments);
         module.maxItemStorageItemValue = 200;
+        console.log('jooo3');
     }
 }
 UNIT_TYPES.BUILDING.CONTAINER_TELEPORTER = 'building.container_teleporter';

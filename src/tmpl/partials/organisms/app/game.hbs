@@ -3,6 +3,7 @@
     {{#mixin "molecules/sidebar" class="app__sidebar" target="[data-partial='organisms/app/game']"}}
       {{#content "content"}}
           {{{mixin "molecules/interface/map" target=target}}}
+          {{{mixin "molecules/interface/add-unit" target=target tab-container-class="tab-container--sidebar"}}}
           {{{mixin "molecules/interface/unit" visible=false target=target tab-container-class="tab-container--sidebar"}}}
       {{/content}}
     {{/mixin}}

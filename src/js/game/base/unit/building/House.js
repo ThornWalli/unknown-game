@@ -18,7 +18,6 @@ class House extends Abstract_Module(Building) {
         this.setModule(Module_House);
         this.selectable = true;
         this.walkable = false;
-        this.portOffset.setValuesLocal(0, 1);
     }
     onModuleReady() {
     }

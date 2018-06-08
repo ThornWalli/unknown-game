@@ -41,25 +41,30 @@ export default class Transfer extends Action {
     start(targetUnit, type, value, direction) {
         if (targetUnit.module.isItemStorageEmpty(type) && direction) {
             // target empty?
+            this.onComplete();
             return false;
         } else if (this.unit.module.isItemStorageEmpty(type) && !direction) {
             // unit empty
+            this.onComplete();
             return false;
         } else if (direction && !targetUnit.module.isTransferDirection(direction ? TRANSFER_DIRECTIONS.IN : TRANSFER_DIRECTIONS.OUT)) {
             // not allowed transfer direction
+            this.onComplete();
             return false;
         }
 
+        this._transferedValue = 0;
         this._transferDirection = direction || false;
         this._targetUnit = targetUnit;
         this._transferType = type;
 
-        if (direction) {
-            this._transferMaxValue = Math.min(value, targetUnit.module.getItemStorageItemValue(type) || value);
+        if (!direction) {
+            value = value || targetUnit.module.getItemStorageItemValue(type);
+            this._transferMaxValue = Math.min(value, Math.min(targetUnit.module.getItemStorageItemValue(type)), this.unit.module.getFreeItemStorageValue());
         } else {
-            this._transferMaxValue = Math.min(value, this.unit.module.getItemStorageItemValue(type) || value);
+            value = value || this.unit.module.getItemStorageItemValue(type);
+            this._transferMaxValue = Math.min(value, Math.min(this.unit.module.getItemStorageItemValue(type)), targetUnit.module.getFreeItemStorageValue());
         }
-
         addListener(this);
         Action.prototype.start.apply(this, arguments);
     }
@@ -79,13 +84,20 @@ export default class Transfer extends Action {
     get transferType() {
         return this._transferType;
     }
+    get transferedValue() {
+        return this._transferedValue;
+    }
 
     /**
      * Gibt die Menge relativ zur Abbau Dauer an.
      * @type {Number}
      */
     get transferValue() {
-        return 10;
+        if (this._transferDirection) {
+            return Math.min(10, this._targetUnit.module.getItemStorageItemValue(this._transferType));
+        } else {
+            return Math.min(10, this.unit.module.getItemStorageItemValue(this._transferType));
+        }
     }
 
     /**
@@ -123,7 +135,6 @@ function removeListener(action) {
 
 function reset(action) {
     removeListener(action);
-    action._transferedValue = null;
 }
 
 // Events
@@ -133,26 +144,32 @@ function onTick(value) {
 }
 
 function onComplete() {
-    console.log('test');
     return () => {
-        const val = this.unit.module.itemStorageTransfer(this._targetUnit.module, this._transferType, (this.transferValue * this.transferEfficiency), this._transferDirection);
-        if (val === false) {
+        let val = false;
+
+        if (this.transferValue) {
+            val = this.unit.module.itemStorageTransfer(this._targetUnit.module, this._transferType, (this.transferValue * this.transferEfficiency), this._transferDirection);
+            if (val) {
+                this._transferedValue += val;
+            }
+
+        }
+        if (
+            (!this._transferMaxValue || this._transferMaxValue && (this._transferedValue >= this._transferMaxValue || (!this._transferDirection ? this._targetUnit.module : this.unit.module).isItemStorageFull()))
+
+
+        ) {
+            this.onComplete();
+            return false;
+        } else if (val === false) {
             // Tansfer wurde abgebrochen
+            this.onComplete();
+            return false;
+        } else if (this.stopped) {
             this.onStop();
             return false;
         } else {
-            this._transferedValue += val;
-            console.log(this._transferMaxValue, this._transferMaxValue, !this._transferMaxValue, this._transferedValue >= this._transferMaxValue, !(this._transferDirection ? this._targetUnit.module : this.unit.module).isItemStorageFull(this._transferType), (!this._transferDirection ? this._targetUnit.module : this.unit.module).isItemStorageFull());
-            if (this.stopped) {
-                this.onStop();
-                return false;
-            } else if (
-                (!this._transferMaxValue || this._transferMaxValue && (this._transferedValue >= this._transferMaxValue || (!this._transferDirection ? this._targetUnit.module : this.unit.module).isItemStorageFull()))) {
-                this.onComplete();
-                return false;
-            } else {
-                return true;
-            }
+            return true;
         }
     };
 }

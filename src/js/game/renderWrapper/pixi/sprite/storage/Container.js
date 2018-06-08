@@ -40,6 +40,7 @@ class Container extends Storage {
         module
             .on('storage.value.add', onChangeStorageValue, this)
             .on('storage.value.remove', onChangeStorageValue, this);
+            onChangeStorageValue.bind(this)(module);
     }
 
     destroy() {

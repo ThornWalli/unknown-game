@@ -1,4 +1,8 @@
 {
+  "road": {
+    "default" : "Road",
+    "dirt": "Dirt Road"
+  },
   "building": {
     "power_station":{
       "default": "Power Plant"

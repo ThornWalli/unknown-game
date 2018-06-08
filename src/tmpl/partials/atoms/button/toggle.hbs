@@ -1,0 +1,18 @@
+---
+title:
+  primary:
+    title: 'Toggle ON'
+  secondary:
+    title: 'Toggle OFF'
+---
+{{#mixin "atoms/button" this partial-name="atoms/button/toggle"}}
+  {{#content "content"}}<label><input type="checkbox" {{#if hook}} data-hook="{{{hook}}}"{{/if}} /><span class="button__inner">
+
+  {{#if title.secondary}}
+    <span class="button__title__primary">{{{title.primary.title}}}</span>
+    <span class="button__title__secondary">{{{title.secondary.title}}}</span>
+  {{else}}
+    <span>{{{fallback title.secondary title}}}</span>
+  {{/if}}
+  </span></label>{{/content}}
+{{/mixin}}

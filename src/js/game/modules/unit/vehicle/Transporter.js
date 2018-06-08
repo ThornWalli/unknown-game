@@ -10,10 +10,6 @@ import {
     UNITS as UNIT_TYPES
 } from '../../../types';
 
-import {
-    getSortedUnitByDistance
-} from '../../../utils/unit';
-
 
 export default class Transporter extends ItemStorage(Vehicle) {
 
@@ -34,7 +30,6 @@ export default class Transporter extends ItemStorage(Vehicle) {
 
     onSelectSecondary(unit) {
         if (unit && !this.isIgnoredUnit(unit) && unit.isType(UNIT_TYPES.ITEM_STORAGE)) {
-            console.log('Transporter onSelectSecondary');
             if (
                 (this._transporterAvailableItemTypes.length < 1 || unit.isType(UNIT_TYPES.ITEM_STORAGE) && this._transporterAvailableItemTypes.find(itemType => unit.module.hasItem(itemType)))
             ) {
@@ -73,11 +68,11 @@ export default class Transporter extends ItemStorage(Vehicle) {
                 return SyncPromise.resolve();
             }
             this.log('Load items…');
-
+            value = Math.min(value || 0, this.getFreeItemStorageValue(itemType));
             return this.app.unitActions.add({
                 type: ACTION_TYPES.TRANSFER,
                 unit: this.unit,
-                startArgs: [unit, itemType, Math.min(value, this.getFreeItemStorageValue(itemType)), true]
+                startArgs: [unit, itemType, value, true]
             });
         }
     }
@@ -112,6 +107,7 @@ export default class Transporter extends ItemStorage(Vehicle) {
                 } else if (!unit.module.isFreeAndAllowedItem(itemType)) {
                     return this.moveToAvailableStorage();
                 }
+                value = value || this.getItemStorageItemValue(itemType);
                 return this.unloadItems(unit, itemType, value).then(() => {
                     return this.afterUnloadItemsToStorage(unit, itemType, value);
                 });
@@ -122,15 +118,16 @@ export default class Transporter extends ItemStorage(Vehicle) {
     }
     unloadItems(unit, itemType, value) {
         this.log('Unload items…', itemType);
+        const itemValue = this.getItemStorageItemValue(itemType);
         return this.app.unitActions.add({
             type: ACTION_TYPES.TRANSFER,
             unit: this.unit,
-            startArgs: [unit, itemType, Math.min(value, this.getItemStorageItemValue(itemType))]
-        });
+            startArgs: [unit, itemType, Math.min(value, itemValue)]
+        }).then(() => itemValue);
     }
 
     afterUnloadItemsToStorage(unit, itemType, value) {
-        if (!this.unit.module.isItemStorageEmpty() && (!value || value >= this.unit.module.getItemStorageItemValue(itemType))) {
+        if (!this.unit.module.isItemStorageEmpty(itemType) && (!value || value > this.unit.module.getItemStorageItemValue(itemType))) {
             return this.unloadItemsToStorage(unit);
         } else {
             return SyncPromise.resolve();
@@ -144,7 +141,7 @@ export default class Transporter extends ItemStorage(Vehicle) {
      * @return {Promise}
      */
     collectItems() {
-        const storage = this.transporterPreferredStorageUnit || this.getFreeStorage();
+        const storage = this.transporterPreferredStorageUnit || this.app.runtimeObserver.getFreeStorage(this.unit.position, this.getAvailableItem());
         if (storage && !this.isItemStorageEmpty()) {
             return this.unloadItemsToStorage(storage);
         } else {
@@ -160,22 +157,37 @@ export default class Transporter extends ItemStorage(Vehicle) {
      * @return {SyncPromise}
      */
     cleanStorage(unit, type) {
-        return this.moveToUnit(unit).then(() => {
-            this.log('Clean Storage…');
-            return this.loadItems(unit, type).then(() => {
-                return this.moveToAvailableStorage([unit]);
+        if (this.app.runtimeObserver.hasFreeItemStorages()) {
+            return this.moveToUnit(unit).then(() => {
+                this.log('Clean Storage…');
+
+                const load = (unit, type) => {
+                    return this.loadItems(unit, type).then(() => {
+                        if (!this.isItemStorageFull() && !unit.module.isItemStorageEmpty(type)) {
+                            return load(unit, type);
+                        } else {
+                            return SyncPromise.resolve();
+                        }
+                    });
+                };
+
+                return load(unit, type).then(() => {
+                    return this.moveToAvailableStorage([unit]);
+                });
+            }).then(() => {
+                if (!unit.module.isItemAllowed(type)) {
+                    this.log('Storage no allowed Item');
+                    return this.moveToDepot();
+                } else if (unit.module.isItemStorageEmpty(type)) {
+                    this.log('Storage is cleaned from Item');
+                    return this.moveToDepot();
+                } else {
+                    return this.cleanStorage.apply(this, arguments);
+                }
             });
-        }).then(() => {
-            if (!unit.module.isItemAllowed(type)) {
-                this.log('Storage no allowed Item');
-                return this.moveToDepot();
-            } else if (unit.module.isItemStorageEmpty(type)) {
-                this.log('Storage is cleaned from Item');
-                return this.moveToDepot();
-            } else {
-                return this.cleanStorage.apply(this, arguments);
-            }
-        });
+        } else {
+            return this.moveToDepot();
+        }
     }
 
     moveToResource(unit, type) {
@@ -197,62 +209,81 @@ export default class Transporter extends ItemStorage(Vehicle) {
     }
 
     getStorageWithItem(type, ignoredUnits = []) {
-        return this.getStoragesByDistance().find(building => {
-            return ignoredUnits.indexOf(building) === -1 && building.module.getItemStorageItemValue(type);
-        });
+        return this.app.runtimeObserver.getStoragesByDistance(this.unit.position).find(building => ignoredUnits.indexOf(building) === -1 && building.module.getItemStorageItemValue(type));
     }
 
+
+    /**
+     * Bringt eine angegebenes Item zur Unit.
+     * @param  {game.base.Unit} unit
+     * @param  {game.types.Items} type
+     * @param  {number} value
+     */
     bringItemFromStorage(unit, type, value) {
-        const storage = this.getStorageWithItem(type);
-        if (storage) {
-            return this.moveToUnit(storage).then(() => {
-                return this.loadItems(storage, type, value);
-            }).then(() => {
-                console.log('this.getItemStorageItemValue(type) < value', this.getItemStorageItemValue(type) , value, this.getItemStorageItemValue(type) < value);
-                if (this.getItemStorageItemValue(type) < value) {
-                    return this.bringItemFromStorage(unit, type, value - this.getItemStorageItemValue(type));
-                } else {
-                    return this.moveToUnit(unit).then(() => {
-                        console.log('unloadItems', unit, type, Math.min(value, this.getItemStorageItemValue(type)), JSON.stringify(this.itemStorageItems));
-                        return this.unloadItems(unit, type, Math.min(value, this.getItemStorageItemValue(type))).then(() => {
-                            if (value > this.getItemStorageItemValue(type)) {
-                                return this.bringItemFromStorage(unit, type, value - this.getItemStorageItemValue(type));
+
+        this._transporterBringOriginValue = value;
+        this._transporterBringValue = value;
+
+        const moveToStorageAndLoad = () => {
+            const storage = this.getStorageWithItem(type);
+            if (storage) {
+                // Gibt Storage mit Item
+                return this.moveToUnit(storage).then(() => {
+                    // An Storage angekommen und lädt jetzt
+                    return this.loadItems(storage, type, value);
+                }).then(() => {
+                    return true;
+                });
+            } else {
+                // Gibt kein Storage mit angegebenen Item
+                this.log('Can\'t Find Storage With Item');
+                return SyncPromise.resolve(false);
+            }
+        };
+
+        return moveToStorageAndLoad().then(flag => {
+            if (flag) {
+                // Transporter voll
+                if (!this.isItemStorageFull(type) && this.getItemStorageItemValue(type) < this._transporterBringValue) {
+                    // Transporter ist nocht nicht voll, aber lager leer…
+                    // Ein weiteres Lager wird angefahren, wenn möglich.
+                    return moveToStorageAndLoad();
+                }
+            }
+            return flag;
+        }).then(flag => {
+            if (flag) {
+                // Fährt zum Ziel
+                return this.moveToUnit(unit).then(() => {
+                    if (!unit.module.isItemStorageFull()) {
+                        // Am Ziel angekommen und entlädt
+                        return this.unloadItems(unit, type, this._transporterBringValue).then(unloadValue => {
+                            // Reduzieren der noch zu holenden Menge
+                            this._transporterBringValue -= unloadValue;
+                            // Hat am Ziel entladen
+                            // Übeprüfen ob angefragte Menge ausgeliefert wurden ist.
+                            if (this._transporterBringValue > 0 && this._transporterBringValue < this._transporterBringOriginValue) {
+                                return this.bringItemFromStorage(unit, type, this._transporterBringValue);
                             }
                         });
-                    });
-                }
-            });
-        } else if (this.getItemStorageItemValue(type) > 0) {
-            return this.moveToUnit(unit).then(() => {
-                console.log('unloadItems', unit, type, Math.min(value, this.getItemStorageItemValue(type)), JSON.stringify(this.itemStorageItems));
-                return this.unloadItems(unit, type, value);
-            });
-        } else {
-            this.log('Can\'t Find Storage With Item');
-            return SyncPromise.resolve();
-        }
-    }
-
-    getStoragesByDistance() {
-        const storages = getSortedUnitByDistance(this.unit.position, this.app.runtimeObserver.buildings.filter(building => {
-            return building.isType(UNIT_TYPES.BUILDING.STORAGE.DEFAULT) && building.isType(UNIT_TYPES.ITEM_STORAGE);
-        }));
-        storages.forEach((storage, i, storages) => {
-            storages[i] = storage.unit;
+                    } else {
+                        // Am Ziel angekommen, ziel ist aber voll…
+                        return this.unloadItemsToStorage();
+                    }
+                });
+            }
+            return flag;
+        }).catch(e => {
+            console.error(e);
+            throw e;
         });
-        return storages;
-    }
-
-    getFreeStorage(ignoredUnits = []) {
-        const storages = this.getStoragesByDistance();
-        return storages.find(storage => ignoredUnits.indexOf(storage) === -1 && storage.module.isFreeAndAllowedItem(this.getAvailableItem()));
     }
 
     getAvailableItem() {
         return this.unit.module.getItemStorageAvailableItems(this.allowedItemsStorageItems).shift();
     }
     moveToAvailableStorage(ignoredUnits = []) {
-        const storage = this.getFreeStorage(ignoredUnits);
+        const storage = this.app.runtimeObserver.getFreeStorage(this.unit.position, this.getAvailableItem(), ignoredUnits);
         this._transporterPreferredStorageUnit = storage;
         if (storage) {
             return this.moveToUnit(storage).then(() => {
@@ -266,7 +297,7 @@ export default class Transporter extends ItemStorage(Vehicle) {
     }
 
     getStorage() {
-        return this._transporterPreferredStorageUnit || this.getFreeStorage();
+        return this._transporterPreferredStorageUnit || this.app.runtimeObserver.getFreeStorage(this.unit.position, this.getAvailableItem());
     }
 
 

@@ -38,21 +38,22 @@ export default Interface.extend({
         Interface.prototype.onSelectUnit.apply(this, arguments);
         if (unit && this.isAvailableUnit(unit)) {
             this.render(unit.module);
+            this.setupUnit(unit);
             this.model.visible = true;
         } else {
             this.model.visible = false;
         }
     },
 
+    setupUnit(unit) {
+        unit.module.on('consumptions.item.change.capacity', onChangeConsumptionCapacity, this);
+    },
+
     render() {
         const rows = [{
-                "head": true,
-                "cells": ['Item', 'Capacity / Max. Capacity', 'Cost']
-            }];
-
-        this.model.selectedUnit.module.on('change.consumption.value', (consumption) => {
-            console.log('change.consumption.value',consumption);
-        });
+            "head": true,
+            "cells": ['Item', 'Capacity / Max. Capacity', 'Cost']
+        }];
 
         this.model.selectedUnit.module.consumptions.forEach(consumption => {
             let styleClass = [];
@@ -69,19 +70,7 @@ export default Interface.extend({
         this.elements.consumptions.innerHTML = this.tmpl.tableContentTmpl.toText({
             "rows": rows
         });
-
-        // this.elements.unitTeleporterItemsDropdown.innerHTML = '';
-        // mapUnitTypes(ITEMS_DATA.map(data => {
-        //     return data.type;
-        // })).forEach(type => {
-        //     this.elements.unitTeleporterItemsDropdown.appendChild(this.tmpl.dropdownItem.toFragment(type));
-        // });
-        // Array.from(this.elements.unitTeleporterItemsDropdown.querySelectorAll('option')).forEach(option => {
-        //     console.log(option,option.value);
-        //     option.selected = this.model.selectedUnit.module.teleporterRequestedItems.indexOf(option.value) !== -1;
-        // });
     }
-
 
 });
 
@@ -89,45 +78,13 @@ export default Interface.extend({
  * Functions
  */
 
-function mapUnitTypes(types) {
-    const result = [];
-    Object.keys(types).forEach(key => {
-        const value = types[key];
-        if (key !== 'DEFAULT') {
-            if (typeof value === 'string') {
-                result.push({
-                    title: `${lang.get(value)}`,
-                    value: value
-                });
-            } else {
-                const options = mapUnitTypes(value);
-                if (options.length > 0) {
-                    result.push({
-                        title: `${lang.get(value.DEFAULT)}`,
-                        value: value.DEFAULT,
-                        options: mapUnitTypes(value)
-                    });
-                }
-            }
-        }
-    });
-    return result;
-}
-
-// function getFlatList(items, result = []) {
-//     return Object.values(items).reduce((result, item) => {
-//         if (typeof item === 'object') {
-//             getFlatList(item, result);
-//         } else {
-//             result.push(item);
-//         }
-//         return result;
-//     }, result);
-// }
-
 /*
  * Events
  */
+
+function onChangeConsumptionCapacity() {
+    this.render();
+}
 
 function onChangeTeleporterItems(e) {
     const options = Array.from(e.target.selectedOptions).map(option => option.value);

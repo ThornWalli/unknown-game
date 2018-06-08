@@ -1,0 +1,24 @@
+---
+active:
+  options:
+    - title: 'Yes'
+      value: '1'
+    - title: 'No'
+      value: '0'
+  title: 'Active'
+user:
+  options: []
+  title: 'User'
+---
+<div class="partial controller" data-partial="molecules/interface/unit/general" data-controller="./partials/molecules/interface/unit/General"{{#if target}} data-target="{{{target}}}"{{/if}}>
+  {{#mixin "atoms/form" this hook="unitGeneralForm"}}
+    {{#content "content"}}
+      {{#mixin "atoms/field" active}}
+        {{#content "content"}}{{{mixin "atoms/input/dropdown" options=options hook="unitGeneralActiveDropdown"}}}{{/content}}
+      {{/mixin}}
+      {{#mixin "atoms/field" user}}
+        {{#content "content"}}{{{mixin "atoms/input/dropdown" options=options hook="unitGeneralUserDropdown"}}}{{/content}}
+      {{/mixin}}
+    {{/content}}
+  {{/mixin}}
+</div>

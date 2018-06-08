@@ -1,13 +1,23 @@
 ---
-timewarp-button:
-  title: 'Skip 1 min'
+timewarp-buttons:
+  - title: 'Skip 1 min'
+    dataset:
+      duration: 60
+  - title: 'Skip 5 min'
+    dataset:
+      duration: 300
+  - title: 'Skip 30 min'
+    dataset:
+      duration: 1800
 ---
 {{#mixin "molecules/interface" this partial-name="molecules/interface/map" controller-name="./partials/molecules/interface/Map"}}
   {{#content "content"}}
       <div class="map-view__time">
         <span data-hook="mapViewTime">00:00</span>
         <div class="map-view__controls">
-          {{{mixin "atoms/button" timewarp-button class="button--small" hook="timewarpButton" }}}
+          {{#each timewarp-buttons}}
+            {{{mixin "atoms/button" this class="button--small" hook="timewarpButton" }}}
+          {{/each}}
         </div>
       </div>
       <div class="map-view__canvas">

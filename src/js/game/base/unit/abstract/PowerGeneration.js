@@ -8,10 +8,10 @@ import {
 const PowerStation = Abstract => class extends Abstract {
     constructor() {
         super();
-        this.setType(UNIT_TYPES.POWER_STATION);
+        this.setType(UNIT_TYPES.POWER_GENERATION);
     }
 };
 
-UNIT_TYPES.POWER_STATION = 'power_station';
-UNIT_CLASSES[UNIT_TYPES.POWER_STATION] = PowerStation;
+UNIT_TYPES.POWER_GENERATION = 'power_generation';
+UNIT_CLASSES[UNIT_TYPES.POWER_GENERATION] = PowerStation;
 export default PowerStation;

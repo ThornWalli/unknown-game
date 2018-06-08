@@ -10,6 +10,8 @@ import {
     getPositionsAroundPositionCircle
 } from '../../../utils/matrix';
 
+import SyncPromise from 'sync-p';
+
 /**
  * Abstract Class Module
  * @class Spawn
@@ -70,7 +72,7 @@ export default Abstract => class extends Abstract {
      */
     spawn() {
         const position = this.getRandomSpawnPosition();
-        let result = Promise.resolve();
+        let result = SyncPromise.resolve();
         if (this._spawnActive) {
             if (position) {
                 result = this.app.unitActions.add({

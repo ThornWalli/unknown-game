@@ -45,6 +45,10 @@ export default Controller.extend({
         'model.visible': {
             type: 'booleanClass',
             name: 'js--visible'
+        },
+        'model.selectedUnit': {
+            type: 'booleanClass',
+            name: 'js--selected-unit'
         }
     },
 
@@ -84,6 +88,8 @@ export default Controller.extend({
         }
         if (unit && this.isAvailableUnit(unit)) {
             this.model.selectedUnit = unit;
+        } else {
+            this.model.selectedUnit = null;
         }
     },
 

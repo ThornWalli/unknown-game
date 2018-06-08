@@ -3,7 +3,7 @@
 import Unit from '../Unit';
 
 import Moveable from './abstract/Moveable';
-import SyncPromise from 'sync-p/extra';
+import SyncPromise from 'sync-p';
 
 import {
     UNITS as UNIT_TYPES
@@ -48,7 +48,7 @@ export default class Vehicle extends Extends {
             promise = SyncPromise.resolve();
         }
         return promise.then(() => {
-            return this.moveToPosition(unit.portPosition);
+            return this.moveToPosition(unit.module.portPosition);
         });
     }
 
@@ -61,7 +61,7 @@ export default class Vehicle extends Extends {
         this.log('Go to depot');
         if (!depotUnit) {
             this.log('Can\'t find Depot…');
-            return Promise.resolve();
+            return SyncPromise.resolve();
         } else {
             return this.park(depotUnit);
         }
@@ -71,13 +71,17 @@ export default class Vehicle extends Extends {
     park(unit) {
         if (!unit.activeAction || unit.activeAction.type !== ACTION_TYPES.PARK) {
             return this.moveToUnit(unit).then(() => {
-                console.log('jooo');
                 // Steht beim Depot.
                 return this.app.unitActions.add({
                     type: ACTION_TYPES.PARK,
                     unit: this.unit,
                     startArgs: [unit]
                 });
+            }).then(() => {
+                return unit.module.addUnitStorageUnit(this.unit);
+            }).catch(e => {
+                console.error(e);
+                throw e;
             });
         } else {
             console.log('BAAAAAM');

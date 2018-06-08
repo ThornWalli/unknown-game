@@ -7,7 +7,7 @@ import {
 
 import Building from '../Building';
 import Abstract_ItemProduction from '../abstract/ItemProduction';
-import Abstract_PowerStation from '../abstract/PowerStation';
+import Abstract_PowerStation from '../abstract/PowerGeneration';
 
 class Food extends Abstract_PowerStation(Abstract_ItemProduction(Building)) {
     constructor() {

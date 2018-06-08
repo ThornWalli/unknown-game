@@ -203,6 +203,8 @@ function ready(containerEl, options) {
             setupUnitActions(this);
             setupUnitModuleControl(this);
             setupRuntimeObserver(this);
+        } else {
+            setupUnitModuleControl(this, true);
         }
 
         if (this._activeTest) {
@@ -222,7 +224,7 @@ function setupUser(app) {
 }
 
 function setupUnitSelect(app, forcedSelectable) {
-    app._unitSelect = new UnitSelect(app,forcedSelectable);
+    app._unitSelect = new UnitSelect(app, forcedSelectable);
     // Events
     app.inputControl.on('pointerdown', app._unitSelect.onPointerDown, app._unitSelect);
 }
@@ -231,8 +233,8 @@ function setupUnitActions(app) {
     app._unitActions = new UnitActions(app);
 }
 
-function setupUnitModuleControl(app) {
-    app._unitModuleControl = new UnitModuleControl(app);
+function setupUnitModuleControl(app, silent) {
+    app._unitModuleControl = new UnitModuleControl(app, silent);
 }
 
 function setupRuntimeObserver(app) {

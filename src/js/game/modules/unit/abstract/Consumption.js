@@ -1,6 +1,10 @@
 'use strict';
 
-import Events from '../../../base/Events';
+import {
+    UNITS_DATA
+} from '../../../types';
+
+import Consumption from '../../../base/Consumption';
 import Consumptions from '../../../base/collection/Consumptions';
 
 /**
@@ -13,7 +17,19 @@ export default Abstract => class extends Abstract {
         super(app, unit);
         this._consumptions = new Consumptions();
         this.addEventsForwarding('consumptions', this._consumptions);
-        this.on('storage.value.add', onAddStorageValue, this);
+        this
+            .on('storage.value.add', onAddStorageValue, this)
+            .on('consumptions.add', this.onAddConsumption, this)
+            .on('consumptions.item.warning', this.onWarningConsumption, this)
+            .on('consumptions.item.empty', this.onEmptyConsumption, this);
+
+console.log('UNITS_DATA[this.unit.type]',UNITS_DATA[this.unit.type].consumptions);
+        UNITS_DATA[this.unit.type].consumptions.forEach(consumption => {
+            console.log('consumptionconsumptionconsumption',consumption);
+            this._consumptions.add(new Consumption(consumption.type, consumption.maxCapacity, consumption.value, {
+                warningMinValues: 3
+            }));
+        });
     }
 
     /*
@@ -24,18 +40,17 @@ export default Abstract => class extends Abstract {
      * Führt den Verbrauch für alle registrierten Verbaucher aus.
      */
     runConsumption() {
-        let run = true;
-        this.requiredItems(this._consumptions.filter(consumption => {
-            if (consumption.value > 0 && consumption.capacity < consumption.capacity.value) {
-                run = false;
-            } else {
+        if (this.canConsumption()) {
+            this._consumptions.filter(consumption => {
                 consumption.capacity = Math.max(consumption.capacity - consumption.value, 0);
-            }
-            if (consumption.getCapacity() < 0.3) {
-                return consumption;
-            }
-        }));
-        return run;
+            });
+            return true;
+        }
+        return false;
+    }
+
+    canConsumption() {
+        return !this._consumptions.find(consumption => !consumption.check());
     }
 
     getConsumption(type) {
@@ -46,8 +61,14 @@ export default Abstract => class extends Abstract {
         });
     }
 
-    requiredItems(items) {
-        console.log('required items :(', items);
+    onAddConsumption(consumption) {
+        // consumption.check();
+    }
+    onWarningConsumption(consumption) {
+        console.log('consumption warning :(', consumption);
+    }
+    onEmptyConsumption(consumption) {
+        console.log('consumption empty :(', consumption);
     }
 
     /*
@@ -67,39 +88,3 @@ function onAddStorageValue(itemStorage, type, value) {
         this.removeItemStorageItemValue(type, value);
     }
 }
-
-class Consumption extends Events {
-    constructor(type, maxCapacity, value) {
-        super();
-        this.type = type;
-        this._capacity = 0;
-        this.maxCapacity = maxCapacity;
-        this.value = value;
-    }
-    getCapacity() {
-        return this.capacity / this.maxCapacity;
-    }
-
-    get capacity() {
-        return this._capacity;
-    }
-    set capacity(value) {
-        this._capacity = Math.min(Math.max(value, 0), this.maxCapacity);
-        this.trigger('change.capacity');
-        if (this.isEmpty()) {
-            this.trigger('empty');
-        }
-    }
-
-    isEmpty() {
-        return this.capacity === 0;
-    }
-
-    isWarning() {
-        return this.capacity < 0.3;
-    }
-}
-
-export {
-    Consumption
-};

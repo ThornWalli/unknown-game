@@ -2,6 +2,7 @@
 
 import {
     UNIT_CLASSES,
+    UNITS_DATA,
     UNITS as UNIT_TYPES
 } from '../../../../types';
 
@@ -21,11 +22,15 @@ class Vehicle extends Sprite(Module(Depot)) {
 
         this.selectable = true;
         this.walkable = false;
-
-        this.portOffset.setValuesLocal(0, 1);
     }
 }
 
 UNIT_TYPES.BUILDING.DEPOT.VEHICLE = 'building.depot.vehicle';
+UNITS_DATA[UNIT_TYPES.BUILDING.DEPOT.VEHICLE] = {
+    type: UNIT_TYPES.BUILDING.DEPOT.VEHICLE,
+    title: 'Fahrzeug Depot (Depot)',
+    description: 'Hier können die Fahrzeuge parken.',
+    energy: 0
+};
 UNIT_CLASSES[UNIT_TYPES.BUILDING.DEPOT.VEHICLE] = Vehicle;
 export default Vehicle;

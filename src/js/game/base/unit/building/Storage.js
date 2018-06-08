@@ -1,6 +1,7 @@
 'use strict';
 
 import {
+    // ITEMS,
     UNIT_CLASSES,
     UNITS as UNIT_TYPES
 } from '../../../types';
@@ -21,11 +22,11 @@ class Storage extends Extends {
         this.setModule(Module_Storage);
         this.selectable = true;
         this.walkable = false;
-        this.portOffset.setValuesLocal(0, 1);
     }
     onModuleReady(module) {
         Extends.prototype.onModuleReady.apply(this, arguments);
         module.maxItemStorageItemValue = 1000;
+        // module.itemStorageItems[ITEMS.RESOURCE.WATER] = 200;
     }
 }
 UNIT_TYPES.BUILDING.STORAGE = {

@@ -9,6 +9,10 @@ import Park from './base/action/Park';
 import Spawn from './base/action/Spawn';
 import Wait from './base/action/Wait';
 
+import {
+    ticker
+} from './base/Ticker';
+
 import SyncPromise from 'sync-p/extra';
 
 import {
@@ -86,6 +90,7 @@ class UnitActions extends Events {
                         throw err;
                     });
                 };
+
                 if (action.unit.activeAction) {
                     if (!this._actionsByUnits.has(unit.id)) {
                         this._actionsByUnits.set(unit.id, []);
@@ -127,7 +132,8 @@ class UnitActions extends Events {
 }
 
 function stopAction(action) {
-    console.log('stopAction', action);
+    // console.log('stopAction', action);
+    action.unit.lastAction = ticker.now();
     action.callback(action);
     this._activeActions.remove(action);
     action.unit.setAction(null);
@@ -140,12 +146,14 @@ function onActionStart(action) {
 
 function onActionStop(action) {
     // console.log('UnitActions', 'Action Begin');
+    action.unit.lastAction = ticker.now();
     this._activeActions.remove(action);
     getNextAction.bind(this)(action.unit);
 }
 
 function onActionComplete(action) {
     // console.log('UnitActions', 'Action Complete');
+    action.unit.lastAction = ticker.now();
     action.callback(action);
     this._activeActions.remove(action);
     getNextAction.bind(this)(action.unit);

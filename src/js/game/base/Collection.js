@@ -4,7 +4,7 @@ import Events from './Events';
 
 export default class Collection extends Events {
 
-    constructor(filter, items ) {
+    constructor(filter, items) {
         super();
         this._filter = filter;
         this._items = items || [];
@@ -50,7 +50,7 @@ export default class Collection extends Events {
     }
 
     createFilteredCollection(filter) {
-        const collection = new(this.class)(filter,this.filter(filter));
+        const collection = new(this.class)(filter, this.filter(filter));
         collection.once('destroy', () => this.off(null, null, collection), this);
         this.on('add', collection.add, collection);
         this.on('remove', collection.remove, collection);
@@ -61,6 +61,7 @@ export default class Collection extends Events {
         if ((!this._filter || this._filter(item))) {
             if (this._items) {
                 this._items.push(item);
+                this.addEventsForwarding('item', item);
                 if (!options || options && !options.silence) {
                     this.trigger('add', item, options);
                 }
@@ -74,6 +75,7 @@ export default class Collection extends Events {
         if (!this._filter || this._filter(item)) {
             if (this._items) {
                 this._items.splice(this._items.indexOf(item), 1);
+                this.removeEventsForwarding('item', item);
                 if (!options || options && !options.silence) {
                     this.trigger('remove', item, options);
                 }

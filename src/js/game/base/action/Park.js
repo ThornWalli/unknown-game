@@ -48,7 +48,7 @@
       */
 
      get duration() {
-         return 250;
+         return 500;
      }
  }
 
@@ -72,7 +72,6 @@
  function onTick() {}
 
  function onComplete() {
-     this._targetUnit.module.addUnitStorageUnit(this.unit);
      this.onComplete();
      return false;
  }

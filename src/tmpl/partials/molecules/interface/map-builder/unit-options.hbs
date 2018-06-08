@@ -1,21 +1,56 @@
 ---
-user:
-  options: []
-  title: 'User'
+general:
+  title: 'General'
+  name: 'general'
+vehicle:
+  title: 'Vehicle'
+  name: 'vehicle'
+storage:
+  title: 'Storage'
+  name: 'storage'
+depot:
+  title: 'Depot'
+  name: 'depot'
+teleporter:
+  title: 'Teleporter'
+  name: 'teleporter'
+consumption:
+  title: 'Consumption'
+  name: 'consumption'
 ---
+
 {{#mixin "molecules/interface" this partial-name="molecules/interface/map-builder/unit-options" controller-name="./partials/molecules/interface/mapBuilder/UnitOptions"}}
   {{#content "content"}}
-    {{#mixin "atoms/fieldset" class="unit-view__storage__allowed_items"}}
-      {{#content "title"}}Unit Options{{/content}}
-        {{#content "content"}}
-          {{#mixin "atoms/form" hook="unitOptionsForm"}}
-            {{#content "content"}}
-              {{#mixin "atoms/field" ../../user}}
-                {{#content "content"}}{{{mixin "atoms/input/dropdown" options=options hook="unitOptionsUserDropdown"}}}{{/content}}
-              {{/mixin}}
-            {{/content}}
-          {{/mixin}}
-      {{/content}}
-    {{/mixin}}
+
+  {{#mixin "molecules/tab-container" this class=tab-container-class target="[data-controller='./partials/molecules/interface/mapBuilder/UnitOptions']" }}
+    {{#content "content"}}
+
+      <div data-name="{{{general.name}}}" data-title="{{{general.title}}}">
+        {{{mixin "molecules/interface/unit/general" visible=false target=../target}}}
+      </div>
+
+      <div data-name="{{{vehicle.name}}}" data-title="{{{vehicle.title}}}">
+        {{{mixin "molecules/interface/unit/vehicle" visible=false target=../target}}}
+      </div>
+
+      <div data-name="{{{storage.name}}}" data-title="{{{storage.title}}}">
+        {{{mixin "molecules/interface/unit/storage" visible=false target=../target}}}
+      </div>
+
+      <div data-name="{{{depot.name}}}" data-title="{{{depot.title}}}">
+        {{{mixin "molecules/interface/unit/depot" visible=false target=../target}}}
+      </div>
+
+      <div data-name="{{{teleporter.name}}}" data-title="{{{teleporter.title}}}">
+        {{{mixin "molecules/interface/unit/teleporter" visible=false target=../target}}}
+      </div>
+
+      <div data-name="{{{consumption.name}}}" data-title="{{{consumption.title}}}">
+        {{{mixin "molecules/interface/unit/consumption" visible=false target=../target}}}
+      </div>
+
+    {{/content}}
+  {{/mixin}}
+
   {{/content}}
 {{/mixin}}

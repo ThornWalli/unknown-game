@@ -13,6 +13,11 @@ const Neighbor = Abstract => class extends Abstract {
         super();
         this.setType(UNIT_TYPES.NEIGHBOR);
         this._neighbors = [];
+        this._neighborPositions = [];
+    }
+
+    isNeighbor(unit) {
+        return !!unit;
     }
 
     get neighbors() {
@@ -23,6 +28,16 @@ const Neighbor = Abstract => class extends Abstract {
         this._neighbors = neighbors;
         this.trigger('change.neighbors', neighbors, this);
     }
+
+    get neighborPositions() {
+        return this._neighborPositions;
+    }
+
+    set neighborPositions(neighborPositions) {
+        this._neighborPositions = neighborPositions;
+        this.trigger('change.neighborPositions', neighborPositions, this);
+    }
+
 };
 
 UNIT_TYPES.NEIGHBOR = 'neighbor';

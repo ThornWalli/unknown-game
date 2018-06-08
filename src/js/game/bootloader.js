@@ -4,6 +4,7 @@ import './base/unit/Wall';
 import './base/unit/Figure';
 import './base/unit/Bot';
 import './base/unit/Road';
+import './base/unit/road/Dirt';
 
 /*
  * Container

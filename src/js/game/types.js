@@ -5,7 +5,10 @@ import {
 } from './utils';
 
 import ACTIONS from './types/actions';
-import UNITS from './types/units';
+import {
+    default as UNITS,
+    UNITS_DATA
+} from './types/units';
 import {
     default as ITEMS,
     ITEMS_DATA,
@@ -40,6 +43,7 @@ function getItems(item) {
 export {
     ACTIONS,
     UNITS,
+    UNITS_DATA,
     ITEMS,
     ITEMS_DATA,
     ITEMS_DATA_MAP,

@@ -11,14 +11,18 @@ class Events {
     }
 
     addEventsForwarding(name, events) {
-        events.on('all', (...args) => {
-            args[0] = `${name}.${args[0]}`;
-            this.trigger.apply(this, args);
-        }, this);
+        if (events[SymbolEvents]) {
+            events.on('all', (...args) => {
+                args[0] = `${name}.${args[0]}`;
+                this.trigger.apply(this, args);
+            }, this);
+        }
     }
 
     removeEventsForwarding(events) {
-        events.off(null, null, this);
+        if (events[SymbolEvents]) {
+            events.off(null, null, this);
+        }
     }
 
     /**

@@ -2,5 +2,5 @@
 accept: 'application/json'
 ---
 {{#mixin "atoms/button" this partial-name="atoms/button/file"}}
-  {{#content "content"}}<label><input type="file" accept="{{{accept}}}" {{#if hook}} data-hook="{{{hook}}}"{{/if}} /><span>Import</span></label>{{/content}}
+  {{#content "content"}}<label class="button__inner"><input type="file" accept="{{{accept}}}" {{#if hook}} data-hook="{{{hook}}}"{{/if}} /><span>Import</span></label>{{/content}}
 {{/mixin}}

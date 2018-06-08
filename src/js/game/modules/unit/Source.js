@@ -16,6 +16,9 @@ export default class Source extends Abstract_Spawn(Unit) {
 
         this.spawnRadius = 3;
         this.spawnUnitClass = UNIT_CLASSES[UNIT_TYPES.RESOURCE.IRON];
+    }
+
+    onReady() {
         this.startSpawn();
     }
 

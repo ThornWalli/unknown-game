@@ -13,6 +13,10 @@ const Action = Abstract => class extends Abstract {
         super();
         this.setType(UNIT_TYPES.ACTION);
         this._activeAction = null;
+
+        this._lastAction = 0;
+        this._actionHistory = [];
+
     }
 
     /*
@@ -23,6 +27,7 @@ const Action = Abstract => class extends Abstract {
         if (!action) {
             this._activeAction = null;
         } else if (!this._activeAction) {
+            this._actionHistory.push(Object.assign({}, action));
             this._activeAction = action;
             this._activeAction.on('stop', () => {
                 this._activeAction = null;
@@ -47,7 +52,26 @@ const Action = Abstract => class extends Abstract {
     get activeAction() {
         return this._activeAction;
     }
+
+    /**
+     * get last action end timestamp
+     * @return {Number}
+     */
+    get lastAction() {
+        return this._lastAction;
+    }
+
+    /**
+     * Sets last action end timestamp
+     */
+    set lastAction(value) {
+        this._lastAction = value;
+    }
+
+
+
 };
 UNIT_TYPES.ACTION = 'action';
 UNIT_CLASSES[UNIT_TYPES.ACTION] = Action;
+
 export default Action;

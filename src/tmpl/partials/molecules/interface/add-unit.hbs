@@ -1,0 +1,25 @@
+---
+remove-selected-units:
+  title: 'Remove Selected Units'
+---
+
+{{#mixin "molecules/interface" this partial-name="molecules/interface/add-unit" controller-name="./partials/molecules/interface/AddUnit" }}
+  {{#content "content"}}
+    <div class="add-unit__controls">
+      {{{mixin "atoms/button" remove-selected-units hook="unitSelectionRemoveSelectedUnits"}}}
+    </div>
+    <div class="add-unit__units">
+      {{{mixin "atoms/list" units hook="unitSelectionItems" class="list--scroll"}}}
+    </div>
+    <div class="add-unit__info">
+      {{#mixin "atoms/fieldset" class="unit-teleporter__favorite_items" }}
+        {{#content "title"}}Info:{{/content}}
+        {{#content "content"}}
+        <div data-hook="addUnitInfo">
+
+        </div>
+        {{/content}}
+      {{/mixin}}
+    </div>
+  {{/content}}
+{{/mixin}}

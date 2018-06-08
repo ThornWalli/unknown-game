@@ -56,31 +56,36 @@ class ContainerTeleporter extends Sprite {
         Sprite.prototype.onModuleReady.apply(this, arguments);
         module
             .on('storage.value.add', onChangeStorageValue, this)
-            .on('storage.value.remove', onChangeStorageValue, this).on('teleporter.receive', () => {
-            if (!this._isGroundOpen) {
-                this._isGroundOpen = true;
-                this.openGround();
-            }
-        }, this).on('teleporter.request', () => {
-            if (this._isGroundOpen) {
-                this.closeGround(() => {
-                    this._isGroundOpen = false;
-                });
-            }
-        }, this);
+            .on('storage.value.remove', onChangeStorageValue, this)
+            .on('teleporter.receive', () => this.openGround(), this)
+            .on('teleporter.request', () => this.closeGround(), this);
+    }
+
+    onTickerOpenGround(tick) {
+        this._groundSprites[this._lastGroundSprite].visible = false;
+        this._groundSprites[this._lastGroundSprite = Math.round((this._groundSprites.length - 1) * tick)].visible = true;
+    }
+
+    onTickerCloseGround(tick) {
+        this._groundSprites[this._lastGroundSprite].visible = false;
+        this._groundSprites[this._lastGroundSprite = Math.round((this._groundSprites.length - 1) * (1 - tick))].visible = true;
     }
 
     openGround(cb) {
-        ticker.register((tick) => {
-            this._groundSprites[this._lastGroundSprite].visible = false;
-            this._groundSprites[this._lastGroundSprite = Math.round((this._groundSprites.length - 1) * tick)].visible = true;
-        }, cb, GROUND_DURATION * SPRITE_LENGTH, true);
+        if (!this._isGroundOpen) {
+            this._isGroundOpen = true;
+            ticker.register(this.onTickerOpenGround.bind(this), () => {
+                return cb;
+            }, GROUND_DURATION * SPRITE_LENGTH, true);
+        }
     }
     closeGround(cb) {
-        ticker.register((tick) => {
-            this._groundSprites[this._lastGroundSprite].visible = false;
-            this._groundSprites[this._lastGroundSprite = Math.round((this._groundSprites.length - 1) * (1 - tick))].visible = true;
-        }, cb, GROUND_DURATION * SPRITE_LENGTH, true);
+        if (this._isGroundOpen) {
+            this._isGroundOpen = false;
+            ticker.register(this.onTickerCloseGround.bind(this), () => {
+                return cb;
+            }, GROUND_DURATION * SPRITE_LENGTH, true);
+        }
     }
 
     showContainer(value) {
@@ -90,9 +95,7 @@ class ContainerTeleporter extends Sprite {
     }
 
     hideContainer() {
-        this._containerSprites.forEach(container => {
-            container.visible = false;
-        });
+        this._containerSprites.forEach(container => container.visible = false);
     }
 }
 
@@ -101,7 +104,5 @@ export default ContainerTeleporter;
 
 function onChangeStorageValue(itemStorage) {
     const count = Math.round(this._containerSprites.length * (itemStorage.totalItemStorageValue / itemStorage.maxItemStorageItemValue));
-    for (var i = 0; i < this._containerSprites.length; i++) {
-        this._containerSprites[i].visible = i < count;
-    }
+    this._containerSprites.forEach((sprite, i) => sprite.visible = i < count);
 }

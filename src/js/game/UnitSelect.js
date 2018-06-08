@@ -3,6 +3,11 @@
 import Events from './base/Events';
 
 import {
+    UNITS as UNIT_TYPES,
+    UNIT_CLASSES
+} from './types';
+
+import {
     getZIndexByUnit
 } from './utils/unit';
 
@@ -15,6 +20,7 @@ export default class UnitSelect extends Events {
         this._forcedSelectable = forcedSelectable;
         this._app = app;
         this._selectedUnits = [];
+        this._selectedUnitType = null;
     }
 
     /*
@@ -24,6 +30,9 @@ export default class UnitSelect extends Events {
     selectUnit(unit) {
         this._selectedUnits.push(unit);
         this.select(unit);
+
+        // TODO Weg machen
+        global.selectedUnit = unit;
     }
 
     removeSelectUnit(unit) {
@@ -52,6 +61,15 @@ export default class UnitSelect extends Events {
         this.trigger('unselect', unit);
     }
 
+    createUnit(position) {
+        const unit = new(UNIT_CLASSES[this._selectedUnitType])();
+        unit.user = this.app.user;
+        unit.position.setLocal(position);
+        this.app.map.units.add(unit, {
+            silence: false
+        });
+    }
+
     /*
      * Properties
      */
@@ -62,8 +80,32 @@ export default class UnitSelect extends Events {
     get selectedUnits() {
         return this._selectedUnits;
     }
+    get selectedUnitType() {
+        return this._selectedUnitType;
+    }
+    set selectedUnitType(value) {
+        this._selectedUnitType = value;
+    }
 
     // Events
+
+    onAddUnit(position) {
+        const units = this.app.map.getUnitsByCell(position.x, position.y);
+        if (units.length > 0) {
+            // if (this.app.map.isCellRoad()) {
+            // console.log('units[0]', units[0]);
+            // }
+            if (units[0].isType(UNIT_TYPES.ROAD.DEFAULT)) {
+                units[0].remove();
+            }
+        } else {
+            this.createUnit(position);
+        }
+    }
+
+    removeSelectedUnits(toggle) {
+        this._selectedUnits.forEach(unit => unit.setToRemove(toggle));
+    }
 
     onPointerDown(event) {
 
@@ -72,7 +114,9 @@ export default class UnitSelect extends Events {
 
         const position = offset.add(event).divideLocal(this.app.map.cellSize).floorLocal();
 
-        if (selectedUnits.length && event.secondaryClick) {
+        if (selectedUnits.length < 1 && event.primaryClick && this._selectedUnitType) {
+            this.onAddUnit(position);
+        } else if (selectedUnits.length && event.secondaryClick) {
             this.trigger('selectSecondary', selectedUnits, position);
             // console.log('click on unit');
 
@@ -105,31 +149,41 @@ export default class UnitSelect extends Events {
                 this.clearSelectUnits();
             }
 
-            // const x = Math.floor((event.x - offset.x) / this.app.map.cellSize.width) + this.visibleBounds.min.x,
-            //     y = Math.floor((event.y - offset.y) / this.app.map.cellSize.height) + this.visibleBounds.min.y;
-            let units = this.app.map.getUnitsByCell(position.x, position.y);
-            if (units.length > 0) {
-                units.sort(function(a, b) {
-                    a = getZIndexByUnit(a) || 0;
-                    b = getZIndexByUnit(b) || 0;
-                    return b - a;
-                }).find(unit => {
-                    if (this._forcedSelectable || unit.selectable) {
-                        this.selectUnit(unit);
-                        return true;
-                    }
-                });
-                // select
-                // for (var i = 0; i < units.length; i++) {
-                //     if (units[i].selectable) {
-                //         this.selectUnit(units[i]);
-                //         break;
-                //     }
-                // }
-            }
+            this.getUnitByPosition(position).find(unit => {
+                if (this._forcedSelectable || unit.selectable) {
+                    this.selectUnit(unit);
+                    return true;
+                }
+            });
+            // let units = this.app.map.getUnitsByCell(position.x, position.y);
+            // if (units.length > 0) {
+            //     units.sort(function(a, b) {
+            //         a = getZIndexByUnit(a) || 0;
+            //         b = getZIndexByUnit(b) || 0;
+            //         return b - a;
+            //     }).find(unit => {
+            //         if (this._forcedSelectable || unit.selectable) {
+            //             this.selectUnit(unit);
+            //             return true;
+            //         }
+            //     });
+            // }
         }
 
         this.app.map.refresh();
+    }
+
+
+    getUnitByPosition(position) {
+        let units = this.app.map.getUnitsByCell(position.x, position.y);
+        if (units.length > 0) {
+            return units.sort(function(a, b) {
+                a = getZIndexByUnit(a) || 0;
+                b = getZIndexByUnit(b) || 0;
+                return b - a;
+            });
+        }
+        return [];
     }
 
 }

@@ -7,4 +7,9 @@ const TYPES = {
     CONTAINER: {}
 };
 
+const UNITS_DATA = {};
+
+export {
+    UNITS_DATA
+};
 export default TYPES;

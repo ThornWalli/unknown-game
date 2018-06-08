@@ -26,7 +26,14 @@ export default Interface.extend({
         this.elements = {
             resourcesList: this.queryByHook('generalInfoResourcesList'),
             vehiclesList: this.queryByHook('generalInfoVehiclesList'),
-            buildingsList: this.queryByHook('generalInfoBuildingsList')
+            buildingsList: this.queryByHook('generalInfoBuildingsList'),
+
+            quickFood: this.queryByHook('generalInfoQuickFood'),
+            quickWater: this.queryByHook('generalInfoQuickWater'),
+            quickEnergy: this.queryByHook('generalInfoQuickEnergy'),
+            quickSolars: this.queryByHook('generalInfoQuickSolars')
+
+
         };
     },
 

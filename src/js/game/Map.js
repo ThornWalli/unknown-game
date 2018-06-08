@@ -7,13 +7,16 @@ import Size from './base/Size';
 import {
     getPositionsAroundPositionCircle
 } from './utils/matrix';
-import UnitCollection from './base/collection/UnitCollection';
+import Units from './base/collection/Units';
 import {
     default as Matrix
 } from './Matrix';
 import {
     GRID_CELL_TYPES
 } from './utils/matrix';
+// import {
+//     clamp
+// } from '../utils/math';
 
 import {
     UNIT_CLASSES,
@@ -32,7 +35,7 @@ export default class Map extends Events {
          */
         this._cellSize = new Size(20, 20);
 
-        setupUnits(this);
+        this.setupUnits();
 
         if (size) {
             reset.bind(this)(size, units);
@@ -62,7 +65,7 @@ export default class Map extends Events {
         if (x > 0 && y > 0 && x < this._size.x && y < this._size.y) {
             const units = this.getUnitsByCell(x, y);
             for (var i = 0; i < units.length; i++) {
-                if (units[i].type === UNIT_TYPES.ROAD.DEFAULT) {
+                if (units[i].isType(UNIT_TYPES.ROAD.DEFAULT)) {
                     return GRID_CELL_TYPES.ROAD;
                 } else
                 if (walkable) {
@@ -82,6 +85,14 @@ export default class Map extends Events {
             }
         });
     }
+
+    isCellFree(x, y) {
+        return (this.getUnitByCell(x, y) || []).length === 0;
+    }
+
+    // clampPosition(position) {
+    //     return position.setValuesLocal(clamp(position.x, 0, this.matrix.size.width), clamp(position.y, 0, this.matrix.size.height));
+    // }
 
     getUnitById(id) {
         return this.units.find(unit => {
@@ -139,27 +150,87 @@ export default class Map extends Events {
         }
     }
 
-    refreshNeighbor(x, y, type, deep = true) {
-
-        const key = getPositionsAroundPositionCircle(new Position(x, y), 1).reduce((result, position) => {
-
+    refreshNeighbor(unit, type, deep = true) {
+        const neighbors = [],
+            neighborPositions = [];
+        getPositionsAroundPositionCircle(unit.position, 1).forEach(position => {
             if (position) {
-                if (this._neighborMatrix[position.x] && this._neighborMatrix[position.x][position.y] && this._neighborMatrix[position.x][position.y].find(unit => {
-                        if (unit && unit.isType(type)) {
+                if (this._neighborMatrix[position.x] && this._neighborMatrix[position.x][position.y]) {
+                    const neighbor = this._neighborMatrix[position.x][position.y].find(neighbor => {
+                        if (neighbor && neighbor.isType(type)) {
                             if (deep) {
-                                unit.neighbors = this.refreshNeighbor(position.x, position.y, type, false);
+                                this.refreshNeighbor(neighbor, type, false, [unit]);
                             }
                             return true;
                         }
-                    })) {
-                    result.push([position.y - y, position.x - x]);
+                    });
+                    if (neighbor) {
+                        neighbors.push(neighbor);
+                        neighborPositions.push([position.y - unit.position.y, position.x - unit.position.x]);
+                    }
                 }
 
             }
-            return result;
-        }, []);
-        return key;
+        });
+        unit.neighbors = neighbors;
+        unit.neighborPositions = neighborPositions;
     }
+
+    // refreshNeighbors(unit, type, deep = true) {
+    //     const neighbors = [];
+    //     const neighborPositions = [];
+    //     if (!type) {
+    //         type = unit.type;
+    //     }
+    //     const unitPosition = unit.position;
+    //
+    //     getPositionsAroundPositionCircle(unitPosition, 1).forEach(position => {
+    //         if (position) {
+    //             if (this._neighborMatrix[position.x] && this._neighborMatrix[position.x][position.y]) {
+    //                 const neighbor = this._neighborMatrix[position.x][position.y].find(neighbor => {
+    //                     if (neighbor && neighbor.isType(type)) {
+    //                         if (deep) {
+    //                             this.refreshNeighbor(neighbor, type, false);
+    //                         }
+    //                         return true;
+    //                     }
+    //                 });
+    //                 if (neighbor) {
+    //                     neighbors.push(neighbor);
+    //                     neighborPositions.push([position.y - unitPosition.y, position.x - unitPosition.x]);
+    //                 }
+    //             }
+    //
+    //         }
+    //     });
+    //     unit.neighbors = neighbors;
+    //     unit.neighborPositions = neighborPositions;
+    // }
+
+    // refreshNeighbor(unit, x, y, type, deep = true) {
+    //
+    //     unit.neighbors = getPositionsAroundPositionCircle(new Position(x, y), 1).reduce((result, position) => {
+    //
+    //         if (position) {
+    //             if (this._neighborMatrix[position.x] && this._neighborMatrix[position.x][position.y]) {
+    //                 const unit = this._neighborMatrix[position.x][position.y].find(unit => {
+    //                     if (unit && unit.isType(type)) {
+    //                         if (deep) {
+    //                             unit.neighbors = this.refreshNeighbor(position.x, position.y, type, false);
+    //                         }
+    //                         return true;
+    //                     }
+    //                 });
+    //                 if (unit) {
+    //                     result.push(unit);
+    //                         // result.push([position.y - y, position.x - x]);
+    //                 }
+    //             }
+    //
+    //         }
+    //         return result;
+    //     }, []);
+    // }
 
     /**
      * Gibt die nächste freie Position an. (Radial)
@@ -168,6 +239,9 @@ export default class Map extends Events {
      * @return {Position}
      */
     getPositionAroundPosition(position, radius = 1) {
+        if (radius > 99999999) {
+            return false;
+        }
         const positions = getPositionsAroundPositionCircle(position, radius);
         for (var i = 0; i < positions.length; i++) {
             if (this.isCellWalkable(positions[i].x, positions[i].y) !== GRID_CELL_TYPES.BLOCKED) {
@@ -179,6 +253,18 @@ export default class Map extends Events {
             return null;
         }
         return result;
+    }
+
+
+    setupUnits() {
+        this._units = new Units();
+        this.addEventsForwarding('units', this._units);
+        this.on('units.add', onAddRemoveUnit, this)
+            .on('units.remove', onAddRemoveUnit, this)
+            .on('units.add', onAddUnit, this)
+            .on('units.remove', onRemoveUnit, this)
+            .on('units.item.change.position', onChangeUnitPosition, this);
+
     }
 
     /*
@@ -207,10 +293,8 @@ function reset(size, units = []) {
     setupMatrix(this);
     units.forEach(unitData => {
         const unit = new UNIT_CLASSES[unitData.type]();
-        if ('user' in unitData && unitData.user) {
-            unit.user = unitData.user;
-        }
-        unit.position.setLocal(unitData.position);
+        delete unitData.type;
+        unit.import(unitData);
         this.units.add(unit);
     });
 }
@@ -256,27 +340,18 @@ class MoveData {
 }
 
 
-function setupUnits(map) {
-    map._units = new UnitCollection();
-    map._units.on('add', onAddRemoveUnit, map);
-    map._units.on('remove', onAddRemoveUnit, map);
-    map._units.on('add', onAddUnit, map);
-    map._units.on('remove', onRemoveUnit, map);
-    map._units.on('change.unit.position', onChangeUnitPosition, map);
-
-}
 
 function onAddUnit(unit) {
     this.addNeighbor(unit.position.x, unit.position.y, unit);
     if (unit.isType(UNIT_TYPES.NEIGHBOR)) {
-        unit.neighbors = this.refreshNeighbor(unit.position.x, unit.position.y, UNIT_TYPES.NEIGHBOR);
+        this.refreshNeighbor(unit, UNIT_TYPES.NEIGHBOR);
     }
 }
 
 function onRemoveUnit(unit) {
     this.removeNeighbor(unit.position.x, unit.position.y, unit);
     if (unit.isType(UNIT_TYPES.NEIGHBOR)) {
-        this.refreshNeighbor(unit.position.x, unit.position.y, UNIT_TYPES.NEIGHBOR);
+        this.refreshNeighbor(unit, UNIT_TYPES.NEIGHBOR);
     }
 }
 

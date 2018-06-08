@@ -9,131 +9,80 @@ import Interface from '../Interface';
 export default Interface.extend({
 
     modelConstructor: Interface.prototype.modelConstructor.extend({
-        session: {}
+        session: {
+
+            tabs: {
+                type: 'array',
+                required: true,
+                default () {
+                    return [
+                        ['info'],
+                        ['vehicle', UNIT_TYPES.VEHICLE.DEFAULT],
+                        ['storage', UNIT_TYPES.ITEM_STORAGE],
+                        ['depot', UNIT_TYPES.UNIT_STORAGE],
+                        ['teleporter', UNIT_TYPES.TELEPORTER]
+                    ];
+                }
+            }
+
+        }
     }),
+
+
+
 
     events: Object.assign({}, Interface.prototype.events, {}),
 
     initialize() {
         Interface.prototype.initialize.apply(this, arguments);
 
-        this.model.once('change:tabContainer', (model, tabContainer) => {
-            tabContainer.openByName('storage');
-        });
+        // this.model.once('change:tabContainer', (model, tabContainer) => {
+        //     tabContainer.openByName('storage');
+        // });
     },
 
     onAppReady(app) {
         Interface.prototype.onAppReady.apply(this, arguments);
         if (app.unitSelect && app.unitSelect.selectedUnits.length > 0) {
-            register.bind(this)(app.unitSelect.selectedUnits[0]);
+            this.register(app.unitSelect.selectedUnits[0]);
         }
     },
 
     onSelectUnit(unit) {
         Interface.prototype.onSelectUnit.apply(this, arguments);
         if (this.model.unit) {
-            unregister.bind(this)(this.model.unit);
+            this.unregister(this.model.unit);
         }
         if (unit) {
-            register.bind(this)(unit);
+            this.register(unit);
         }
         this.model.visible = !!unit;
+    },
+
+
+    register(unit) {
+        this.model.unit = unit;
+        this.setupUnit(unit);
+        this.model.tabContainer.openByName('info');
+    },
+
+    unregister() {
+        this.model.unit = null;
+
+    },
+
+
+    setupUnit(unit) {
+
+
+        this.model.tabs.forEach(tab => {
+                if (tab.length > 1 && unit.isType(tab[1]) || tab.length === 1 && !!unit) {
+                    this.model.tabContainer.showTab(tab[0]);
+                } else {
+                    this.model.tabContainer.hideTab(tab[0]);
+                }
+        });
+
     }
 
 });
-
-
-
-function register(unit) {
-    this.model.unit = unit;
-    setupUnit.bind(this)(unit);
-    this.model.tabContainer.openByName('info');
-}
-
-function unregister() {
-    this.model.unit = null;
-
-}
-
-// function elementVisibility(el, visible = false) {
-//     el.style.display = visible ? null : 'none';
-// }
-
-function setupUnit(unit) {
-
-    // Info
-    setupInfo.bind(this)(unit, !!unit);
-
-    // Vehicle
-    setupVehicle.bind(this)(unit.module, unit.isType(UNIT_TYPES.VEHICLE.DEFAULT));
-
-    // Storage
-    setupStorage.bind(this)(unit.module, unit.isType(UNIT_TYPES.ITEM_STORAGE));
-
-    // Depot
-    setupDepot.bind(this)(unit.module, unit.isType(UNIT_TYPES.UNIT_STORAGE));
-
-    // Teleporter
-    setupTeleporter.bind(this)(unit.module, unit.isType(UNIT_TYPES.TELEPORTER));
-
-}
-
-/*
- * Info
- */
-
-function setupInfo(unit, active) {
-    if (active) {
-        this.model.tabContainer.showTab('info');
-    } else {
-        this.model.tabContainer.hideTab('info');
-    }
-}
-
-/*
- * Vehicle
- */
-
-function setupVehicle(module, active) {
-    if (active) {
-        this.model.tabContainer.showTab('vehicle');
-    } else {
-        this.model.tabContainer.hideTab('vehicle');
-    }
-}
-
-/*
- * Storage
- */
-
-function setupStorage(module, active) {
-    if (active) {
-        this.model.tabContainer.showTab('storage');
-    } else {
-        this.model.tabContainer.hideTab('storage');
-    }
-}
-
-/*
- * Depot
- */
-
-function setupDepot(module, active) {
-    if (active) {
-        this.model.tabContainer.showTab('depot');
-    } else {
-        this.model.tabContainer.hideTab('depot');
-    }
-}
-
-/*
- * Teleporter
- */
-
-function setupTeleporter(module, active) {
-    if (active) {
-        this.model.tabContainer.showTab('teleporter');
-    } else {
-        this.model.tabContainer.hideTab('teleporter');
-    }
-}

@@ -51,11 +51,20 @@ export default Interface.extend({
     },
 
     renderItem(log) {
-        this.elements.list.appendChild(this.itemTmpl.toFragment({
-            time: timestampToTimeString(log.timestamp),
-            type: log.type,
-            text: log.text
-        }));
+        if (!Array.isArray(log)) {
+            log = [log];
+        }
+        log.forEach(log => {
+            if (this.elements.list.children.length >= 100) {
+                this.elements.list.children[0].remove();
+            }
+            this.elements.list.appendChild(this.itemTmpl.toFragment({
+                timestamp: log.timestamp,
+                time: timestampToTimeString(log.timestamp),
+                type: log.type,
+                text: log.text
+            }));
+        });
         this.elements.list.parentElement.scrollTop = this.elements.list.parentElement.scrollHeight;
     }
 });
@@ -70,5 +79,14 @@ function onChangeTargetApp(model, app) {
 
 
 function onAddLog(log) {
-    this.renderItem(log);
+    this.__logs = this.__logs || [];
+    if (this.__timeout) {
+        this.__logs.push(log);
+    } else {
+        this.__timeout = global.setTimeout(() => {
+                this.renderItem(this.__logs.splice(0,this.__logs.length));
+            this.__timeout = null;
+        }, 1000);
+    }
+
 }

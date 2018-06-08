@@ -5,7 +5,8 @@ import ItemStorage from './abstract/ItemStorage';
 // import Grabber from '../../base/unit/vehicle/harvester/Grabber';
 // import Transporter from '../../base/unit/vehicle/Transporter';
 
-export default class Storage extends ItemStorage(Unit) {
+const Extends = ItemStorage(Unit);
+export default class Storage extends Extends {
     constructor(app, unit) {
         super(app, unit);
 
@@ -16,15 +17,18 @@ export default class Storage extends ItemStorage(Unit) {
         // this.app.unitSelect.selectUnit(harvesterUnit);
         this.on('change.allowedItemsStorageItems', onChangeAllowedItemsStorageItems, this);
     }
+
+    destroy() {
+        return this.cleanStorage().then(() => {
+            return Extends.prototype.destroy.apply(this, arguments);
+        });
+    }
+
     createVehicleUnit(unit) {
         unit.user = this.unit.user;
         unit.position.setLocal(this.app.map.getPositionAroundPosition(this.unit.position));
         unit.on('module.ready', onVehiclerModuleReady, this);
         this.app.map.units.add(unit);
-    }
-
-    cleanStorage(key) {
-        this.requestTransporterToEmpty(key);
     }
 }
 

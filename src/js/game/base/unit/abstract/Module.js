@@ -18,14 +18,18 @@ const Module = Abstract => class extends Abstract {
     /**
      * Tritt ein wenn Module bereit ist.
      * @param {game.base.Module} module
+     * @param {Boolean} silent
      */
     onModuleReady() {}
-    setupModule(app) {
+    setupModule(app, silent = false) {
         if (!this._ready) {
             this._module = new(this._module)(app, this);
             this._ready = true;
-            this.onModuleReady(this._module);
-            this.trigger('module.ready', this._module, this);
+            if (!silent) {
+                this.onModuleReady(this._module);
+                this._module.onReady();
+                this.trigger('module.ready', this._module, this);
+            }
         }
     }
     /**

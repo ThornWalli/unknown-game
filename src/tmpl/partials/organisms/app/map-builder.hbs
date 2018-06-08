@@ -3,7 +3,7 @@
     {{#mixin "molecules/sidebar" class="app__sidebar" target="[data-controller='./partials/organisms/app/MapBuilder']"}}
       {{#content "content"}}
           {{{mixin "molecules/interface/map" target=target}}}
-          {{{mixin "molecules/interface/map-builder/unit-options" target=target}}}
+          {{{mixin "molecules/interface/map-builder/unit-options" target=target tab-container-class="tab-container--sidebar"}}}
           {{{mixin "molecules/interface/map-builder/unit-selection" target=target}}}
       {{/content}}
     {{/mixin}}

@@ -12,16 +12,22 @@ import Position from '../base/Position';
  * @return {game.base.Position}
  */
 function getPositionsAroundPositionCircle(position, radius = 3, filled = false) {
-    const positions = [];
+    let positions = [];
     for (var angle = 0; angle < (Math.PI * 2); angle += (Math.PI / 10)) {
         positions.push(getPositionByAngleRadius(angle, radius).addLocal(position));
     }
     // radius over 1, ignore position
     if (filled && radius > 1) {
-        return positions.concat(getPositionsAroundPositionCircle(position, radius - 1, filled));
-    } else {
-        return positions;
+        positions = positions.concat(getPositionsAroundPositionCircle(position, radius - 1, filled));
     }
+
+    const filter = [];
+    return positions.filter(position => {
+        if (filter.indexOf(`${position.x}_${position.y}`) === -1) {
+            filter.push(`${position.x}_${position.y}`);
+            return position;
+        }
+    });
 }
 
 

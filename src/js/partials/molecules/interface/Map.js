@@ -46,8 +46,8 @@ class Events_Dom {
         event.preventDefault();
     }
 
-    static onClickTimewarp() {
-        ticker.skip(1000 * 60);
+    static onClickTimewarp(e) {
+        ticker.skip(1000 * parseInt(e.target.dataset.duration));
     }
 
 }
@@ -121,11 +121,10 @@ export default Interface.extend({
     onViewportInit() {
         if (this.targetModel) {
             if (this.targetModel.app) {
-                onChangeTargeApp.bind(this)(this.targetModel, this.targetModel.app);
+                onChangeTargetApp.bind(this)(this.targetModel, this.targetModel.app);
             } else {
-                this.targetModel.once('change:app', onChangeTargeApp, this);
+                this.targetModel.once('change:app', onChangeTargetApp, this);
             }
-
         } else {
             throw new Error('TargetModel is undefined…');
         }
@@ -152,7 +151,7 @@ export default Interface.extend({
 
 });
 
-function onChangeTargeApp(model, app) {
+function onChangeTargetApp(model, app) {
     app.ready.then(() => {
         this.model.mapView = new MapView(app, this.elements.canvas);
     });

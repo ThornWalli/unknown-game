@@ -8,25 +8,77 @@
 
     li {
       margin: 5px 0;
-
-      &::before {
-        content: "-\00a0";
-        display: table-cell;
-      }
-
-      > span {
-        display: table-cell;
-
-        & + span {
-          &::before {
-            content: ":\00a0";
-          }
-        }
-      }
     }
   }
 
   .general-info {
+    &__table {
+      ul {
+        li {
+          &::before {
+            content: "-\00a0";
+            display: table-cell;
+          }
+
+          > span {
+            display: table-cell;
+
+            & + span {
+              &::before {
+                content: ":\00a0";
+              }
+            }
+          }
+        }
+      }
+    }
+
+    &__quick {
+      ul {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      li {
+        width: calc(100% / 2);
+      }
+
+      img {
+        width: 16px;
+        vertical-align: middle;
+        display: inline-block;
+      }
+
+      span {
+        display: inline-block;
+        font-weight: 500;
+      }
+
+      img + span {
+        &::before {
+          content: ":";
+          padding-right: 4px;
+        }
+      }
+
+      span + span {
+        &.js {
+          &--ready {
+            color: $color_green;
+          }
+
+          &--warning {
+            color: $color_orange;
+          }
+
+          &--error {
+            color: $color_red;
+          }
+        }
+      }
+    }
+
     &__container {
       margin: 10px 5px;
 

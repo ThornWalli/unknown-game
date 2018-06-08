@@ -1,7 +1,7 @@
 'use strict';
 
 
-export default class UnitOverview {
+export default class Log {
     constructor(app) {
         this._app = app;
     }

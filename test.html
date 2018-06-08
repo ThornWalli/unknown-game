@@ -1,0 +1,172 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="icon.png">
+  <!-- Place favicon.ico in the root directory -->
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.0/css/swiper.css">
+
+  <style>
+    img {
+      display: block;
+      margin: 0 auto;
+    }
+
+    .swiper-slide {
+      width: 500px;
+    }
+
+    [class*="slide-content-"] {
+      width: 100%;
+    }
+
+    [class*="slide-content-"]>div {
+      box-sizing: border-box;
+      padding: 10px 20px;
+      background: red;
+    }
+
+    [class*="slide-content-"]>div:last-child {
+      background: blue;
+    }
+
+    .slide-content-float:after {
+      content: "";
+      display: block;
+      clear: left;
+    }
+
+    .slide-content-float>div {
+      float: left;
+      width: 50%;
+    }
+
+    .slide-content-flex {
+
+      display: flex;
+
+    }
+
+    .slide-content-flex>div {
+      width: 50%;
+      flex: 0 50%;
+    }
+  </style>
+
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.0/js/swiper.js"></script>
+
+</head>
+
+<body>
+
+  <style>
+    .clearfix:after {
+      content: "";
+      display: none;
+      clear: both;
+    }
+  </style>
+
+  <h1>Float</h1>
+
+  <div class="swiper-container">
+    <!-- Additional required wrapper -->
+    <div class="swiper-wrapper">
+      <!-- Slides -->
+      <div class="swiper-slide">
+        <div class="slide-content-float">
+          <div>
+            <img src="https://dummyimage.com/400x400/EEE/666" width="200" />
+          </div>
+          <div>
+            <p>Rem placeat luctus nobis minim voluptatum exercitationem dignissimos aenean congue.</p>
+            <p>Quam mollit doloremque convallis, ipsam, pariatur, quasi, voluptatum, parturient, laborum.</p>
+          </div>
+        </div>
+      </div>
+      <div class="swiper-slide">Slide 2</div>
+      <div class="swiper-slide">Slide 3</div>
+    </div>
+    <!-- If we need pagination -->
+    <div class="swiper-pagination"></div>
+
+    <!-- If we need navigation buttons -->
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+
+    <!-- If we need scrollbar -->
+    <div class="swiper-scrollbar"></div>
+  </div>
+
+  <div "swiper-slide">
+    <h1>Flex</h1>
+
+    <div class="swiper-container">
+      <!-- Additional required wrapper -->
+      <div class="swiper-wrapper">
+        <!-- Slides -->
+        <div class="swiper-slide">
+          <div class="slide-content-flex">
+            <div>
+              <img src="https://dummyimage.com/400x400/EEE/666" width="200" />
+            </div>
+            <div>
+              <p>Rem placeat luctus nobis minim voluptatum exercitationem dignissimos aenean congue.</p>
+              <p>Quam mollit doloremque convallis, ipsam, pariatur, quasi, voluptatum, parturient, laborum.</p>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-slide">Slide 2</div>
+        <div class="swiper-slide">Slide 3</div>
+      </div>
+      <!-- If we need pagination -->
+      <div class="swiper-pagination"></div>
+
+      <!-- If we need navigation buttons -->
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+
+      <!-- If we need scrollbar -->
+      <div class="swiper-scrollbar"></div>
+    </div>
+
+  </div>
+
+
+  <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+      var mySwiper = new Swiper('.swiper-container', {
+        // Optional parameters
+        direction: 'horizontal',
+        loop: true,
+
+        // If we need pagination
+        pagination: {
+          el: '.swiper-pagination',
+        },
+
+        // Navigation arrows
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+
+        // And if we need scrollbar
+        scrollbar: {
+          el: '.swiper-scrollbar',
+        },
+      })
+    });
+  </script>
+
+</body>
+
+</html>

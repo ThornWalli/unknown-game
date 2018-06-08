@@ -4,33 +4,27 @@ import {
     ITEMS
 } from '../../../types';
 import Food from '../Food';
-import {
-    ticker
-} from '../../../base/Ticker';
+
 
 const TYPE = ITEMS.FOOD.VEGETABLE;
-const CONSUMPTION_TYPE_WATER = ITEMS.RESOURCE.WATER;
-
-import {
-    Consumption
-} from '../abstract/Consumption';
+// import Consumption from '../../../base/Consumption';
+// const CONSUMPTION_TYPE_WATER = ITEMS.RESOURCE.WATER;
 
 export default class Greenhouse extends Food {
     constructor(app, unit) {
         super(app, unit);
+        //
+        // this.consumptions.add(new Consumption(CONSUMPTION_TYPE_WATER, 100, 20, {
+        //     warningMinValues: 3
+        // }));
 
-        console.log('Start Date', Date.now());
-
-        this.consumptions.add(new Consumption(CONSUMPTION_TYPE_WATER, 100, 10));
-
+        this.productionItems.push(TYPE);
         this.maxItemStorageItemValue = 100;
         this.allowedItemsStorageItems.push(ITEMS.RESOURCE.WATER);
         this.allowedItemsStorageItems.push(TYPE);
         this.addItemStorageItemValue(TYPE, 20);
 
 
-
-        ticker.register(null, this.onTickerComplete.bind(this), 60 * 2 * 1000);
 
         // setTimeout(() => {
         //     this.requestItem(ITEMS.RESOURCE.WATER, 50);
@@ -41,21 +35,17 @@ export default class Greenhouse extends Food {
 
     }
 
-    requiredItems(items) {
-        items.forEach(item => this.requestItem(item.type, item.maxCapacity));
+    onReady() {
+        Food.prototype.onReady.apply(this, arguments);
+        this.startItemProduction(true);
+    }
 
+    onEmptyConsumption(consumption) {
+        return this.requestItem(consumption.type, consumption.maxCapacity - consumption.capacity);
     }
 
     onTickerComplete() {
-        if (!this.isItemStorageFull() && this.runConsumption()) {
-            if (this.addItemStorageItemValue(TYPE, 10) !== 0) {
-                this.log('Food created');
-            } else {
-                this.requestTransporterToEmpty();
-            }
-        } else {
-            this.requestTransporterToEmpty();
-        }
+        return Food.prototype.onTickerComplete.apply(this, arguments);
     }
 
 }

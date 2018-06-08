@@ -10,6 +10,8 @@ import uuid from 'uuid';
 import Events from './Events';
 import Position from './Position';
 
+import SyncPromise from 'sync-p';
+
 class Unit extends Events {
     constructor() {
         super();
@@ -20,7 +22,24 @@ class Unit extends Events {
 
         this._id = uuid();
 
+        /**
+         * Gibt an ob Unit aktiv ist
+         * @type {Boolean}
+         */
         this._active = true;
+
+        /**
+         * Gibt an ob Unit gelöscht werden soll.
+         * Wird verwendet bei einem Abriss von einem Lager, dieses muss erst leer sein zum löschen.
+         * @type {Boolean}
+         */
+        this._removed = true;
+
+        /**
+         * Gibt an ob Unit sichtbar ist.
+         * @type {Boolean}
+         */
+        this._visible = true;
 
         /**
          * Gibt die UnitStorage, in dem sich die Unit befindet.
@@ -65,9 +84,13 @@ class Unit extends Events {
          */
         this._portOffset = new Position();
 
-
+        /**
+         * Beinhaltet alle Typen die von der Unit verwendet werden.
+         * @type {Array}
+         */
         this._types = [];
 
+        // Set Default Type
         this.setType(UNIT_TYPES.DEFAULT);
 
     }
@@ -86,6 +109,51 @@ class Unit extends Events {
         this.direction = setDirection(this.position, this.lastPosition);
     }
 
+    /**
+     * Setzt fest das die Unit gelöscht werden soll.
+     */
+    setToRemove(toggle) {
+        if (toggle) {
+            this._setToRemove = !this._setToRemove;
+            this.active = !this.active;
+        } else {
+            this._setToRemove = true;
+            this.active = false;
+        }
+
+        let result = [];
+        if (this.isType(UNIT_TYPES.ACTION)) {
+            if (this._activeAction) {
+                result.push(this._activeAction.stop());
+            }
+        }
+
+        if (!this.active) {
+            if (this.isType(UNIT_TYPES.MODULE)) {
+                result.push(this.module.destroy());
+            }
+            console.log('this.module.destroy()', result);
+            this.trigger('change.setToRemove', this, this._setToRemove);
+            return SyncPromise.all(result).then(() => {
+                console.log('JOOOOOOO2000 3');
+                this.remove();
+            });
+        } else {
+            return SyncPromise.all(result);
+        }
+    }
+
+    /**
+     * Fragt ab ob Unit gelöscht werden soll.
+     * @return {Boolean}
+     */
+    isSetToRemove() {
+        return this._setToRemove;
+    }
+
+    /**
+     * Löscht die angegebene Unit.
+     */
     remove() {
         this.trigger('remove', this);
     }
@@ -95,6 +163,19 @@ class Unit extends Events {
         // unit.off(null, null, this);
     }
 
+    /**
+     * Überprüft ob angegebene Unit übereinstimmt.
+     * @param  {game.base.Unit}  unit
+     * @return {Boolean}
+     */
+    is(unit) {
+        return this.id === unit.id;
+    }
+    /**
+     * Überprüft ob angegebene(r) Type(n) mit der Unit übereinstimmen.
+     * @param  {game.types.Units}  type
+     * @return {Boolean}
+     */
     isType(type) {
         if (typeof type !== 'string') {
             type = type.type;
@@ -102,29 +183,64 @@ class Unit extends Events {
         return this._types.indexOf(type) > -1;
     }
 
+    /**
+     * Vergibt der Unit einen Typ.
+     * @param  {game.types.Units}  type
+     */
     setType(type) {
         this._types.push(type);
+    }
+
+    import (data) {
+        Object.keys(data).forEach(property => {
+            if (property === 'module') {
+                Object.keys(data.module).forEach(property => {
+                    this.importSetProperty(property, data[property], true);
+                    this.module[property] = data.module[property];
+                });
+            } else {
+                this.importSetProperty(property, data[property]);
+            }
+        });
+    }
+
+    importSetProperty(name, value, isModule) {
+        let scope = this;
+        if (isModule) {
+            scope = this.module;
+        }
+        if (scope[name] instanceof Position) {
+            scope.position.setLocal(value);
+        } else {
+            scope[name] = value;
+        }
+    }
+
+    export () {
+        const data = {
+            active: this.active,
+            type: this.type,
+            position: this.position.toJSON()
+        };
+
+        if (this.user) {
+            data.user = this.user.id;
+        }
+        if (this.module) {
+            data.module = Array.from(this.module.exportableProperties).reduce((result, property) => {
+                if (this.module[property]) {
+                    result[property] = this.module[property];
+                }
+                return result;
+            }, {});
+        }
+        return data;
+
     }
 
     /*
      * Properties
      */
-
-    /**
-     * Ruft die Port Position der Unit ab.
-     * @return {game.base.Position}
-     */
-    get portPosition() {
-        return this.position.add(this._portOffset);
-    }
-
-    /**
-     * Ruft die Port Offset der Unit ab.
-     * @return {game.base.Position}
-     */
-    get portOffset() {
-        return this._portOffset;
-    }
 
     /**
      * Relativer abstand von vorheriger, zu aktueller Position.
@@ -148,13 +264,20 @@ class Unit extends Events {
         return this._types;
     }
 
-
     get active() {
         return this._active;
     }
     set active(value) {
         this._active = value;
         this.trigger('change.active', this, value);
+    }
+
+    get visible() {
+        return this._visible;
+    }
+    set visible(value) {
+        this._visible = value;
+        this.trigger('change.visible', this, value);
     }
 
 
@@ -171,11 +294,7 @@ class Unit extends Events {
      * @type {Boolean}
      */
     get selectable() {
-        if (!this._active) {
-            return false;
-        } else {
-            return this._selectable;
-        }
+        return this._selectable;
     }
     set selectable(selectable) {
         this._selectable = selectable;

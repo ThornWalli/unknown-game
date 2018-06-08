@@ -5,8 +5,18 @@ import SyncPromise from 'sync-p';
 import Events from './base/Events';
 
 import {
+    ticker
+} from './base/Ticker';
+
+import {
     UNITS as UNIT_TYPES
 } from './types';
+
+import {
+    getSortedUnitByDistance
+} from './utils/unit';
+
+const VEHICLE_TIMEOUT = 2 * 60 * 1000;
 
 /**
  * RuntimeObserver
@@ -29,9 +39,23 @@ export default class RuntimeObserver extends Events {
         this.onChangeStorages();
 
         this._vehicles = this.getVehicles();
+        this._freeTransporter = new Set(this._vehicles.filter(unit => isTransporter(unit)));
         this.onChangeVehicles();
 
         this.setup();
+
+
+        ticker.register(null, () => {
+            this._vehicles.forEach(vehicle => {
+                const timeDiff = ticker.now() - vehicle.lastAction;
+                if (!vehicle.activeAction && (vehicle.lastAction === 0 || (timeDiff) > (5 * 60 * 1000))) {
+                    vehicle.module.moveToDepot();
+                }
+            });
+            return true;
+        }, VEHICLE_TIMEOUT, false);
+
+
     }
 
     setup() {
@@ -39,19 +63,17 @@ export default class RuntimeObserver extends Events {
         // Request Transporter Queue
 
         this._requestTransporterQueue = [];
-        this.on('change.depots.vehicles', (depots) => {
-            const transporters = depots.reduce((result, depot) => {
-                result = result.concat(depot.module.unitStorageUnits.items);
-                return result;
-            }, []);
-            if (transporters.length > 0) {
+        this.on('change.depots.vehicles', () => {
+            const transporters = Array.from(this._freeTransporter);
+            if (transporters.length > 0 && this._requestTransporterQueue.length > 0) {
                 this._requestTransporterQueue.shift()(transporters);
             }
         }, this);
 
 
         this._storages.forEach(unit => unit.module.on('storage.value.add', this.onChangeResources, this));
-        this._depots.forEach(unit => unit.module.on('add.storage.units', this.onChangeDepotVehicles, this));
+        this._depots.forEach(unit => unit.module.on('add.storage.units', this.onAddStorageUnitsUnit, this));
+        this._depots.forEach(unit => unit.module.on('remove.storage.units', this.onRemoveStorageUnitsUnit, this));
         this.app.map.units.on('add', unit => {
             if (unit.isType(UNIT_TYPES.BUILDING.DEFAULT) && isUserUnit(this.app, unit)) {
                 this._buildings.push(unit);
@@ -68,7 +90,10 @@ export default class RuntimeObserver extends Events {
                 this.onChangeStorages();
             }
             if (unit.isType(UNIT_TYPES.VEHICLE.DEFAULT) && isUserUnit(this.app, unit)) {
-                this._vehicles.push(unit);
+                this._vehicles.add(unit);
+                if (isTransporter(unit)) {
+                    this._freeTransporter.add(unit);
+                }
                 this.onChangeVehicles();
             }
         });
@@ -84,6 +109,9 @@ export default class RuntimeObserver extends Events {
             }
             if (unit.isType(UNIT_TYPES.VEHICLE.DEFAULT) && isUserUnit(this.app, unit)) {
                 this._vehicles.splice(this._vehicles.indexOf(unit), 1);
+                if (isTransporter(unit)) {
+                    this._freeTransporter.delete(unit);
+                }
                 this.onChangeVehicles();
             }
             if (unit.isType(UNIT_TYPES.BUILDING.STORAGE.DEFAULT) && isUserUnit(this.app, unit)) {
@@ -92,8 +120,25 @@ export default class RuntimeObserver extends Events {
             }
         });
 
+
+this._solars = 0;
+        this._energy = 0;
+        this._water = 0;
+        this._food = 0;
     }
 
+    get solars() {
+        return this._solars;
+    }
+    get energy() {
+        return this._energy;
+    }
+    get water() {
+        return this._water;
+    }
+    get food() {
+        return this._food;
+    }
 
     // Functions
 
@@ -118,31 +163,59 @@ export default class RuntimeObserver extends Events {
             }
         });
     }
+    getEnergy() {
+        return this.app.map.getUnitsByType(UNIT_TYPES.POWER_GENERATION.DEFAULT).filter(unit => {
+            if (isUserUnit(this.app, unit)) {
+                return unit;
+            }
+        });
+    }
+
+    hasFreeItemStorages(key) {
+        return this._storages.some(storage => {
+            return storage.module.getFreeItemStorageValue(key);
+        });
+    }
 
     /**
      * Ruft einen freien Transporter.
      * @param {game.types.items} type
      */
     requestTransporter() {
-        const transporters = this.vehicles.filter(unit => unit.isType(UNIT_TYPES.VEHICLE.TRANSPORTER.DEFAULT) && !unit.activeAction);
-        if (transporters.length > 0) {
-            return transporters.shift();
-        }
+        return this.requestTransporters().then(transporters => {
+            this._freeTransporter.delete(transporters[0]);
+            return transporters[0];
+        });
     }
 
     requestTransporters() {
         return new SyncPromise(resolve => {
-            const transporters = this.vehicles.filter(unit => unit.isType(UNIT_TYPES.VEHICLE.TRANSPORTER.DEFAULT) && !unit.activeAction);
-
-            if (transporters.length > 0) {
-                return resolve(transporters);
+            const transporters = this._freeTransporter;
+            if (transporters.size > 0) {
+                return resolve(Array.from(transporters));
             } else {
                 this._requestTransporterQueue.push(resolve);
             }
+        }).catch(e => {
+            throw e;
         });
 
     }
 
+    getStoragesByDistance(position) {
+        const storages = getSortedUnitByDistance(position, this._buildings.filter(building => {
+            return building.active && building.isType(UNIT_TYPES.BUILDING.STORAGE.DEFAULT) && building.isType(UNIT_TYPES.ITEM_STORAGE);
+        }));
+        storages.forEach((storage, i, storages) => {
+            storages[i] = storage.unit;
+        });
+        return storages;
+    }
+
+    getFreeStorage(position, item, units = [], ignore = true) {
+        const storages = this.getStoragesByDistance(position);
+        return storages.find(storage => (units.length < 1 || !ignore && units.indexOf(storage) > -1 || ignore && units.indexOf(storage) === -1) && storage.module.isFreeAndAllowedItem(item));
+    }
 
 
     // Properties
@@ -162,6 +235,9 @@ export default class RuntimeObserver extends Events {
     get vehicles() {
         return [].concat(this._vehicles);
     }
+    get freeTransporter() {
+        return [].concat(this._freeTransporter);
+    }
 
     // Events
 
@@ -171,8 +247,17 @@ export default class RuntimeObserver extends Events {
     onChangeDepots() {
         this.trigger('change.depots', this.depots);
     }
-    onChangeDepotVehicles() {
-        this.trigger('change.depots.vehicles', this.depots);
+
+    onAddStorageUnitsUnit(storage, unit) {
+        if (isTransporter(unit)) {
+            this._freeTransporter.add(unit);
+            this.trigger('change.depots.vehicles', this.depots);
+        }
+    }
+    onRemoveStorageUnitsUnit(storage, unit) {
+        if (isTransporter(unit)) {
+            this._freeTransporter.delete(unit);
+        }
     }
     onChangeStorages() {
         this.trigger('change.storages', this.storages);
@@ -192,6 +277,10 @@ export default class RuntimeObserver extends Events {
         this.onChangeStorages();
     }
 
+}
+
+function isTransporter(unit) {
+    return unit.isType(UNIT_TYPES.VEHICLE.TRANSPORTER.DEFAULT);
 }
 
 function isUserUnit(app, unit) {

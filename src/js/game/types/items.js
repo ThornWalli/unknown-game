@@ -2,6 +2,8 @@
 
 const ITEMS = {
 
+    ENERGY: 'energy',
+
     FOOD: {
         DEFAULT: 'food.default',
         VEGETABLE: 'food.vegetable'

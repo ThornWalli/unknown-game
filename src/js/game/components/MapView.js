@@ -7,8 +7,9 @@ export default class MapView {
         this._app = app;
         this._canvas = canvas;
         this._context = canvas.getContext('2d');
-            app.display.on('refresh', onRefresh, this).on('reset', onRefresh, this);
-            app.map.on('refresh', onRefresh, this);
+        this._refreshTimeout = null;
+        app.display.on('refresh', onRefresh, this).on('reset', onRefresh, this);
+        app.map.on('refresh', onRefresh, this);
     }
 
     refresh() {
@@ -95,5 +96,6 @@ export default class MapView {
 }
 
 function onRefresh() {
-    this.refresh();
+    clearTimeout(this._refreshTimeout);
+    this._refreshTimeout = setTimeout(this.refresh.bind(this), 100);
 }

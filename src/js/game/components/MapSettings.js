@@ -38,12 +38,14 @@ export default class MapSettings {
             matrix: this._app.map.matrix.size.toJSON(),
             units: this._app.map.units.map(unit => {
                 const data = {
+                    active: unit.active,
                     type: unit.type,
                     position: unit.position.toJSON()
                 };
                 if (unit.user) {
                     data.user = unit.user.id;
                 }
+
                 return data;
             })
         });

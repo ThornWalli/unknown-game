@@ -121,6 +121,13 @@ SPRITE_BLUEPRINTS[UNIT_TYPES.ROAD.DEFAULT] = {
     width: 3,
     height: 3
 };
+import './sprite/road/Dirt';
+SPRITE_BLUEPRINTS[UNIT_TYPES.ROAD.DIRT] = {
+    name: UNIT_TYPES.ROAD.DIRT,
+    path: 'assets/img/road/moon.png',
+    width: 3,
+    height: 3
+};
 
 
 // Resource

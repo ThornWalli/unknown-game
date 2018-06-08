@@ -8,12 +8,21 @@ import {
  * Verwaltet die Module.
  */
 export default class UnitModuleControl {
-    constructor(app) {
+    constructor(app, silent) {
         this._app = app;
+        this._silent = silent;
 
         this._units = this._app.map.units.createFilteredCollection(collectionFilter);
         this._units.on('add', onAddUnit, this);
-        [].concat(this._units.items).forEach(item => setupUnit(item, app));
+        [].concat(this._units.items).forEach(item => this.setupUnit(item, app));
+    }
+
+    /*
+     * Functions
+     */
+
+    setupUnit(unit, app) {
+        unit.setupModule(app, this._silent);
     }
 
     /*
@@ -31,12 +40,8 @@ function collectionFilter(unit) {
     }
 }
 
-function setupUnit(unit, app) {
-        unit.setupModule(app);
-}
-
 function onAddUnit(unit) {
-    setupUnit(unit, this._app);
+    this.setupUnit(unit, this._app);
 }
 
 function isModuleUnit(unit) {

@@ -1,8 +1,8 @@
 'use strict';
 
 import {
-    UNITS as UNIT_TYPES,
-    TRANSFER_DIRECTIONS
+    TRANSFER_DIRECTIONS,
+    ACTIONS as ACTION_TYPES
 } from '../../../types';
 
 import SyncPromise from 'sync-p';
@@ -29,10 +29,14 @@ export default Abstract => class extends Abstract {
          */
         this._allowedItemsStorageItems = [];
 
-        this._itemsRequested = false;
+        this._requestedItems = new Set();
         this._transporterRequested = false;
 
+        this._cleanStorageWaitDuration = 60000;
+
         this._transferDirection = TRANSFER_DIRECTIONS.BOTH;
+
+        this.exportableProperties.add('_allowedItemsStorageItems');
 
     }
 
@@ -40,34 +44,51 @@ export default Abstract => class extends Abstract {
      * Functions
      */
 
-
+    cleanStorage(key) {
+        if (this.app.runtimeObserver.hasFreeItemStorages(key)) {
+            return this.requestTransporterToEmpty(key);
+        } else {
+            return this.app.unitActions.add({
+                type: ACTION_TYPES.WAIT,
+                unit: this.unit,
+                startArgs: [this._cleanStorageWaitDuration]
+            }).then(() => {
+                return this.cleanStorage();
+            });
+        }
+    }
 
     /**
      * Fordert die angegebene Resource an.
      * @param  {game.types.Items} type
      */
     requestItem(type, value) {
+        if (!this._requestedItems.has(type) && !this.isItemStorageFull()) {
+            this._requestedItems.add(type);
 
-        if ( !this.isItemStorageFull()) {
-            // this._itemsRequested = true;
-            console.log('requestItem', type, value);
-            return this.app.runtimeObserver.requestTransporters().then(transporters => {
-                const transporter = transporters.shift();
-                console.log('requestItem', transporter, this.unit, type, value);
-                return transporter.module.bringItemFromStorage(this.unit, type, value);
-            }).then(() => {
-                // this._itemsRequested = false;
+            return this.app.runtimeObserver.requestTransporter().then(transporter => {
+                return transporter.module.bringItemFromStorage(this.unit, type, value).then(flag => {
+                    this._requestedItems.delete(type);
+                    if (flag) {
+                        return transporter;
+                    } else {
+                        return transporter.module.moveToDepot();
+                    }
+                });
             }).catch(err => {
                 throw err;
             });
+        } else {
+            return SyncPromise.resolve();
         }
     }
 
     requestTransporterToEmpty(item) {
-        if (!this._transporterRequested) {
+        if (!this.app.runtimeObserver.getFreeStorage(this.unit.position, item)) {
+            this._transporterRequested = false;
+        } else if (!this._transporterRequested && !this.unit.module.isItemStorageEmpty()) {
             this._transporterRequested = true;
             // const key = item || Object.keys(this.itemStorageItems)[0];
-
             let items = [];
             if (item) {
                 items.push(item);
@@ -75,20 +96,21 @@ export default Abstract => class extends Abstract {
                 items = items.concat(Object.keys(this.itemStorageItems));
             }
             const result = [];
-            for (var i = 0; i < items.length; i++) {
-                const transporter = this.app.runtimeObserver.requestTransporter();
+
+            const request = transporter => {
                 if (transporter) {
-                    result.push(transporter.module.cleanStorage(this.unit, items[i]));
-                } else {
-                    break;
+                    return transporter.module.cleanStorage(this.unit, items[i]);
                 }
+            };
+
+            for (var i = 0; i < items.length; i++) {
+                result.push(this.app.runtimeObserver.requestTransporter().then(request));
             }
 
-            return Promise.all(result).then(() => {
-                return this.requestTransporterToEmpty(item);
-            }).then(() => {
+            return SyncPromise.all(result).then(() => {
                 console.log('SCHON FERTIG?');
                 this._transporterRequested = false;
+                return this.requestTransporterToEmpty(item);
             });
         }
 
@@ -217,6 +239,9 @@ export default Abstract => class extends Abstract {
             delete this._itemStorageItems[type];
         }
         this.trigger('storage.value.remove', this, type, value);
+        if (value === 0) {
+            this.trigger('storage.value.empty', this, type);
+        }
         return value;
     }
 
@@ -254,7 +279,10 @@ export default Abstract => class extends Abstract {
      * Ruft das freie Volumen ab.
      * @return {Number}
      */
-    getFreeItemStorageValue() {
+    getFreeItemStorageValue(type) {
+        if (type && !this.isItemAllowed(type)) {
+            return 0;
+        }
         return this._maxItemStorageItemValue - this.totalItemStorageValue;
     }
 

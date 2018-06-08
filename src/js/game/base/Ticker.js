@@ -9,7 +9,13 @@ import {
     ticker as pixi_ticker
 } from 'pixi.js';
 
-const DEFAULT_DURATION = 1000;
+const DEFAULT_DURATION = 1000,
+    DEFAULT_TICK = function() {
+        return true;
+    },
+    DEFAULT_COMPLETE = function() {
+        return true;
+    };
 
 class Ticker extends Events {
     constructor(name) {
@@ -89,6 +95,7 @@ class Ticker extends Events {
         const listener = new Listener(tick, complete, duration, once);
         this._listeners.add(listener);
         addListenerToTicker(this, listener);
+        return listener;
     }
 
 
@@ -104,6 +111,10 @@ class Ticker extends Events {
     get ticker() {
         return this._ticker;
     }
+
+    get timestamp() {
+        return this._timestamp;
+    }
 }
 
 function addListenerToTicker(ticker, listener) {
@@ -112,19 +123,15 @@ function addListenerToTicker(ticker, listener) {
 
 class Listener {
     constructor(tick, complete, duration, once = false) {
-        this.tick = tick;
-        this.complete = complete || function (){
-            return true;
-        };
+        this.tick = tick || DEFAULT_TICK;
+        this.complete = complete || DEFAULT_COMPLETE;
         this.duration = duration;
         this.once = once;
         this.timestamp = null;
     }
     onTick() {
         const now = this._ticker.now();
-        if (this.tick) {
-            this.tick(this.normalize, this);
-        }
+        this.tick(this.normalize, this);
         if ((now - this.timestamp) > this.duration) {
             if (this.complete) {
                 const complete = this.complete(this);

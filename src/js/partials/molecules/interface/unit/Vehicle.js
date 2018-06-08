@@ -74,8 +74,8 @@ export default Interface.extend({
                 this.vehicleItemStorages.destroy();
             }
         }
-        // this.elements.transporterStorageForm.setAttribute('disabled', !unit || unit && !unit.isType(UNIT_TYPES.ITEM_STORAGE));
-        // this.elements.transporterPreferredItemForm.setAttribute('disabled', !unit || unit && !unit.isType(UNIT_TYPES.VEHICLE.TRANSPORTER.DEFAULT));
+        this.elements.transporterStorageForm.setAttribute('disabled', !unit || unit && !unit.isType(UNIT_TYPES.ITEM_STORAGE));
+        this.elements.transporterPreferredItemForm.setAttribute('disabled', !unit || unit && !unit.isType(UNIT_TYPES.VEHICLE.TRANSPORTER.DEFAULT));
         this.model.visible = !!unit;
     }
 
@@ -96,21 +96,17 @@ function render(module) {
 
     // UnitStorage
 
-    this.vehicleUnitStorages.on('add', () => {
-        renderItems.bind(this)(prepareStorage(this.vehicleUnitStorages), this.elements.vehicleDepot);
-    }, this).on('remove', () => {
-        renderItems.bind(this)(prepareStorage(this.vehicleUnitStorages), this.elements.vehicleDepot);
-    }, this);
+    this.vehicleUnitStorages
+        .on('add', () => renderItems.bind(this)(prepareStorage(this.vehicleUnitStorages), this.elements.vehicleDepot), this)
+        .on('remove', () => renderItems.bind(this)(prepareStorage(this.vehicleUnitStorages), this.elements.vehicleDepot), this);
     renderItems.bind(this)(prepareStorage(this.vehicleUnitStorages), this.elements.vehicleDepot, getUnitId(module.vehiclePreferredDepotUnit));
     module.on('vehiclePreferredDepotUnit.change', (unit, value) => this.elements.vehicleDepot.value = getUnitId(value), this);
 
     // ItemStorage
 
-    this.vehicleItemStorages.on('add', () => {
-        renderItems.bind(this)(prepareStorage(this.vehicleItemStorages), this.elements.transporterStorage);
-    }, this).on('remove', () => {
-        renderItems.bind(this)(prepareStorage(this.vehicleItemStorages), this.elements.transporterStorage);
-    }, this);
+    this.vehicleItemStorages
+        .on('add', () => renderItems.bind(this)(prepareStorage(this.vehicleItemStorages), this.elements.transporterStorage), this)
+        .on('remove', () => renderItems.bind(this)(prepareStorage(this.vehicleItemStorages), this.elements.transporterStorage), this);
     renderItems.bind(this)(prepareStorage(this.vehicleItemStorages), this.elements.transporterStorage, getUnitId(module.transporterPreferredStorageUnit));
     module.on('transporterPreferredStorageUnit.change', (unit, value) => this.elements.transporterStorage.value = getUnitId(value), this);
 
@@ -118,9 +114,7 @@ function render(module) {
 
     let items = null;
     if (module.transporterAvailableItemTypes.length > 0) {
-        items = module.transporterAvailableItemTypes.reduce((result, type) => {
-            return result.concat(getFlatList(getItems(type)));
-        }, []);
+        items = module.transporterAvailableItemTypes.reduce((result, type) => result.concat(getFlatList(getItems(type))), []);
     } else {
         items = getFlatList(ITEMS);
     }
@@ -176,9 +170,7 @@ function getUnitId(unit) {
 // Vehicle
 
 function onClickTransporterMoveToStorage() {
-    if (this.model.selectedUnit.module.transporterPreferredStorageUnit) {
-        this.model.selectedUnit.module.moveToStorage(this.model.selectedUnit.module.transporterPreferredStorageUnit);
-    }
+    this.model.selectedUnit.module.moveToStorage(this.model.selectedUnit.module.transporterPreferredStorageUnit);
 }
 
 function onClickMoveToResource() {
@@ -186,22 +178,17 @@ function onClickMoveToResource() {
 }
 
 function onChangeTransporterStorage(e) {
-    console.log('onChangeTransporterStorage', e.target.value);
     this.model.selectedUnit.module.transporterPreferredStorageUnit = this.model.selectedUnit.module.app.map.getUnitById(e.target.value);
 }
 
 function onChangeVehicleResource(e) {
-    console.log('onChangeVehicleResource', e.target.value);
     this.model.selectedUnit.module.transporterPreferredItemType = e.target.value;
 }
 
 function onClickVehicleMoveToDepot() {
-    if (this.model.selectedUnit.module.vehiclePreferredDepotUnit) {
-        this.model.selectedUnit.module.moveToDepot(this.model.selectedUnit.module.vehiclePreferredDepotUnit);
-    }
+    this.model.selectedUnit.module.moveToDepot(this.model.selectedUnit.module.vehiclePreferredDepotUnit);
 }
 
 function onChangeVehicleDepot(e) {
-    console.log('onChangeVehicleDepot', e.target.value);
     this.model.selectedUnit.module.vehiclePreferredDepotUnit = this.model.selectedUnit.module.app.map.getUnitById(e.target.value);
 }

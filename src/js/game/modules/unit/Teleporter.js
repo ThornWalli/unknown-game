@@ -10,7 +10,8 @@ import Abstract_ItemStorage from './abstract/ItemStorage';
 
 import SyncPromise from 'sync-p';
 
-export default class Teleporter extends Abstract_ItemStorage(Unit) {
+const Extends = Abstract_ItemStorage(Unit);
+export default class Teleporter extends Extends {
     constructor(app, unit) {
         super(app, unit);
         this._teleporterEnergy = 1;
@@ -20,7 +21,23 @@ export default class Teleporter extends Abstract_ItemStorage(Unit) {
         this._teleporterItemSlots = 4;
         this._teleporterRequestedItems = [];
         this._teleporterAutoRequest = true;
-        this.on('change.teleporterRequestedItems', onChangeRequestedItems);
+    }
+
+    destroy() {
+        return this.cleanStorage().then(() => {
+            return Extends.prototype.destroy.apply(this, arguments);
+        });
+    }
+
+    onReady() {
+        Extends.prototype.onReady.apply(this, arguments);
+        console.log('öäääää');
+        this
+            .on('storage.value.empty', onItemStorageEmpty, this)
+            .on('change.teleporterRequestedItems', onChangeRequestedItems);
+        if (this.teleporterRequestedItems.length > 0) {
+            onChangeRequestedItems(this, this.teleporterRequestedItems);
+        }
     }
 
     /*
@@ -28,7 +45,15 @@ export default class Teleporter extends Abstract_ItemStorage(Unit) {
      */
 
     requestItems(items, random = Math.random) {
-        if (!this._teleporterActiveRequest) {
+
+        if (this.isItemStorageFull()) {
+            return this.requestTransporterToEmpty().then(() => {
+                this._teleporterActiveRequest = null;
+                if (this._teleporterRequestedItems && this._teleporterAutoRequest) {
+                    return this.requestItems(this._teleporterRequestedItems, random);
+                }
+            });
+        } else if (!this._teleporterActiveRequest) {
             const requestedItems = [];
             items = items.filter(item => {
                 if (ITEMS_DATA_MAP[item].teleporterEnergy <= this._teleporterEnergy) {
@@ -41,6 +66,7 @@ export default class Teleporter extends Abstract_ItemStorage(Unit) {
             for (var i = 0; i < this._teleporterItemSlots; i++) {
                 requestedItems.push(items[Math.round(random() * (items.length - 1))]);
             }
+            console.log('JOOO');
             this._teleporterRequestDurationTime = this.getDurationFromItems();
             this._teleporterArrivalTime = Date.now() + this._teleporterRequestDurationTime;
             this.trigger('teleporter.request');
@@ -54,12 +80,11 @@ export default class Teleporter extends Abstract_ItemStorage(Unit) {
                 requestedItems.forEach(item => {
                     count[item] = (count[item] || 0) + 1;
                 });
-                Object.keys(count).forEach(key => {
+                return Object.keys(count).reduce((count, key) => {
                     count[key] = (count[key] / this._teleporterItemSlots) * freeStorage;
                     this.addItemStorageItemValue(key, count[key]);
-                });
-                console.log('ount', count);
-                return count;
+                    return count;
+                }, count);
             }).then(() => {
                 this.trigger('teleporter.receive');
                 return this.requestTransporterToEmpty().then(() => {
@@ -91,6 +116,12 @@ export default class Teleporter extends Abstract_ItemStorage(Unit) {
     set teleporterRequestedItems(value) {
         this._teleporterRequestedItems = value;
         this.trigger('change.teleporterRequestedItems', this, value);
+    }
+}
+
+function onItemStorageEmpty() {
+    if (this._teleporterRequestedItems) {
+        this.requestItems(this._teleporterRequestedItems);
     }
 }
 

@@ -1,6 +1,23 @@
 {{#mixin "molecules/interface" this partial-name="molecules/interface/general-info" controller-name="./partials/molecules/interface/GeneralInfo" }}
   {{#content "content"}}
     {{{mixin "atoms/button" title="Detail…" dialog="detail-info"}}}
+    <div class="general-info__container general-info__quick">
+      <ul>
+        <li>
+          <img src="{{{relativeToRoot}}}assets/img/icons/solars_green.png" title="Solars" alt="Solars" /> <span data-hook="generalInfoQuickSolars">0</span>
+        </li>
+        <li>
+          <img src="{{{relativeToRoot}}}assets/img/icons/energy_green.png" title="Energy" alt="Energy" /> <span data-hook="generalInfoQuickEnergy">0</span>
+        </li>
+        <li>
+          <img src="{{{relativeToRoot}}}assets/img/icons/food_green.png" title="Food" alt="Food" /> <span data-hook="generalInfoQuickFood">0</span>
+        </li>
+        <li>
+          <img src="{{{relativeToRoot}}}assets/img/icons/water_green.png" title="Food" alt="Food" /> <span data-hook="generalInfoQuickWater">0</span>
+        </li>
+      </ul>
+    </div>
+
     <div class="general-info__container_split">
       <div>
         <div class="general-info__container">

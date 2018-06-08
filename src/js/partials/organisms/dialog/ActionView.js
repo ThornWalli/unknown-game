@@ -1,5 +1,9 @@
 'use strict';
 
+import {
+    UNITS as UNIT_TYPES
+} from '../../../game/types';
+
 import Dialog from '../Dialog';
 
 export default Dialog.extend({
@@ -54,7 +58,7 @@ export default Dialog.extend({
                     if (this.model.unit) {
                         unregister.bind(this)(this.model.unit);
                     }
-                    if (unit) {
+                    if (unit && unit.isType(UNIT_TYPES.ACTION)) {
                         register.bind(this)(unit);
                     }
                 });

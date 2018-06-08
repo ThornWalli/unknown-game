@@ -1,5 +1,7 @@
 'use strict';
 
+import SyncPromise from 'sync-p';
+
 import Events from './Events';
 
 export default class Action extends Events {
@@ -27,7 +29,6 @@ export default class Action extends Events {
 
     onStop() {
         this._completed = false;
-        this._stopped = true;
         this._started = false;
         this.trigger('stop', this);
     }
@@ -56,6 +57,9 @@ export default class Action extends Events {
      */
     stop() {
         this._stopped = true;
+        return new SyncPromise(resolve => {
+            this.once('stop', resolve);
+        });
     }
 
     /**

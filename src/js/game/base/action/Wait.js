@@ -18,6 +18,11 @@ export default class Wait extends Action {
         this._timerListener = null;
     }
 
+    onStop() {
+        removeListener(this);
+        Action.prototype.onStop.apply(this, arguments);
+    }
+
     onComplete() {
         removeListener(this);
         Action.prototype.onComplete.apply(this, arguments);
@@ -36,16 +41,6 @@ export default class Wait extends Action {
             Action.prototype.start.apply(this, arguments);
             this.onComplete();
         }
-    }
-
-    stop() {
-        removeListener(this);
-        Action.prototype.stop.apply(this, arguments);
-    }
-
-    destroy() {
-        removeListener(this);
-        Action.prototype.destroy.apply(this, arguments);
     }
 
     /*
@@ -75,7 +70,12 @@ function removeListener(action) {
 // Events
 
 function onTick(value) {
-        this.trigger('waiting', this, value);
+    if (this._stopped) {
+        console.log('????');
+        this.onStop();
+        return false;
+    }
+    this.trigger('waiting', this, value);
 }
 
 function onComplete() {

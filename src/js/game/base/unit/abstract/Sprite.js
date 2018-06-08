@@ -25,9 +25,7 @@ const Sprite = Abstract => class extends Abstract {
         this._sprite = sprite;
     }
     renderSprite() {
-        if (this._sprite) {
-            this.trigger('render.sprite', this);
-        }
+        this.trigger('render.sprite', this);
     }
 
     onActionComplete() {
